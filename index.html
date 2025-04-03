@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Symbolic Interpreter</title>
+    </head>
+    <body>
+        <pre id="output"></pre>
+        <br>
+        <input type="text" id="input" autofocus>
+        <button onclick="interpret()">Run</button>
+        <script>
+            function interpret() {
+                const inputField = document.getElementById('input').value;
+                const result = "..."; // TODO: run interpreter here
+                document.getElementById('output').textContent += ("> " + inputField + "\n" + result + "\n");
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const inputField = document.getElementById('input');
+                inputField.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault(); // Prevent form submission or newline
+                        interpret();
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

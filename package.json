@@ -1,0 +1,26 @@
+{
+  "name": "symbolic_interpreter",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mnikander/symbolic_interpreter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mnikander/symbolic_interpreter/issues"
+  },
+  "homepage": "https://github.com/mnikander/symbolic_interpreter#readme",
+  "devDependencies": {
+    "vitest": "^3.1.1"
+  }
+}
