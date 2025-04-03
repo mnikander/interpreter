@@ -1,3 +1,3 @@
-function interpret(expr) {
+export function interpret(expr) {
     return "..."
 }

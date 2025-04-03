@@ -9,8 +9,9 @@
         <br>
         <input type="text" id="input" autofocus>
 
-        <script src="src/interpreter.js"></script>
-        <script>
+        <script type="module">
+            import { interpret } from './src/interpreter.js';
+
             const input = document.getElementById('input');
 
             function run_interpreter() {
