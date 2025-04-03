@@ -8,19 +8,18 @@
         <pre id="output"></pre>
         <br>
         <input type="text" id="input" autofocus>
-        <button onclick="run_interpreter()">Run</button>
 
         <script src="src/interpreter.js"></script>
         <script>
+            const input = document.getElementById('input');
+
             function run_interpreter() {
-                const inputField = document.getElementById('input').value;
-                const result = interpret(input);
-                document.getElementById('output').textContent += ("> " + inputField + "\n" + result + "\n");
+                const result = interpret(input.value);
+                document.getElementById('output').textContent += ("> " + input.value + "\n" + result + "\n");
             }
 
             document.addEventListener('DOMContentLoaded', () => {
-                const inputField = document.getElementById('input');
-                inputField.addEventListener('keydown', (event) => {
+                input.addEventListener('keydown', (event) => {
                     if (event.key === 'Enter') {
                         event.preventDefault(); // Prevent form submission or newline
                         run_interpreter();
