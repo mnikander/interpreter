@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-export function check_parentheses(line: string) {
+export function check_parentheses(line: string): boolean {
     let count = 0;
     let open_before_close = true;
 
@@ -21,7 +21,7 @@ export function check_parentheses(line: string) {
     return open_before_close && balanced;
 }
 
-export function add_whitespace_to_parentheses(line: string) {
+export function add_whitespace_to_parentheses(line: string): string {
     let output = "";
     for (let i = 0; i < line.length; i++) {
         if (line[i] == '(') {
