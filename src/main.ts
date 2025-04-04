@@ -13,6 +13,12 @@ function run_interpreter() {
   }
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    const output = document.getElementById("output");
+    if (output) {
+        output.textContent = "Welcome! Try typing:\n\n(+ 1 2)\n\nand press Enter.\n\n";
+    }
+
     const inputField = document.getElementById("input");
     inputField?.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
