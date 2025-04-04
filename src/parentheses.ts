@@ -1,0 +1,36 @@
+export function check_parentheses(line: string) {
+    let count = 0;
+    let open_before_close = true;
+
+    for (let i = 0; i < line.length; i++) {
+        if (line[i] == '(') {
+            count++;
+        }
+        else if (line[i] == ')') {
+            count--;
+        }
+        if (count < 0) {
+            open_before_close = false;
+        }
+    }
+
+    let balanced = (count == 0);
+
+    return open_before_close && balanced;
+}
+
+export function add_whitespace_to_parentheses(line: string) {
+    let output = "";
+    for (let i = 0; i < line.length; i++) {
+        if (line[i] == '(') {
+            output += ' ( ';
+        }
+        else if(line[i] == ')') {
+            output += ' ) ';
+        }
+        else {
+            output += line[i];
+        }
+    }
+    return output;
+}

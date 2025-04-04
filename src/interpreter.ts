@@ -1,22 +1,4 @@
-function run_interpreter() {
-    const inputEl = document.getElementById("input") as HTMLInputElement;
-    const outputEl = document.getElementById("output") as HTMLPreElement;
-  
-    const input = inputEl.value;
-    const result = interpret(input);
-  
-    outputEl.textContent += `> ${input}\n${result}\n`;
-  }
-
-document.addEventListener('DOMContentLoaded', () => {
-    const inputField = document.getElementById("input");
-    inputField?.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // Prevent form submission or newline
-            run_interpreter();
-        }
-    });
-});
+import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
 
 export function interpret(line: string) {
     if (!check_parentheses(line)) {
@@ -50,43 +32,6 @@ export function interpret(line: string) {
     else {
         return "ERROR: invalid expression";
     }
-}
-
-export function check_parentheses(line: string) {
-    let count = 0;
-    let open_before_close = true;
-
-    for (let i = 0; i < line.length; i++) {
-        if (line[i] == '(') {
-            count++;
-        }
-        else if (line[i] == ')') {
-            count--;
-        }
-        if (count < 0) {
-            open_before_close = false;
-        }
-    }
-
-    let balanced = (count == 0);
-
-    return open_before_close && balanced;
-}
-
-export function add_whitespace_to_parentheses(line: string) {
-    let output = "";
-    for (let i = 0; i < line.length; i++) {
-        if (line[i] == '(') {
-            output += ' ( ';
-        }
-        else if(line[i] == ')') {
-            output += ' ) ';
-        }
-        else {
-            output += line[i];
-        }
-    }
-    return output;
 }
 
 export function remove_empty_words(words: string[]) {
