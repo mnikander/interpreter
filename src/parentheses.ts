@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Marco Nikander
+
 export function check_parentheses(line: string) {
     let count = 0;
     let open_before_close = true;

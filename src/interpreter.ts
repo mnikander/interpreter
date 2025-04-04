@@ -1,3 +1,5 @@
+// Copyright (c) 2025 Marco Nikander
+
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
 
 export function interpret(line: string) {
