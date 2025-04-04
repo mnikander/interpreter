@@ -6,11 +6,7 @@ export function interpret(line: string) {
     if (!check_parentheses(line)) {
         return "ERROR: invalid parentheses";
     }
-
-    let spaced   = add_whitespace_to_parentheses(line);
-    let words    = spaced.split(" ");
-    words        = remove_empty_words(words);
-    const tokens = words.map(tokenize);
+    const tokens    = parse(line);
     let first_error = tokens.find(is_error);
     if (first_error != undefined)
     {
@@ -34,6 +30,14 @@ export function interpret(line: string) {
     else {
         return "ERROR: invalid expression";
     }
+}
+
+export function parse(line: string) {
+    let spaced   = add_whitespace_to_parentheses(line);
+    let words    = spaced.split(" ");
+    words        = remove_empty_words(words);
+    const tokens = words.map(tokenize);
+    return tokens;
 }
 
 export function remove_empty_words(words: string[]) {
