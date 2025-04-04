@@ -8,7 +8,7 @@ export function interpret(line: string): string | number | undefined {
     let first_error = tokens.find(is_error);
     if (first_error != undefined)
     {
-        let message = "ERROR: " + (first_error.value ?? `invalid symbol ${first_error.terminal}`);
+        let message = "ERROR: " + (first_error.value ?? "unknown");
         return message;
     }
 

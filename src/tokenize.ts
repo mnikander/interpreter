@@ -54,7 +54,7 @@ export function remove_empty_words(words: string[]): string[] {
 export function to_token(word: string): Token {
     return maybe_token_operation(word) ??
             maybe_token_number(word) ??
-            {name: "TK_ERROR", value: word} as TokenError;
+            {name: "TK_ERROR", value: `invalid character ${word}`} as TokenError;
 }
 
 export function maybe_token_operation(word: string): undefined | TokenTerminal {
