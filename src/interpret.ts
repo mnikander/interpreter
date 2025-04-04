@@ -13,7 +13,7 @@ export function interpret(line: string): string | number | undefined {
     }
 
     // hardcode addition for now
-    if (tokens[0].name == 'TK_NUMBER') {
+    if (tokens.length == 1 && tokens[0].name == 'TK_NUMBER') {
         return tokens[0].value;
     }
     else if (tokens[0].name == 'TK_LEFT')  {
