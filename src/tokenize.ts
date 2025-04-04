@@ -4,7 +4,6 @@ import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses"
 export interface Token {
     name: string,
     value?: number | string;
-    terminal?: string
 }
 
 export interface TokenError extends Token {
@@ -17,11 +16,19 @@ export interface TokenNumber extends Token {
     value: number
 }
 
-const terminal_tokens: Token[] = [
-    {name: "TK_LEFT" , terminal: "("},
-    {name: "TK_RIGHT", terminal: ")"},
-    {name: "TK_ADD"  , terminal: "+"},
-];
+type TokenTerminal = TokenLeft | TokenRight | TokenAdd;
+
+export interface TokenAdd extends Token {
+    name: "TK_ADD",
+}
+
+export interface TokenLeft extends Token {
+    name: "TK_LEFT",
+}
+
+export interface TokenRight extends Token {
+    name: "TK_RIGHT",
+}
 
 export function tokenize(line: string): Token[] {
     if (!check_parentheses(line)) {
@@ -44,16 +51,20 @@ export function remove_empty_words(words: string[]): string[] {
     return result;
 }
 
-export function maybe_terminal_token(word: string): Token | undefined {
-    for (const token of terminal_tokens) {
-        if(word == token.terminal) {
-            return {name: token.name, terminal: token.terminal} as Token;
-        }
+export function maybe_terminal_token(word: string): undefined | TokenTerminal {
+    if (word == "(") {
+        return {name: "TK_LEFT"} as TokenLeft;
+    }
+    else if (word == ")") {
+        return {name: "TK_RIGHT"} as TokenRight;
+    }
+    else if (word == "+") {
+        return {name: "TK_ADD"} as TokenAdd;
     }
     return undefined;
 }
 
-export function maybe_number_token(word: string): Token | undefined {
+export function maybe_number_token(word: string): undefined | TokenNumber {
     if (word == '' || word[0] == ' ') {
         // TODO: this block should not be necessary
         return undefined;
