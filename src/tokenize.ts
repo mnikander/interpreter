@@ -52,12 +52,12 @@ export function remove_empty_words(words: string[]): string[] {
 }
 
 export function to_token(word: string): Token {
-    return maybe_terminal_token(word) ??
-            maybe_number_token(word) ??
+    return maybe_token_operation(word) ??
+            maybe_token_number(word) ??
             {name: "TK_ERROR", value: word} as TokenError;
 }
 
-export function maybe_terminal_token(word: string): undefined | TokenTerminal {
+export function maybe_token_operation(word: string): undefined | TokenTerminal {
     if (word == "(") {
         return {name: "TK_LEFT"} as TokenLeft;
     }
@@ -70,7 +70,7 @@ export function maybe_terminal_token(word: string): undefined | TokenTerminal {
     return undefined;
 }
 
-export function maybe_number_token(word: string): undefined | TokenNumber {
+export function maybe_token_number(word: string): undefined | TokenNumber {
     if (word == '' || word[0] == ' ') {
         // TODO: this block should not be necessary
         return undefined;
