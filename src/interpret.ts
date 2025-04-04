@@ -31,4 +31,5 @@ export function interpret(line: string): string | number | undefined {
     else {
         return "ERROR: invalid expression";
     }
+    return "ERROR: unknown";
 }
