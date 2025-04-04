@@ -7,7 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "vitest"
+    "build": "vite build",
+    "test": "vitest",
+    "dev": "vite",
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "repository": {
     "type": "git",
@@ -21,6 +25,9 @@
   },
   "homepage": "https://github.com/mnikander/symbolic_interpreter#readme",
   "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.5",
     "vitest": "^3.1.1"
   }
 }

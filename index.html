@@ -8,26 +8,7 @@
         <pre id="intro">Welcome! Give this a try:<br>  (+ 1 2)</pre>
         <pre id="output"></pre>
         <br>
-        <input type="text" id="input" autofocus>
-
-        <script type="module">
-            import { interpret } from './src/interpreter.js';
-
-            const input = document.getElementById('input');
-
-            function run_interpreter() {
-                const result = interpret(input.value);
-                document.getElementById('output').textContent += ("> " + input.value + "\n" + result + "\n");
-            }
-
-            document.addEventListener('DOMContentLoaded', () => {
-                input.addEventListener('keydown', (event) => {
-                    if (event.key === 'Enter') {
-                        event.preventDefault(); // Prevent form submission or newline
-                        run_interpreter();
-                    }
-                });
-            });
-        </script>
+        <input type="text" id="input" autofocus/>
+        <script type="module" src="./src/interpreter.ts"></script>
     </body>
 </html>

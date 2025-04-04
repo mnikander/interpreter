@@ -1,4 +1,24 @@
-export function interpret(line) {
+function run_interpreter() {
+    const inputEl = document.getElementById("input") as HTMLInputElement;
+    const outputEl = document.getElementById("output") as HTMLPreElement;
+  
+    const input = inputEl.value;
+    const result = interpret(input);
+  
+    outputEl.textContent += `> ${input}\n${result}\n`;
+  }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const inputField = document.getElementById("input");
+    inputField?.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Prevent form submission or newline
+            run_interpreter();
+        }
+    });
+});
+
+export function interpret(line: string) {
     if (!check_parentheses(line)) {
         return "ERROR: invalid parentheses";
     }
@@ -17,19 +37,22 @@ export function interpret(line) {
     if (tokens[0].name == "TK_NUMBER") {
         return tokens[0].value;
     }
-    else if (tokens[0] == TK_LEFT &&
-        tokens[1] == TK_ADD &&
-        tokens[2].name == "TK_NUMBER" &&
-        tokens[3].name == "TK_NUMBER" &&
-        tokens[4] == TK_RIGHT) {
-        return tokens[2].value + tokens[3].value;
+    else if (tokens[0] == TK_LEFT)  {
+        if (tokens[1] == TK_ADD) {
+            if (tokens[2].name == "TK_NUMBER" && tokens[3].name == "TK_NUMBER" && tokens[4] == TK_RIGHT) {
+                    return tokens[2].value + tokens[3].value;
+            }
         }
+        else {
+            return "ERROR: no valid operation provided"
+        }
+    }
     else {
         return "ERROR: invalid expression";
     }
 }
 
-export function check_parentheses(line) {
+export function check_parentheses(line: string) {
     let count = 0;
     let open_before_close = true;
 
@@ -50,7 +73,7 @@ export function check_parentheses(line) {
     return open_before_close && balanced;
 }
 
-function add_whitespace_to_parentheses(line) {
+export function add_whitespace_to_parentheses(line: string) {
     let output = "";
     for (let i = 0; i < line.length; i++) {
         if (line[i] == '(') {
@@ -66,7 +89,7 @@ function add_whitespace_to_parentheses(line) {
     return output;
 }
 
-function remove_empty_words(words) {
+export function remove_empty_words(words: string[]) {
     let result = [];
     for (let word of words) {
         if (word != "") {
@@ -76,7 +99,7 @@ function remove_empty_words(words) {
     return result;
 }
 
-export function maybe_token(word, token) {
+export function maybe_token(word: string, token: any) {
     if(word == token.symbol) {
         return token;
     }
@@ -85,7 +108,7 @@ export function maybe_token(word, token) {
     }
 }
 
-export function maybe_number(word) {
+export function maybe_number(word: string) {
     if (word == '' || word[0] == ' ') {
         // TODO: this block should not be necessary
         return undefined;
@@ -101,7 +124,7 @@ export function maybe_number(word) {
     }
 }
 
-export function tokenize(word) {
+export function tokenize(word: string) {
     return maybe_token(word, TK_LEFT) ??
             maybe_token(word, TK_RIGHT) ??
             maybe_token(word, TK_ADD) ??
@@ -109,7 +132,7 @@ export function tokenize(word) {
             {name: "ERROR", symbol: word};
 }
 
-export function is_error(token) {
+export function is_error(token: any) {
     return token.name == "ERROR";
 }
 
