@@ -30,6 +30,26 @@ export interface TokenRight extends Token {
     name: "TK_RIGHT",
 }
 
+export function is_tk_error(token: Token): boolean {
+    return token.name == "TK_ERROR";
+}
+
+export function is_tk_number(token: Token): boolean {
+    return token.name == "TK_NUMBER";
+}
+
+export function is_tk_left(token: Token): boolean {
+    return token.name == "TK_LEFT";
+}
+
+export function is_tk_right(token: Token): boolean {
+    return token.name == "TK_RIGHT";
+}
+
+export function is_tk_add(token: Token): boolean {
+    return token.name == "TK_ADD";
+}
+
 export function tokenize(line: string): Token[] {
     if (!check_parentheses(line)) {
         return [{name: "TK_ERROR", value: "invalid parentheses"} as TokenError] as Token[];
@@ -84,8 +104,4 @@ export function maybe_token_number(word: string): undefined | TokenNumber {
             return {name: "TK_NUMBER", value: number} as TokenNumber;
         }
     }
-}
-
-export function is_error(token: any): boolean {
-    return token.name == "TK_ERROR";
 }
