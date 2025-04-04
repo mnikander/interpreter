@@ -8,8 +8,10 @@ export function interpret(line: string): string | number | undefined {
     let first_error = tokens.find(is_error);
     if (first_error != undefined)
     {
-        return `ERROR: invalid token '${first_error.symbol}'`;
+        let message = "ERROR: " + (first_error.value ?? `invalid symbol ${first_error.terminal}`);
+        return message;
     }
+
     // hardcode addition for now
     if (tokens[0].name == 'TK_NUMBER') {
         return tokens[0].value;

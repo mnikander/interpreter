@@ -4,7 +4,7 @@ import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses"
 export interface Token {
     name: string,
     value?: number | string;
-    symbol?: string
+    terminal?: string
 }
 
 export interface TokenError extends Token {
@@ -17,18 +17,15 @@ export interface TokenNumber extends Token {
     value: number
 }
 
-const TK_LEFT  : Token = {name: "TK_LEFT",   symbol: "("};
-const TK_RIGHT : Token = {name: "TK_RIGHT",  symbol: ")"};
-const TK_ADD   : Token = {name: "TK_ADD",    symbol: "+"};
-
-export function is_error(token: any): boolean {
-    return token.name == "ERROR";
-}
-
+const terminal_tokens: Token[] = [
+    {name: "TK_LEFT" , terminal: "("},
+    {name: "TK_RIGHT", terminal: ")"},
+    {name: "TK_ADD"  , terminal: "+"},
+];
 
 export function parse(line: string): Token[] {
     if (!check_parentheses(line)) {
-        return [{name: "TK_ERROR", value: "ERROR: invalid parentheses"} as TokenError] as Token[];
+        return [{name: "TK_ERROR", value: "invalid parentheses"} as TokenError] as Token[];
     }
     let spaced   = add_whitespace_to_parentheses(line);
     let words    = spaced.split(" ");
@@ -47,16 +44,16 @@ export function remove_empty_words(words: string[]): string[] {
     return result;
 }
 
-export function maybe_token(word: string, token: any): Token | undefined {
-    if(word == token.symbol) {
-        return token;
+export function maybe_terminal_token(word: string): Token | undefined {
+    for (const token of terminal_tokens) {
+        if(word == token.terminal) {
+            return {name: token.name, terminal: token.terminal} as Token;
+        }
     }
-    else {
-        return undefined;
-    }
+    return undefined;
 }
 
-export function maybe_number(word: string): Token | undefined {
+export function maybe_number_token(word: string): Token | undefined {
     if (word == '' || word[0] == ' ') {
         // TODO: this block should not be necessary
         return undefined;
@@ -73,9 +70,11 @@ export function maybe_number(word: string): Token | undefined {
 }
 
 export function tokenize(word: string): Token {
-    return maybe_token(word, TK_LEFT) ??
-            maybe_token(word, TK_RIGHT) ??
-            maybe_token(word, TK_ADD) ??
-            maybe_number(word) ??
+    return maybe_terminal_token(word) ??
+            maybe_number_token(word) ??
             {name: "TK_ERROR", value: word} as TokenError;
+}
+
+export function is_error(token: any): boolean {
+    return token.name == "TK_ERROR";
 }
