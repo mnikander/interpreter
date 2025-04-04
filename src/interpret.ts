@@ -1,10 +1,10 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
-import { is_error, parse, Token } from "./parse";
+import { is_error, tokenize, Token } from "./tokenize";
 
 export function interpret(line: string): string | number | undefined {
-    const tokens    = parse(line);
+    const tokens    = tokenize(line);
     let first_error = tokens.find(is_error);
     if (first_error != undefined)
     {

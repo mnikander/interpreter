@@ -23,14 +23,14 @@ const terminal_tokens: Token[] = [
     {name: "TK_ADD"  , terminal: "+"},
 ];
 
-export function parse(line: string): Token[] {
+export function tokenize(line: string): Token[] {
     if (!check_parentheses(line)) {
         return [{name: "TK_ERROR", value: "invalid parentheses"} as TokenError] as Token[];
     }
     let spaced   = add_whitespace_to_parentheses(line);
     let words    = spaced.split(" ");
     words        = remove_empty_words(words);
-    const tokens = words.map(tokenize);
+    const tokens = words.map(to_token);
     return tokens;
 }
 
@@ -69,7 +69,8 @@ export function maybe_number_token(word: string): Token | undefined {
     }
 }
 
-export function tokenize(word: string): Token {
+export function to_token(word: string): Token {
+    
     return maybe_terminal_token(word) ??
             maybe_number_token(word) ??
             {name: "TK_ERROR", value: word} as TokenError;
