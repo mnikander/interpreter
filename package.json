@@ -1,5 +1,5 @@
 {
-  "name": "symbolic_interpreter",
+  "name": "interpreter",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -15,15 +15,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mnikander/symbolic_interpreter.git"
+    "url": "git+https://github.com/mnikander/interpreter.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/mnikander/symbolic_interpreter/issues"
+    "url": "https://github.com/mnikander/interpreter/issues"
   },
-  "homepage": "https://github.com/mnikander/symbolic_interpreter#readme",
+  "homepage": "https://github.com/mnikander/interpreter#readme",
   "devDependencies": {
     "gh-pages": "^6.3.0",
     "typescript": "^5.8.2",
