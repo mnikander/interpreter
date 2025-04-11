@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { interpret } from '../src/interpret.ts'
+import { interpret } from '../src/interpret.js'
 
 describe('evaluate', () => {
   it('tautology', () => {
