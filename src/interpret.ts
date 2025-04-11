@@ -4,8 +4,8 @@ import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses"
 import { is_tk_error, is_tk_number, is_tk_left, is_tk_right, is_tk_add, tokenize, Token } from "./lexer";
 
 export function interpret(line: string): string | number | undefined {
-    const tokens    = tokenize(line);
-    let first_error = tokens.find(is_tk_error);
+    const tokens: Token[]                = tokenize(line);
+    const first_error: Token | undefined = tokens.find(is_tk_error);
     if (first_error != undefined)
     {
         let message = "ERROR: " + (first_error.value ?? "unknown");
