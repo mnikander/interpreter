@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const output = document.getElementById("output");
     if (output) {
-        output.textContent = "Welcome! Try typing:\n\n(+ 1 2)\n\nand press Enter.\n\n";
+        output.textContent = "Welcome! Try typing:\n\n(+ 1 2)\n\nand press Enter. For more info run:\n\n(help)\n\n";
     }
 
     const inputField = document.getElementById("input");

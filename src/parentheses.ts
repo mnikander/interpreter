@@ -21,6 +21,7 @@ export function check_parentheses(line: string): boolean {
     return open_before_close && balanced;
 }
 
+// TODO: get rid of this function. It does make parsing easier, but it will make outputting column numbers for error messages nearly impossible
 export function add_whitespace_to_parentheses(line: string): string {
     let output = "";
     for (let i = 0; i < line.length; i++) {
