@@ -91,17 +91,11 @@ export function maybe_function_token(word: string): undefined | TokenTerminal {
 }
 
 export function maybe_number_token(word: string): undefined | TokenNumber {
-    if (word == '' || word[0] == ' ') {
-        // TODO: this block should not be necessary
+    let number = Number(word);
+    if (isNaN(number)) {
         return undefined;
     }
     else {
-        let number = Number(word);
-        if (isNaN(number)) {
-            return undefined;
-        }
-        else {
-            return {name: "TK_NUMBER", value: number} as TokenNumber;
-        }
+        return {name: "TK_NUMBER", value: number} as TokenNumber;
     }
 }
