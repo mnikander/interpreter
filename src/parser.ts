@@ -17,10 +17,7 @@ export interface NodeCall extends Node {
     params: Node[],
 }
 
-export interface NodeExpression extends Node {
-    kind: "ND_EXPRESSION",
-    value: NodeAtom | NodeCall | NodeIdentifier,
-}
+export type NodeExpression = NodeAtom | NodeCall | NodeIdentifier;
 
 export interface NodeIdentifier extends Node {
     kind: "ND_IDENTIFIER",
@@ -32,7 +29,7 @@ export interface ParseError extends Node {
     value: string,
 }
 
-export function parse_expression(tokens: readonly Token[], index: number = 0): [Node, number] {
+export function parse_expression(tokens: readonly Token[], index: number = 0): [(ParseError | NodeExpression), number] {
     if (index < tokens.length) {
         let token: Token = tokens[index];
 
