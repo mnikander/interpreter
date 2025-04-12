@@ -2,57 +2,57 @@
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
 
 export interface Token {
-    name: string,
+    kind: string,
     value?: number | string;
 }
 
 export interface TokenError extends Token {
-    name: "TK_ERROR",
+    kind: "TK_ERROR",
     value: string
 }
 
 export interface TokenNumber extends Token {
-    name: "TK_NUMBER",
+    kind: "TK_NUMBER",
     value: number
 }
 
 type TokenTerminal = TokenLeft | TokenRight | TokenAdd;
 
 export interface TokenAdd extends Token {
-    name: "TK_ADD",
+    kind: "TK_ADD",
 }
 
 export interface TokenLeft extends Token {
-    name: "TK_LEFT",
+    kind: "TK_LEFT",
 }
 
 export interface TokenRight extends Token {
-    name: "TK_RIGHT",
+    kind: "TK_RIGHT",
 }
 
 export function is_tk_error(token: Token): boolean {
-    return token.name == "TK_ERROR";
+    return token.kind == "TK_ERROR";
 }
 
 export function is_tk_number(token: Token): boolean {
-    return token.name == "TK_NUMBER";
+    return token.kind == "TK_NUMBER";
 }
 
 export function is_tk_left(token: Token): boolean {
-    return token.name == "TK_LEFT";
+    return token.kind == "TK_LEFT";
 }
 
 export function is_tk_right(token: Token): boolean {
-    return token.name == "TK_RIGHT";
+    return token.kind == "TK_RIGHT";
 }
 
 export function is_tk_add(token: Token): boolean {
-    return token.name == "TK_ADD";
+    return token.kind == "TK_ADD";
 }
 
 export function tokenize(line: string): Token[] {
     if (!check_parentheses(line)) {
-        return [{name: "TK_ERROR", value: "invalid parentheses"} as TokenError] as Token[];
+        return [{kind: "TK_ERROR", value: "invalid parentheses"} as TokenError] as Token[];
     }
     let spaced   = add_whitespace_to_parentheses(line);
     let words    = spaced.split(" ");
@@ -74,18 +74,18 @@ export function remove_empty_words(words: string[]): string[] {
 export function to_token(word: string): Token {
     return maybe_function_token(word) ??
             maybe_number_token(word) ??
-            {name: "TK_ERROR", value: `invalid character ${word}`} as TokenError;
+            {kind: "TK_ERROR", value: `invalid character ${word}`} as TokenError;
 }
 
 export function maybe_function_token(word: string): undefined | TokenTerminal {
     if (word == "(") {
-        return {name: "TK_LEFT"} as TokenLeft;
+        return {kind: "TK_LEFT"} as TokenLeft;
     }
     else if (word == ")") {
-        return {name: "TK_RIGHT"} as TokenRight;
+        return {kind: "TK_RIGHT"} as TokenRight;
     }
     else if (word == "+") {
-        return {name: "TK_ADD"} as TokenAdd;
+        return {kind: "TK_ADD"} as TokenAdd;
     }
     return undefined;
 }
@@ -96,6 +96,6 @@ export function maybe_number_token(word: string): undefined | TokenNumber {
         return undefined;
     }
     else {
-        return {name: "TK_NUMBER", value: number} as TokenNumber;
+        return {kind: "TK_NUMBER", value: number} as TokenNumber;
     }
 }
