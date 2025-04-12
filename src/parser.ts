@@ -31,5 +31,10 @@ export interface ParseError extends Node {
 }
 
 export function parse_expression(tokens: readonly Token[], index: number = 0): Node {
-    return {kind: "ND_ERROR", value: "unknown parsing error"} as ParseError;
+    if (is_tk_number(tokens[index])) {
+        return {kind: "ND_ATOM", value: tokens[0].value} as NodeAtom;
+    }
+    else {
+        return {kind: "ND_ERROR", value: "unknown parsing error"} as ParseError;
+    }
 }
