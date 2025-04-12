@@ -5,13 +5,15 @@ import { Token, TokenLeft, TokenRight, TokenAdd, TokenNumber } from '../src/lexe
 describe('parse', () => {
     it('(', () => {
         const tokens: Token[] = [{kind: "TK_LEFT"} as TokenLeft]
-        const ast: Node = parse_expression(tokens);
+        const [ast, index]: [Node, number] = parse_expression(tokens);
+        expect(index).toBe(1);
         expect(ast.kind).toBe("ND_ERROR");
     });
 
     it('5', () => {
         const tokens: Token[] = [{kind: "TK_NUMBER", value: 5} as TokenNumber];
-        const ast: Node = parse_expression(tokens);
+        const [ast, index]: [Node, number] = parse_expression(tokens);
+        expect(index).toBe(1);
         expect(ast.kind).toBe("ND_ATOM");
         expect((ast as NodeAtom).value).toBe(5);
     });
@@ -25,7 +27,8 @@ describe('parse', () => {
             {kind: "TK_RIGHT"} as TokenRight,
         ]
 
-        const call: NodeCall = parse_expression(tokens) as NodeCall;
+        const [call, index]: [NodeCall, number] = parse_expression(tokens) as [NodeCall, number];
+        expect(index).toBe(5);
         expect(call.kind).toBe("ND_CALL");
         expect(call.params.length).toBe(2);
         const func: NodeIdentifier = call.func as NodeIdentifier;
@@ -46,6 +49,7 @@ describe('parse', () => {
             {kind: "TK_LEFT"} as TokenLeft,
             {kind: "TK_ADD"} as TokenAdd,
             {kind: "TK_LEFT"} as TokenLeft,
+            {kind: "TK_ADD"} as TokenAdd,
             {kind: "TK_NUMBER", value: 1} as TokenNumber,
             {kind: "TK_NUMBER", value: 2} as TokenNumber,
             {kind: "TK_RIGHT"} as TokenRight,
@@ -53,7 +57,8 @@ describe('parse', () => {
             {kind: "TK_RIGHT"} as TokenRight,
         ]
 
-        const outer_call: NodeCall = parse_expression(tokens) as NodeCall;
+        const [outer_call, index]: [NodeCall, number] = parse_expression(tokens) as [NodeCall, number];
+        expect(index).toBe(9);
         expect(outer_call.kind).toBe("ND_CALL");
         expect(outer_call.params.length).toBe(2);
 
