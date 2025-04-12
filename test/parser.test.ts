@@ -86,4 +86,47 @@ describe('parse', () => {
         expect(outer_right.kind).toBe("ND_ATOM");
         expect(outer_right.value).toBe(3);
     });
+
+    it('(+ 1 (+ 2 3))', () => {
+        const tokens: Token[] = [
+            {kind: "TK_LEFT"} as TokenLeft,
+            {kind: "TK_ADD"} as TokenAdd,
+            {kind: "TK_NUMBER", value: 1} as TokenNumber,
+            {kind: "TK_LEFT"} as TokenLeft,
+            {kind: "TK_ADD"} as TokenAdd,
+            {kind: "TK_NUMBER", value: 2} as TokenNumber,
+            {kind: "TK_NUMBER", value: 3} as TokenNumber,
+            {kind: "TK_RIGHT"} as TokenRight,
+            {kind: "TK_RIGHT"} as TokenRight,
+        ]
+
+        const [outer_call, index]: [NodeCall, number] = parse_expression(tokens) as [NodeCall, number];
+        expect(index).toBe(9);
+        expect(outer_call.kind).toBe("ND_CALL");
+        expect(outer_call.params.length).toBe(2);
+
+        const outer_func: NodeIdentifier = outer_call.func as NodeIdentifier;
+        expect(outer_func.kind).toBe("ND_IDENTIFIER");
+        expect(outer_func.value).toBe("+");
+
+        const outer_left: NodeAtom = outer_call.params[0] as NodeAtom;
+        expect(outer_left.kind).toBe("ND_ATOM");
+        expect(outer_left.value).toBe(1);
+
+        const inner_call: NodeCall = outer_call.params[1] as NodeCall;
+        expect(inner_call.kind).toBe("ND_CALL");
+        expect(inner_call.params.length).toBe(2);
+
+        const inner_func: NodeIdentifier = outer_call.func as NodeIdentifier;
+        expect(inner_func.kind).toBe("ND_IDENTIFIER");
+        expect(inner_func.value).toBe("+");
+
+        const inner_left: NodeAtom = inner_call.params[0] as NodeAtom;
+        expect(inner_left.kind).toBe("ND_ATOM");
+        expect(inner_left.value).toBe(2);
+
+        const inner_right: NodeAtom = inner_call.params[1] as NodeAtom;
+        expect(inner_right.kind).toBe("ND_ATOM");
+        expect(inner_right.value).toBe(3);
+    });
 })
