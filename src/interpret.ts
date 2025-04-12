@@ -12,8 +12,6 @@ export function interpret(line: string): string | number | undefined {
         return message;
     }
 
-    // TODO: implement `(help)` which prints a string of available function signatures
-
     // hardcode the use of a single constant OR addition
     if (tokens.length == 1 && is_tk_number(tokens[0])) {
         return tokens[0].value;
