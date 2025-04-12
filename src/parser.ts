@@ -12,7 +12,7 @@ export interface NodeAtom extends Node {
 export interface NodeCall extends Node {
     kind: "ND_CALL",
     procedure: Node,
-    arguments: Node[],
+    parameters: Node[],
 }
 
 export interface NodeExpression extends Node {
