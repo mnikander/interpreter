@@ -24,6 +24,8 @@ You can get a full list of available commands with:
 (help)
 ```
 
+You can also take a look at this brief [introduction to symbolic expressions](https://github.com/mnikander/lambda/blob/main/resources/symbolic_expression_intro.md).
+
 ## Development setup
 
 ```bash
