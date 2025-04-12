@@ -11,8 +11,8 @@ export interface NodeAtom extends Node {
 
 export interface NodeCall extends Node {
     kind: "ND_CALL",
-    procedure: Node,
-    parameters: Node[],
+    func: Node,
+    params: Node[],
 }
 
 export interface NodeExpression extends Node {

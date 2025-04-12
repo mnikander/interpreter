@@ -27,16 +27,16 @@ describe('parse', () => {
 
         const call: NodeCall = parse_expression(tokens) as NodeCall;
         expect(call.kind).toBe("ND_CALL");
-        expect(call.parameters.length).toBe(2);
-        const procedure: NodeIdentifier = call.procedure as NodeIdentifier;
-        expect(procedure.kind).toBe("ND_IDENTIFIER");
-        expect(procedure.value).toBe("+");
+        expect(call.params.length).toBe(2);
+        const func: NodeIdentifier = call.func as NodeIdentifier;
+        expect(func.kind).toBe("ND_IDENTIFIER");
+        expect(func.value).toBe("+");
 
-        const left: NodeAtom = call.parameters[0] as NodeAtom;
+        const left: NodeAtom = call.params[0] as NodeAtom;
         expect(left.kind).toBe("ND_ATOM");
         expect(left.value).toBe(1);
 
-        const right: NodeAtom = call.parameters[1] as NodeAtom;
+        const right: NodeAtom = call.params[1] as NodeAtom;
         expect(right.kind).toBe("ND_ATOM");
         expect(right.value).toBe(2);
     });
@@ -55,29 +55,29 @@ describe('parse', () => {
 
         const outer_call: NodeCall = parse_expression(tokens) as NodeCall;
         expect(outer_call.kind).toBe("ND_CALL");
-        expect(outer_call.parameters.length).toBe(2);
+        expect(outer_call.params.length).toBe(2);
 
-        const outer_procedure: NodeIdentifier = outer_call.procedure as NodeIdentifier;
-        expect(outer_procedure.kind).toBe("ND_IDENTIFIER");
-        expect(outer_procedure.value).toBe("+");
+        const outer_func: NodeIdentifier = outer_call.func as NodeIdentifier;
+        expect(outer_func.kind).toBe("ND_IDENTIFIER");
+        expect(outer_func.value).toBe("+");
 
-        const inner_call: NodeCall = outer_call.parameters[0] as NodeCall;
+        const inner_call: NodeCall = outer_call.params[0] as NodeCall;
         expect(inner_call.kind).toBe("ND_CALL");
-        expect(inner_call.parameters.length).toBe(2);
+        expect(inner_call.params.length).toBe(2);
 
-        const inner_procedure: NodeIdentifier = outer_call.procedure as NodeIdentifier;
-        expect(inner_procedure.kind).toBe("ND_IDENTIFIER");
-        expect(inner_procedure.value).toBe("+");
+        const inner_func: NodeIdentifier = outer_call.func as NodeIdentifier;
+        expect(inner_func.kind).toBe("ND_IDENTIFIER");
+        expect(inner_func.value).toBe("+");
 
-        const inner_left: NodeAtom = inner_call.parameters[0] as NodeAtom;
+        const inner_left: NodeAtom = inner_call.params[0] as NodeAtom;
         expect(inner_left.kind).toBe("ND_ATOM");
         expect(inner_left.value).toBe(1);
 
-        const inner_right: NodeAtom = inner_call.parameters[1] as NodeAtom;
+        const inner_right: NodeAtom = inner_call.params[1] as NodeAtom;
         expect(inner_right.kind).toBe("ND_ATOM");
         expect(inner_right.value).toBe(2);
 
-        const outer_right: NodeAtom = outer_call.parameters[1] as NodeAtom;
+        const outer_right: NodeAtom = outer_call.params[1] as NodeAtom;
         expect(outer_right.kind).toBe("ND_ATOM");
         expect(outer_right.value).toBe(3);
     });
