@@ -30,6 +30,6 @@ export interface ParseError extends Node {
     value: string,
 }
 
-export function parse(tokens: Token[]): Node {
+export function parse_expression(tokens: readonly Token[], index: number = 0): Node {
     return {kind: "ND_ERROR", value: "unknown parsing error"} as ParseError;
 }
