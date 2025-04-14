@@ -29,6 +29,19 @@ export interface ParseError extends Node {
     value: string,
 }
 
+export function parse(tokens: Token[]): [(ParseError | NodeExpression), number] {
+    let [expression, index] = parse_expression(tokens, 0);
+    if (index == tokens.length) {
+        return [expression, index];
+    }
+    else if (index < tokens.length) {
+        return [{kind: "ND_ERROR", value: "expected a single expression"} as ParseError, index];
+    }
+    else {
+        return [{kind: "ND_ERROR", value: "not all tokens could be evaluated"} as ParseError, index];
+    }
+}
+
 export function parse_expression(tokens: readonly Token[], index: number = 0): [(ParseError | NodeExpression), number] {
     if (index < tokens.length) {
         let token: Token = tokens[index];
