@@ -44,6 +44,18 @@ describe('parse', () => {
         expect(right.value).toBe(2);
     });
 
+    it('1 2', () => {
+        // invalid input should fail, the '2' is unreachable, i.e. not part of the expression
+        const tokens: Token[] = [
+            {kind: "TK_NUMBER", value: 1} as TokenNumber,
+            {kind: "TK_NUMBER", value: 2} as TokenNumber,
+        ]
+
+        const [ast, index] = parse_expression(tokens);
+        expect(index).toBe(1);
+        expect(ast.kind).toBe("ND_ERROR");
+    });
+
     it('(+ (+ 1 2) 3)', () => {
         const tokens: Token[] = [
             {kind: "TK_LEFT"} as TokenLeft,
