@@ -29,6 +29,22 @@ export interface ParseError extends Node {
     value: string,
 }
 
+export function is_nd_atom(node: Node): boolean {
+    return node.kind == "ND_ATOM";
+}
+
+export function is_nd_call(node: Node): boolean {
+    return node.kind == "ND_CALL";
+}
+
+export function is_nd_identifier(node: Node): boolean {
+    return node.kind == "ND_IDENTIFIER";
+}
+
+export function is_nd_error(node: Node): boolean {
+    return node.kind == "ND_ERROR";
+}
+
 export function parse(tokens: Token[]): [(ParseError | NodeExpression), number] {
     let [expression, index] = parse_expression(tokens, 0);
     if (index == tokens.length) {
@@ -80,5 +96,29 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): [
     }
     else {
         return [{kind: "ND_ERROR", value: "expected another token"} as ParseError, index];
+    }
+}
+
+export function check_for_errors(ast: Node): undefined | ParseError {
+    if (ast.kind == "ND_ERROR") {
+        return (ast as ParseError); // found an error
+    }
+    else if (ast.kind == "ND_CALL") {
+        const call = (ast as NodeCall);
+        if (check_for_errors(call.func) !== undefined) {
+            return (ast as ParseError); // function is not ok
+        }
+        else { // func is ok, check params
+            let aggregate: undefined | ParseError = undefined;
+            for (let arg of call.params) {
+                if (check_for_errors(arg) !== undefined) {
+                    return (arg as ParseError); // parameters are not ok
+                }
+            }
+            return undefined; // all params are ok as well
+        }
+    }
+    else {
+        return undefined; // everything is ok
     }
 }
