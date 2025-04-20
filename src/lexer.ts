@@ -16,10 +16,9 @@ export interface TokenNumber extends Token {
     value: number
 }
 
-type TokenTerminal = TokenLeft | TokenRight | TokenAdd;
-
-export interface TokenAdd extends Token {
-    kind: "TK_ADD",
+export interface TokenIdentifier extends Token {
+    kind: "TK_IDENTIFIER",
+    value: string
 }
 
 export interface TokenLeft extends Token {
@@ -38,16 +37,16 @@ export function is_tk_number(token: Token): boolean {
     return token.kind == "TK_NUMBER";
 }
 
+export function is_tk_identifier(token: Token): boolean {
+    return token.kind == "TK_IDENTIFIER";
+}
+
 export function is_tk_left(token: Token): boolean {
     return token.kind == "TK_LEFT";
 }
 
 export function is_tk_right(token: Token): boolean {
     return token.kind == "TK_RIGHT";
-}
-
-export function is_tk_add(token: Token): boolean {
-    return token.kind == "TK_ADD";
 }
 
 export function tokenize(line: string): Token[] {
@@ -72,20 +71,18 @@ export function remove_empty_words(words: string[]): string[] {
 }
 
 export function to_token(word: string): Token {
-    return maybe_function_token(word) ??
+    return maybe_parenthesis_token(word) ??
             maybe_number_token(word) ??
+            maybe_identifier_token(word) ??
             {kind: "TK_ERROR", value: `invalid character ${word}`} as TokenError;
 }
 
-export function maybe_function_token(word: string): undefined | TokenTerminal {
+export function maybe_parenthesis_token(word: string): undefined | TokenLeft | TokenRight {
     if (word == "(") {
         return {kind: "TK_LEFT"} as TokenLeft;
     }
     else if (word == ")") {
         return {kind: "TK_RIGHT"} as TokenRight;
-    }
-    else if (word == "+") {
-        return {kind: "TK_ADD"} as TokenAdd;
     }
     return undefined;
 }
@@ -98,4 +95,14 @@ export function maybe_number_token(word: string): undefined | TokenNumber {
     else {
         return {kind: "TK_NUMBER", value: number} as TokenNumber;
     }
+}
+
+export function maybe_identifier_token(word: string): undefined | TokenIdentifier {
+    if (/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(word)) {
+        return {kind: "TK_IDENTIFIER", value: word} as TokenIdentifier;
+    }
+    else if (/^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+$/.test(word)) {
+        return {kind: "TK_IDENTIFIER", value: word} as TokenIdentifier;
+    }
+    return undefined;
 }

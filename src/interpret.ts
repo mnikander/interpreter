@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
-import { is_tk_error, is_tk_number, is_tk_left, is_tk_right, is_tk_add, tokenize, Token } from "./lexer";
+import { is_tk_error, tokenize, Token } from "./lexer";
 import { check_for_errors, is_nd_atom, is_nd_call, is_nd_identifier, Node, NodeAtom, NodeCall, NodeIdentifier, parse, ParseError } from "./parser";
 
 export function interpret(line: string): string | number | undefined {

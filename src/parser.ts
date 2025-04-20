@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_tk_add, is_tk_left, is_tk_number, is_tk_right, Token } from "./lexer";
+import { is_tk_number, is_tk_identifier, is_tk_left, is_tk_right, Token } from "./lexer";
 
 export interface Node {
     kind: string,
@@ -66,9 +66,9 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): [
             index++; // consume the TK_NUMBER
             return [{kind: "ND_ATOM", value: token.value} as NodeAtom, index];
         }
-        else if (is_tk_add(token)) {
-            index++; // consume the TK_ADD
-            return [{kind: "ND_IDENTIFIER", value: "+"} as NodeIdentifier, index];
+        else if (is_tk_identifier(token)) {
+            index++; // consume the TK_IDENTIFIER
+            return [{kind: "ND_IDENTIFIER", value: token.value} as NodeIdentifier, index];
         }
         else if (is_tk_left(token)) {
             index++; // consume the TK_LEFT

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { NodeAtom, NodeCall, NodeExpression, NodeIdentifier, Node, parse } from '../src/parser.ts'
-import { Token, TokenLeft, TokenRight, TokenAdd, TokenNumber } from '../src/lexer.ts'
+import { Token, TokenNumber, TokenIdentifier, TokenLeft, TokenRight } from '../src/lexer.ts'
 
 describe('parse', () => {
     it('(', () => {
@@ -21,7 +21,7 @@ describe('parse', () => {
     it('(+ 1 2)', () => {
         const tokens: Token[] = [
             {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_ADD"} as TokenAdd,
+            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
             {kind: "TK_NUMBER", value: 1} as TokenNumber,
             {kind: "TK_NUMBER", value: 2} as TokenNumber,
             {kind: "TK_RIGHT"} as TokenRight,
@@ -59,9 +59,9 @@ describe('parse', () => {
     it('(+ (+ 1 2) 3)', () => {
         const tokens: Token[] = [
             {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_ADD"} as TokenAdd,
+            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
             {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_ADD"} as TokenAdd,
+            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
             {kind: "TK_NUMBER", value: 1} as TokenNumber,
             {kind: "TK_NUMBER", value: 2} as TokenNumber,
             {kind: "TK_RIGHT"} as TokenRight,
@@ -102,10 +102,10 @@ describe('parse', () => {
     it('(+ 1 (+ 2 3))', () => {
         const tokens: Token[] = [
             {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_ADD"} as TokenAdd,
+            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
             {kind: "TK_NUMBER", value: 1} as TokenNumber,
             {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_ADD"} as TokenAdd,
+            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
             {kind: "TK_NUMBER", value: 2} as TokenNumber,
             {kind: "TK_NUMBER", value: 3} as TokenNumber,
             {kind: "TK_RIGHT"} as TokenRight,

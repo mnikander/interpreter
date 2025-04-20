@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { to_token, tokenize, Token, TokenLeft, TokenRight, TokenAdd, TokenNumber, TokenError } from '../src/lexer.js'
+import { to_token, tokenize, Token, TokenLeft, TokenRight, TokenNumber, TokenIdentifier } from '../src/lexer.js'
 
 describe('to_token', () => {
 
@@ -19,15 +19,28 @@ describe('to_token', () => {
     });
 
     it('add', () => {
-        const expected: Token = {kind: "TK_ADD"} as TokenAdd;
+        const expected: Token = {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier;
         expect(to_token('+')).toStrictEqual(expected);
     });
 
-    it('unknown', () => {
-        expect(to_token('???').kind).toStrictEqual("TK_ERROR");
+    it('custom function', () => {
+        expect(to_token('my_function').kind).toStrictEqual("TK_IDENTIFIER");
+    });
+
+    it('custom operation', () => {
+        expect(to_token('???').kind).toStrictEqual("TK_IDENTIFIER");
+    });
+
+    it('invalid identifiers', () => {
+        expect(to_token('$a').kind).toStrictEqual("TK_ERROR");
+        expect(to_token('a$').kind).toStrictEqual("TK_ERROR");
+        expect(to_token('$1').kind).toStrictEqual("TK_ERROR");
+        expect(to_token('1$').kind).toStrictEqual("TK_ERROR");
+        expect(to_token('1a').kind).toStrictEqual("TK_ERROR");
+        expect(to_token('1_').kind).toStrictEqual("TK_ERROR");
+        expect(to_token('_+').kind).toStrictEqual("TK_ERROR");
     });
 });
-
 
 describe('tokenize', () => {
 
@@ -48,7 +61,7 @@ describe('tokenize', () => {
 
     it('one plus two', () => {
         const expected: Token[] = [{kind: "TK_LEFT"} as TokenLeft,
-                                   {kind: "TK_ADD"} as TokenAdd,
+                                   {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
                                    {kind: "TK_NUMBER", value: 1} as TokenNumber,
                                    {kind: "TK_NUMBER", value: 2} as TokenNumber,
                                    {kind: "TK_RIGHT"} as TokenRight,
