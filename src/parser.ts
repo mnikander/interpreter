@@ -6,9 +6,14 @@ export interface Node {
     kind: string,
 }
 
-export interface NodeAtom extends Node {
-    kind: "ND_ATOM",
-    value: number | string,
+export interface NodeNumber extends Node {
+    kind: "ND_NUMBER",
+    value: number,
+}
+
+export interface NodeIdentifier extends Node {
+    kind: "ND_IDENTIFIER",
+    value: string,
 }
 
 export interface NodeCall extends Node {
@@ -17,28 +22,24 @@ export interface NodeCall extends Node {
     params: Node[],
 }
 
-export type NodeExpression = NodeAtom | NodeCall | NodeIdentifier;
-
-export interface NodeIdentifier extends Node {
-    kind: "ND_IDENTIFIER",
-    value: string,
-}
-
 export interface ParseError extends Node {
     kind: "ND_ERROR",
     value: string,
 }
 
-export function is_nd_atom(node: Node): boolean {
-    return node.kind == "ND_ATOM";
-}
+export type NodeAtom = NodeNumber | NodeIdentifier;
+export type NodeExpression = NodeAtom | NodeCall;
 
-export function is_nd_call(node: Node): boolean {
-    return node.kind == "ND_CALL";
+export function is_nd_number(node: Node): boolean {
+    return node.kind == "ND_NUMBER";
 }
 
 export function is_nd_identifier(node: Node): boolean {
     return node.kind == "ND_IDENTIFIER";
+}
+
+export function is_nd_call(node: Node): boolean {
+    return node.kind == "ND_CALL";
 }
 
 export function is_nd_error(node: Node): boolean {
@@ -64,7 +65,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): [
 
         if (is_tk_number(token)) {
             index++; // consume the TK_NUMBER
-            return [{kind: "ND_ATOM", value: token.value} as NodeAtom, index];
+            return [{kind: "ND_NUMBER", value: token.value} as NodeNumber, index];
         }
         else if (is_tk_identifier(token)) {
             index++; // consume the TK_IDENTIFIER

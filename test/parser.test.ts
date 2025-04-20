@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { NodeAtom, NodeCall, NodeExpression, NodeIdentifier, Node, parse } from '../src/parser.ts'
+import { NodeNumber, NodeCall, NodeExpression, NodeIdentifier, Node, parse } from '../src/parser.ts'
 import { Token, TokenNumber, TokenIdentifier, TokenLeft, TokenRight } from '../src/lexer.ts'
 
 describe('parse', () => {
@@ -14,8 +14,8 @@ describe('parse', () => {
         const tokens: Token[] = [{kind: "TK_NUMBER", value: 5} as TokenNumber];
         const [ast, index]: [Node, number] = parse(tokens);
         expect(index).toBe(1);
-        expect(ast.kind).toBe("ND_ATOM");
-        expect((ast as NodeAtom).value).toBe(5);
+        expect(ast.kind).toBe("ND_NUMBER");
+        expect((ast as NodeNumber).value).toBe(5);
     });
 
     it('(+ 1 2)', () => {
@@ -35,12 +35,12 @@ describe('parse', () => {
         expect(func.kind).toBe("ND_IDENTIFIER");
         expect(func.value).toBe("+");
 
-        const left: NodeAtom = call.params[0] as NodeAtom;
-        expect(left.kind).toBe("ND_ATOM");
+        const left: NodeNumber = call.params[0] as NodeNumber;
+        expect(left.kind).toBe("ND_NUMBER");
         expect(left.value).toBe(1);
 
-        const right: NodeAtom = call.params[1] as NodeAtom;
-        expect(right.kind).toBe("ND_ATOM");
+        const right: NodeNumber = call.params[1] as NodeNumber;
+        expect(right.kind).toBe("ND_NUMBER");
         expect(right.value).toBe(2);
     });
 
@@ -86,16 +86,16 @@ describe('parse', () => {
         expect(inner_func.kind).toBe("ND_IDENTIFIER");
         expect(inner_func.value).toBe("+");
 
-        const inner_left: NodeAtom = inner_call.params[0] as NodeAtom;
-        expect(inner_left.kind).toBe("ND_ATOM");
+        const inner_left: NodeNumber = inner_call.params[0] as NodeNumber;
+        expect(inner_left.kind).toBe("ND_NUMBER");
         expect(inner_left.value).toBe(1);
 
-        const inner_right: NodeAtom = inner_call.params[1] as NodeAtom;
-        expect(inner_right.kind).toBe("ND_ATOM");
+        const inner_right: NodeNumber = inner_call.params[1] as NodeNumber;
+        expect(inner_right.kind).toBe("ND_NUMBER");
         expect(inner_right.value).toBe(2);
 
-        const outer_right: NodeAtom = outer_call.params[1] as NodeAtom;
-        expect(outer_right.kind).toBe("ND_ATOM");
+        const outer_right: NodeNumber = outer_call.params[1] as NodeNumber;
+        expect(outer_right.kind).toBe("ND_NUMBER");
         expect(outer_right.value).toBe(3);
     });
 
@@ -121,8 +121,8 @@ describe('parse', () => {
         expect(outer_func.kind).toBe("ND_IDENTIFIER");
         expect(outer_func.value).toBe("+");
 
-        const outer_left: NodeAtom = outer_call.params[0] as NodeAtom;
-        expect(outer_left.kind).toBe("ND_ATOM");
+        const outer_left: NodeNumber = outer_call.params[0] as NodeNumber;
+        expect(outer_left.kind).toBe("ND_NUMBER");
         expect(outer_left.value).toBe(1);
 
         const inner_call: NodeCall = outer_call.params[1] as NodeCall;
@@ -133,12 +133,12 @@ describe('parse', () => {
         expect(inner_func.kind).toBe("ND_IDENTIFIER");
         expect(inner_func.value).toBe("+");
 
-        const inner_left: NodeAtom = inner_call.params[0] as NodeAtom;
-        expect(inner_left.kind).toBe("ND_ATOM");
+        const inner_left: NodeNumber = inner_call.params[0] as NodeNumber;
+        expect(inner_left.kind).toBe("ND_NUMBER");
         expect(inner_left.value).toBe(2);
 
-        const inner_right: NodeAtom = inner_call.params[1] as NodeAtom;
-        expect(inner_right.kind).toBe("ND_ATOM");
+        const inner_right: NodeNumber = inner_call.params[1] as NodeNumber;
+        expect(inner_right.kind).toBe("ND_NUMBER");
         expect(inner_right.value).toBe(3);
     });
 });

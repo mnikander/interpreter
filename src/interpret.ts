@@ -2,9 +2,9 @@
 
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
 import { is_tk_error, tokenize, Token } from "./lexer";
-import { check_for_errors, is_nd_atom, is_nd_call, is_nd_identifier, Node, NodeAtom, NodeCall, NodeIdentifier, parse, ParseError } from "./parser";
+import { check_for_errors, is_nd_number, is_nd_identifier, is_nd_call, Node, NodeAtom, NodeCall, NodeIdentifier, parse, ParseError } from "./parser";
 
-export function interpret(line: string): string | number | undefined {
+export function interpret(line: string): undefined | boolean | number | string {
     const tokens: Token[]                = tokenize(line);
     const lexer_error: Token | undefined = tokens.find(is_tk_error);
     if (lexer_error !== undefined)
@@ -22,7 +22,7 @@ export function interpret(line: string): string | number | undefined {
     }
 
     // hardcode the use of a single constant OR addition
-    if (is_nd_atom(ast)) {
+    if (is_nd_number(ast)) {
         return (ast as NodeAtom).value;
     }
     else if (is_nd_call(ast)) {
@@ -31,7 +31,7 @@ export function interpret(line: string): string | number | undefined {
             const func = call.func as NodeIdentifier;
             if (func.value === "+") {
                 if(call.params.length == 2) {
-                    if(is_nd_atom(call.params[0]) && is_nd_atom(call.params[1])) {
+                    if(is_nd_number(call.params[0]) && is_nd_number(call.params[1])) {
                         const left = call.params[0] as NodeAtom;
                         const right = call.params[1] as NodeAtom;
                         if (typeof left.value === "number" && typeof right.value === "number") {
