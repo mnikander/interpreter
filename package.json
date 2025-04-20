@@ -10,8 +10,8 @@
     "build": "vite build",
     "test": "vitest",
     "dev": "vite",
-    "preview": "vite preview",
-    "deploy": "gh-pages -d dist"
+    "preview": "npm run build && vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
   },
   "repository": {
     "type": "git",
