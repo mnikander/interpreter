@@ -141,4 +141,4 @@ describe('parse', () => {
         expect(inner_right.kind).toBe("ND_ATOM");
         expect(inner_right.value).toBe(3);
     });
-})
+});
