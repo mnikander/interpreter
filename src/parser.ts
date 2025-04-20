@@ -72,7 +72,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): [
         }
         else if (is_tk_left(token)) {
             index++; // consume the TK_LEFT
-            let func: Node = {kind: "ND_EMPTY"};
+            let func: Node = {kind: "ND_DEFAULT"};
             let params: Node[] = [];
             [func, index] = parse_expression(tokens, index);
 
@@ -82,7 +82,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): [
                     return [{kind: "ND_CALL", func: func, params: params} as NodeCall, index];
                 }
                 else {
-                    let node: Node = {kind: "ND_EMPTY"};
+                    let node: Node = {kind: "ND_DEFAULT"};
                     [node, index] = parse_expression(tokens, index);
                     params.push(node);
                 }
