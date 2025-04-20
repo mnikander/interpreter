@@ -1,9 +1,14 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_tk_number, is_tk_identifier, is_tk_left, is_tk_right, Token } from "./lexer";
+import { is_tk_boolean, is_tk_number, is_tk_identifier, is_tk_left, is_tk_right, Token } from "./lexer";
 
 export interface Node {
     kind: string,
+}
+
+export interface NodeBoolean extends Node {
+    kind: "ND_BOOLEAN",
+    value: boolean,
 }
 
 export interface NodeNumber extends Node {
@@ -27,8 +32,12 @@ export interface ParseError extends Node {
     value: string,
 }
 
-export type NodeAtom = NodeNumber | NodeIdentifier;
+export type NodeAtom = NodeBoolean | NodeNumber | NodeIdentifier;
 export type NodeExpression = NodeAtom | NodeCall;
+
+export function is_nd_boolean(node: Node): boolean {
+    return node.kind == "ND_BOOLEAN";
+}
 
 export function is_nd_number(node: Node): boolean {
     return node.kind == "ND_NUMBER";
@@ -63,7 +72,11 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): [
     if (index < tokens.length) {
         let token: Token = tokens[index];
 
-        if (is_tk_number(token)) {
+        if (is_tk_boolean(token)) {
+            index++; // consume the TK_BOOLEAN
+            return [{kind: "ND_BOOLEAN", value: token.value} as NodeBoolean, index];
+        }
+        else if (is_tk_number(token)) {
             index++; // consume the TK_NUMBER
             return [{kind: "ND_NUMBER", value: token.value} as NodeNumber, index];
         }

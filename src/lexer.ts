@@ -3,12 +3,17 @@ import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses"
 
 export interface Token {
     kind: string,
-    value?: number | string;
+    value?: boolean | number | string;
 }
 
 export interface TokenError extends Token {
     kind: "TK_ERROR",
     value: string
+}
+
+export interface TokenBoolean extends Token {
+    kind: "TK_BOOLEAN",
+    value: boolean
 }
 
 export interface TokenNumber extends Token {
@@ -31,6 +36,10 @@ export interface TokenRight extends Token {
 
 export function is_tk_error(token: Token): boolean {
     return token.kind == "TK_ERROR";
+}
+
+export function is_tk_boolean(token: Token): boolean {
+    return token.kind == "TK_BOOLEAN";
 }
 
 export function is_tk_number(token: Token): boolean {
@@ -72,6 +81,7 @@ export function remove_empty_words(words: string[]): string[] {
 
 export function to_token(word: string): Token {
     return maybe_parenthesis_token(word) ??
+            maybe_boolean_token(word) ??
             maybe_number_token(word) ??
             maybe_identifier_token(word) ??
             {kind: "TK_ERROR", value: `invalid character ${word}`} as TokenError;
@@ -85,6 +95,18 @@ export function maybe_parenthesis_token(word: string): undefined | TokenLeft | T
         return {kind: "TK_RIGHT"} as TokenRight;
     }
     return undefined;
+}
+
+export function maybe_boolean_token(word: string): undefined | TokenBoolean {
+    if (word === 'True') {
+        return {kind: "TK_BOOLEAN", value: true};
+    }
+    else if (word === 'False') {
+        return {kind: "TK_BOOLEAN", value: false};
+    }
+    else {
+        return undefined;
+    }
 }
 
 export function maybe_number_token(word: string): undefined | TokenNumber {

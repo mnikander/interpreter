@@ -1,11 +1,21 @@
 import { describe, it, expect } from 'vitest'
-import { to_token, tokenize, Token, TokenLeft, TokenRight, TokenNumber, TokenIdentifier } from '../src/lexer.js'
+import { to_token, tokenize, Token, TokenBoolean, TokenNumber, TokenIdentifier , TokenLeft, TokenRight} from '../src/lexer.js'
 
 describe('to_token', () => {
 
     it('zero', () => {
         const expected: Token = {kind: "TK_NUMBER", value: 0} as TokenNumber;
         expect(to_token('0')).toStrictEqual(expected);
+    });
+
+    it('True', () => {
+        const expected: Token = {kind: "TK_BOOLEAN", value: true} as TokenBoolean;
+        expect(to_token('True')).toStrictEqual(expected);
+    });
+
+    it('False', () => {
+        const expected: Token = {kind: "TK_BOOLEAN", value: false} as TokenBoolean;
+        expect(to_token('False')).toStrictEqual(expected);
     });
 
     it('left', () => {

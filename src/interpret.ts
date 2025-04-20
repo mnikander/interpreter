@@ -2,7 +2,7 @@
 
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
 import { is_tk_error, tokenize, Token } from "./lexer";
-import { check_for_errors, is_nd_number, is_nd_identifier, is_nd_call, Node, NodeAtom, NodeCall, NodeIdentifier, parse, ParseError } from "./parser";
+import { check_for_errors, is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, Node, NodeAtom, NodeCall, NodeIdentifier, parse, ParseError } from "./parser";
 
 export function interpret(line: string): undefined | boolean | number | string {
     const tokens: Token[]                = tokenize(line);
@@ -22,7 +22,10 @@ export function interpret(line: string): undefined | boolean | number | string {
     }
 
     // hardcode the use of a single constant OR addition
-    if (is_nd_number(ast)) {
+    if (is_nd_boolean(ast)) {
+        return (ast as NodeAtom).value;
+    }
+    else if (is_nd_number(ast)) {
         return (ast as NodeAtom).value;
     }
     else if (is_nd_call(ast)) {

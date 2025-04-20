@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { NodeNumber, NodeCall, NodeExpression, NodeIdentifier, Node, parse } from '../src/parser.ts'
-import { Token, TokenNumber, TokenIdentifier, TokenLeft, TokenRight } from '../src/lexer.ts'
+import { Token, TokenBoolean, TokenNumber, TokenIdentifier, TokenLeft, TokenRight } from '../src/lexer.ts'
 
 describe('parse', () => {
     it('(', () => {
@@ -16,6 +16,14 @@ describe('parse', () => {
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_NUMBER");
         expect((ast as NodeNumber).value).toBe(5);
+    });
+
+    it('True', () => {
+        const tokens: Token[] = [{kind: "TK_BOOLEAN", value: true} as TokenBoolean];
+        const [ast, index]: [Node, number] = parse(tokens);
+        expect(index).toBe(1);
+        expect(ast.kind).toBe("ND_BOOLEAN");
+        expect((ast as NodeNumber).value).toBe(true);
     });
 
     it('(+ 1 2)', () => {
