@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { interpret } from '../src/interpret.js'
 
-describe('evaluate', () => {
+describe('interpret', () => {
   
   it('integer', () => {
     const result = interpret("5");
