@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { evaluate } from "./evaluator";
+import { evaluate, EvaluationError, EvaluationValue } from "./evaluator";
 import { is_tk_error, tokenize, Token } from "./lexer";
 import { Node, parse, ParseError, check_for_errors } from "./parser";
 
@@ -21,5 +21,19 @@ export function interpret(line: string): undefined | boolean | number | string {
         return message;
     }
 
-    return evaluate(ast);
+    const result = evaluate(ast);
+
+    if(result.kind === "EV_VALUE") {
+        return (result as EvaluationValue).value;
+    }
+    else if (result.kind === "EV_ENTRY") {
+        return "ERROR: result is a function. ";
+    }
+    else if (result.kind === "EV_ERROR") {
+        return `ERROR: ${(result as EvaluationError).message}. `;
+    }
+    else {
+        return 'ERROR: unknown evaluation error. '
+    }
+
 }
