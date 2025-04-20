@@ -13,6 +13,12 @@ describe('interpret', () => {
     expect(result).toBe(3);
   });
 
+  it('invalid addition', () => {
+    const result = interpret("(+ 1 2 3)");
+    expect(result).toContain("ERROR");
+    expect(result).toContain("argument");
+  });
+
   it('left-nested addition', () => {
     const result = interpret("(+ (+ 1 2) 3)");
     expect(result).toBe(6);
