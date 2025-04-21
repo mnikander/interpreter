@@ -35,7 +35,7 @@ export function is_tk_right(token: Token): boolean {
 
 export function tokenize(line: string): Token[] {
     if (!check_parentheses(line)) {
-        return [{kind: "TokenError", value: "invalid parentheses"}] as Token[];
+        return [{kind: "TokenError", value: "invalid parentheses"}];
     }
     let spaced   = add_whitespace_to_parentheses(line);
     let words    = spaced.split(" ");
@@ -59,15 +59,15 @@ export function to_token(word: string): Token {
             maybe_boolean_token(word) ??
             maybe_number_token(word) ??
             maybe_identifier_token(word) ??
-            {kind: "TokenError", value: `invalid character ${word}`} as Token;
+            {kind: "TokenError", value: `invalid character ${word}`};
 }
 
 export function maybe_parenthesis_token(word: string): undefined | Token {
     if (word == "(") {
-        return {kind: "TokenLeft"} as Token;
+        return {kind: "TokenLeft", value: "("};
     }
     else if (word == ")") {
-        return {kind: "TokenRight"} as Token;
+        return {kind: "TokenRight", value: ")"};
     }
     return undefined;
 }
@@ -90,16 +90,16 @@ export function maybe_number_token(word: string): undefined | Token {
         return undefined;
     }
     else {
-        return {kind: "TokenNumber", value: number} as Token;
+        return {kind: "TokenNumber", value: number};
     }
 }
 
 export function maybe_identifier_token(word: string): undefined | Token {
     if (/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(word)) {
-        return {kind: "TokenIdentifier", value: word} as Token;
+        return {kind: "TokenIdentifier", value: word};
     }
     else if (/^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+$/.test(word)) {
-        return {kind: "TokenIdentifier", value: word} as Token;
+        return {kind: "TokenIdentifier", value: word};
     }
     return undefined;
 }

@@ -4,32 +4,32 @@ import { to_token, tokenize, Token} from '../src/lexer.js'
 describe('to_token', () => {
 
     it('zero', () => {
-        const expected: Token = {kind: "TokenNumber", value: 0} as Token;
+        const expected: Token = {kind: "TokenNumber", value: 0};
         expect(to_token('0')).toStrictEqual(expected);
     });
 
     it('True', () => {
-        const expected: Token = {kind: "TokenBoolean", value: true} as Token;
+        const expected: Token = {kind: "TokenBoolean", value: true};
         expect(to_token('True')).toStrictEqual(expected);
     });
 
     it('False', () => {
-        const expected: Token = {kind: "TokenBoolean", value: false} as Token;
+        const expected: Token = {kind: "TokenBoolean", value: false};
         expect(to_token('False')).toStrictEqual(expected);
     });
 
     it('left', () => {
-        const expected: Token = {kind: "TokenLeft", value: "("} as Token;
+        const expected: Token = {kind: "TokenLeft", value: "("};
         expect(to_token('(')).toStrictEqual(expected);
     });
 
     it('right', () => {
-        const expected: Token = {kind: "TokenRight", value: ")"} as Token;
+        const expected: Token = {kind: "TokenRight", value: ")"};
         expect(to_token(')')).toStrictEqual(expected);
     });
 
     it('add', () => {
-        const expected: Token = {kind: "TokenIdentifier", value: "+"} as Token;
+        const expected: Token = {kind: "TokenIdentifier", value: "+"};
         expect(to_token('+')).toStrictEqual(expected);
     });
 
@@ -55,26 +55,26 @@ describe('to_token', () => {
 describe('tokenize', () => {
 
     it('zero', () => {
-        const expected: Token[] = [{kind: "TokenNumber", value: 0} as Token];
+        const expected: Token[] = [{kind: "TokenNumber", value: 0}];
         expect(tokenize('0')).toStrictEqual(expected);
     });
 
     it('positive one', () => {
-        const expected: Token[] = [{kind: "TokenNumber", value: +1} as Token];
+        const expected: Token[] = [{kind: "TokenNumber", value: +1}];
         expect(tokenize('+1')).toStrictEqual(expected);
     });
 
     it('negative one', () => {
-      const expected: Token[] = [{kind: "TokenNumber", value: -1} as Token];
+      const expected: Token[] = [{kind: "TokenNumber", value: -1}];
       expect(tokenize('-1')).toStrictEqual(expected);
   });
 
     it('one plus two', () => {
-        const expected: Token[] = [{kind: "TokenLeft"} as Token,
-                                   {kind: "TokenIdentifier", value: "+"} as Token,
-                                   {kind: "TokenNumber", value: 1} as Token,
-                                   {kind: "TokenNumber", value: 2} as Token,
-                                   {kind: "TokenRight"} as Token,
+        const expected: Token[] = [{kind: "TokenLeft", value: "("},
+                                   {kind: "TokenIdentifier", value: "+"},
+                                   {kind: "TokenNumber", value: 1},
+                                   {kind: "TokenNumber", value: 2},
+                                   {kind: "TokenRight", value: ")"},
                                   ];
         expect(tokenize('(+ 1 2)')).toStrictEqual(expected);
     });
