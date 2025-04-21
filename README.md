@@ -3,9 +3,9 @@
 A simple interpreter for symbolic expressions which runs in the browser.
 The goal is to implement the core of a [lambda language](https://github.com/mnikander/lambda).
 
-## Try it online
+## [Try it online](https://mnikander.github.io/interpreter/)
 
-Just visit the GitHub page for this [interpreter](https://mnikander.github.io/interpreter/) and start coding in your browser!
+Just visit the GitHub page for this interpreter, using the link above, and start coding in your browser!
 You can compute `1 + 2` with:
 
 ```lisp
