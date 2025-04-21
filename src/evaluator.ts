@@ -34,6 +34,7 @@ const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
     ['&',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left && right; }, about: "(& True False)\tlogical and"}],
     ['|',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left || right; }, about: "(| True False)\tlogical or"}],
     ['!',    {kind: "EV_FUNCTION", arity: 1, value: function (left: boolean) { return !left; }, about: "(! True)\tlogical negation"}],
+    ['if',   {kind: "EV_FUNCTION", arity: 3, value: function (cond: boolean, left: boolean | number, right: boolean | number) { return cond ? left : right; }, about: "(if (< 0 1) 4 8) if-expression"}],
     ['help', {kind: "EV_FUNCTION", arity: 0, value: function () { return help(environment); }, about: "(help)\t\tprints this dialog"}],
     ['Help', {kind: "EV_FUNCTION", arity: 0, value: function () { return help(environment); }, about: "(Help)\t\tprints this dialog"}],
 ]);
@@ -107,6 +108,31 @@ export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | Evaluati
                 }
                 else {
                     return left;
+                }
+            }
+            if(fn.arity == 3 && call.params.length == 3) {
+                const zero = evaluate(call.params[0]);
+                const one = evaluate(call.params[1]);
+                const two = evaluate(call.params[2]);
+                if (zero.kind === "EV_VALUE") {
+                    if (one.kind === "EV_VALUE") {
+                        if (two.kind === "EV_VALUE") {
+                            const f = fn.value as Function;
+                            const z = (zero as EvaluationValue).value;
+                            const o = (one as EvaluationValue).value;
+                            const t = (two as EvaluationValue).value;
+                            return {kind: "EV_VALUE", value: f(z, o, t)} as EvaluationValue;
+                        }
+                        else {
+                            return two;
+                        }
+                    }
+                    else {
+                        return one;
+                    }
+                }
+                else {
+                    return zero;
                 }
             }
             else {
