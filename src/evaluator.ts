@@ -11,6 +11,7 @@ export interface SymbolEntry {
     kind: string,
     arity?: number,
     value: boolean | number | Function,
+    about: string,
 };
 
 export interface EvaluationValue {
@@ -18,16 +19,27 @@ export interface EvaluationValue {
     value: boolean | number,
 }
 
-const environment = new Map<string, SymbolEntry>([
-    ['+',  {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left + right; }}],
-    ['-',  {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left - right; }}],
-    ['*',  {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left * right; }}],
-    ['/',  {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left / right; }}],
-    ['%',  {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left % right; }}],
-    ['&',  {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left && right; }}],
-    ['|',  {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left || right; }}],
-    ['!',  {kind: "EV_FUNCTION", arity: 1, value: function (left: boolean) { return !left; }}],
+const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
+    ['+',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left + right; }, about: "(+ 5 2)\t\taddition"}],
+    ['-',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left - right; }, about: "(- 5 2)\t\tsubtraction"}],
+    ['*',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left * right; }, about: "(* 5 2)\t\tmultiplication"}],
+    ['/',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left / right; }, about: "(/ 5 2)\t\tdivision"}],
+    ['%',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left % right; }, about: "(% 5 2)\t\tremainder after division"}],
+    ['&',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left && right; }, about: "(& True False)\tlogical and"}],
+    ['|',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left || right; }, about: "(| True False)\tlogical or"}],
+    ['!',    {kind: "EV_FUNCTION", arity: 1, value: function (left: boolean) { return !left; }, about: "(! True)\tlogical negation"}],
+    ['help', {kind: "EV_FUNCTION", arity: 0, value: function (left: boolean) { return help(environment); }, about: "(help)\t\tprints this dialog"}],
 ]);
+
+function help(environment: Map<string, SymbolEntry>): string {
+    let message: string = "Symbol\tUsage\t\tName\n";
+    for (const [key, value] of environment.entries()) {
+        if (value.arity !== undefined) {
+            message += `${key}\t${value.about}\n`;
+        }
+    }
+    return message;
+}
 
 export function lookup(identifier: ASTAtom, environment: Map<string, SymbolEntry>): undefined | SymbolEntry {
     return environment.get(String(identifier.value));
@@ -57,6 +69,10 @@ export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | Evaluati
         const identifier: ASTNode = call.func as { kind: "ND_IDENTIFIER", value: string };
         const fn: undefined | SymbolEntry = lookup(identifier, environment);
         if(fn?.kind === "EV_FUNCTION") {
+            if(fn.arity == 0 && call.params.length == 0) {
+                const f = fn.value as Function;
+                return {kind: "EV_VALUE", value: f()} as EvaluationValue;
+            }
             if(fn.arity == 1 && call.params.length == 1) {
                 const left = evaluate(call.params[0]);
                 if (left.kind === "EV_VALUE") {
