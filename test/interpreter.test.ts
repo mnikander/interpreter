@@ -61,13 +61,15 @@ describe('interpret', () => {
         const tt = interpret("(| True True)");
         expect(tt).toBe(true);
     });
+});
 
-    it('when the condition is true, "if" must return the 2nd expression', () => {
+describe('if-expression', () => {
+    it('when the 1st expression is true, "if" must return the 2nd expression', () => {
         const result = interpret("(if True 4 8)");
         expect(result).toBe(4);
     });
 
-    it('when the condition is false, "if" must return the 3rd expression', () => {
+    it('when the 1st expression is false, "if" must return the 3rd expression', () => {
         const result = interpret("(if False 4 8)");
         expect(result).toBe(8);
     });
