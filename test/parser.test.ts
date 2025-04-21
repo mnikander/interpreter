@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest'
 import { NodeNumber, NodeCall, NodeExpression, NodeIdentifier, Node, parse } from '../src/parser.ts'
-import { Token, TokenBoolean, TokenNumber, TokenIdentifier, TokenLeft, TokenRight } from '../src/lexer.ts'
+import { Token } from '../src/lexer.ts'
 
 describe('parse', () => {
     it('(', () => {
-        const tokens: Token[] = [{kind: "TK_LEFT"} as TokenLeft]
+        const tokens: Token[] = [{kind: "TokenLeft"} as Token]
         const [ast, index]: [Node, number] = parse(tokens);
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_ERROR");
     });
 
     it('5', () => {
-        const tokens: Token[] = [{kind: "TK_NUMBER", value: 5} as TokenNumber];
+        const tokens: Token[] = [{kind: "TokenNumber", value: 5} as Token];
         const [ast, index]: [Node, number] = parse(tokens);
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_NUMBER");
@@ -19,7 +19,7 @@ describe('parse', () => {
     });
 
     it('True', () => {
-        const tokens: Token[] = [{kind: "TK_BOOLEAN", value: true} as TokenBoolean];
+        const tokens: Token[] = [{kind: "TokenBoolean", value: true} as Token];
         const [ast, index]: [Node, number] = parse(tokens);
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_BOOLEAN");
@@ -28,11 +28,11 @@ describe('parse', () => {
 
     it('(+ 1 2)', () => {
         const tokens: Token[] = [
-            {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
-            {kind: "TK_NUMBER", value: 1} as TokenNumber,
-            {kind: "TK_NUMBER", value: 2} as TokenNumber,
-            {kind: "TK_RIGHT"} as TokenRight,
+            {kind: "TokenLeft"} as Token,
+            {kind: "TokenIdentifier", value: "+"} as Token,
+            {kind: "TokenNumber", value: 1} as Token,
+            {kind: "TokenNumber", value: 2} as Token,
+            {kind: "TokenRight"} as Token,
         ]
 
         const [call, index]: [NodeCall, number] = parse(tokens) as [NodeCall, number];
@@ -55,8 +55,8 @@ describe('parse', () => {
     it('1 2', () => {
         // invalid input should fail, the '2' is unreachable, i.e. not part of the expression
         const tokens: Token[] = [
-            {kind: "TK_NUMBER", value: 1} as TokenNumber,
-            {kind: "TK_NUMBER", value: 2} as TokenNumber,
+            {kind: "TokenNumber", value: 1} as Token,
+            {kind: "TokenNumber", value: 2} as Token,
         ]
 
         const [ast, index] = parse(tokens);
@@ -66,15 +66,15 @@ describe('parse', () => {
 
     it('(+ (+ 1 2) 3)', () => {
         const tokens: Token[] = [
-            {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
-            {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
-            {kind: "TK_NUMBER", value: 1} as TokenNumber,
-            {kind: "TK_NUMBER", value: 2} as TokenNumber,
-            {kind: "TK_RIGHT"} as TokenRight,
-            {kind: "TK_NUMBER", value: 3} as TokenNumber,
-            {kind: "TK_RIGHT"} as TokenRight,
+            {kind: "TokenLeft"} as Token,
+            {kind: "TokenIdentifier", value: "+"} as Token,
+            {kind: "TokenLeft"} as Token,
+            {kind: "TokenIdentifier", value: "+"} as Token,
+            {kind: "TokenNumber", value: 1} as Token,
+            {kind: "TokenNumber", value: 2} as Token,
+            {kind: "TokenRight"} as Token,
+            {kind: "TokenNumber", value: 3} as Token,
+            {kind: "TokenRight"} as Token,
         ]
 
         const [outer_call, index]: [NodeCall, number] = parse(tokens) as [NodeCall, number];
@@ -109,15 +109,15 @@ describe('parse', () => {
 
     it('(+ 1 (+ 2 3))', () => {
         const tokens: Token[] = [
-            {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
-            {kind: "TK_NUMBER", value: 1} as TokenNumber,
-            {kind: "TK_LEFT"} as TokenLeft,
-            {kind: "TK_IDENTIFIER", value: "+"} as TokenIdentifier,
-            {kind: "TK_NUMBER", value: 2} as TokenNumber,
-            {kind: "TK_NUMBER", value: 3} as TokenNumber,
-            {kind: "TK_RIGHT"} as TokenRight,
-            {kind: "TK_RIGHT"} as TokenRight,
+            {kind: "TokenLeft"} as Token,
+            {kind: "TokenIdentifier", value: "+"} as Token,
+            {kind: "TokenNumber", value: 1} as Token,
+            {kind: "TokenLeft"} as Token,
+            {kind: "TokenIdentifier", value: "+"} as Token,
+            {kind: "TokenNumber", value: 2} as Token,
+            {kind: "TokenNumber", value: 3} as Token,
+            {kind: "TokenRight"} as Token,
+            {kind: "TokenRight"} as Token,
         ]
 
         const [outer_call, index]: [NodeCall, number] = parse(tokens) as [NodeCall, number];

@@ -1,66 +1,41 @@
 // Copyright (c) 2025 Marco Nikander
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
 
-export interface Token {
-    kind: string,
-    value?: boolean | number | string;
-}
-
-export interface TokenError extends Token {
-    kind: "TK_ERROR",
-    value: string
-}
-
-export interface TokenBoolean extends Token {
-    kind: "TK_BOOLEAN",
-    value: boolean
-}
-
-export interface TokenNumber extends Token {
-    kind: "TK_NUMBER",
-    value: number
-}
-
-export interface TokenIdentifier extends Token {
-    kind: "TK_IDENTIFIER",
-    value: string
-}
-
-export interface TokenLeft extends Token {
-    kind: "TK_LEFT",
-}
-
-export interface TokenRight extends Token {
-    kind: "TK_RIGHT",
-}
+export type Token = 
+    | { kind: "TokenBoolean", value: boolean}    // Boolean
+    | { kind: "TokenNumber", value: number }     // Number
+    | { kind: "TokenIdentifier", value: string } // Symbol
+    | { kind: "TokenLeft", value: "(" }          // OpenParen
+    | { kind: "TokenRight", value: ")" }         // CloseParen
+    | { kind: "TokenError", value: string};
 
 export function is_tk_error(token: Token): boolean {
-    return token.kind == "TK_ERROR";
+    return token.kind == "TokenError";
 }
 
 export function is_tk_boolean(token: Token): boolean {
-    return token.kind == "TK_BOOLEAN";
+    return token.kind == "TokenBoolean";
 }
 
 export function is_tk_number(token: Token): boolean {
-    return token.kind == "TK_NUMBER";
+    return token.kind == "TokenNumber";
 }
 
 export function is_tk_identifier(token: Token): boolean {
-    return token.kind == "TK_IDENTIFIER";
+    return token.kind == "TokenIdentifier";
 }
 
 export function is_tk_left(token: Token): boolean {
-    return token.kind == "TK_LEFT";
+    return token.kind == "TokenLeft";
 }
 
 export function is_tk_right(token: Token): boolean {
-    return token.kind == "TK_RIGHT";
+    return token.kind == "TokenRight";
 }
 
 export function tokenize(line: string): Token[] {
     if (!check_parentheses(line)) {
-        return [{kind: "TK_ERROR", value: "invalid parentheses"} as TokenError] as Token[];
+        return [{kind: "TokenError", value: "invalid parentheses"}] as Token[];
     }
     let spaced   = add_whitespace_to_parentheses(line);
     let words    = spaced.split(" ");
@@ -84,47 +59,47 @@ export function to_token(word: string): Token {
             maybe_boolean_token(word) ??
             maybe_number_token(word) ??
             maybe_identifier_token(word) ??
-            {kind: "TK_ERROR", value: `invalid character ${word}`} as TokenError;
+            {kind: "TokenError", value: `invalid character ${word}`} as Token;
 }
 
-export function maybe_parenthesis_token(word: string): undefined | TokenLeft | TokenRight {
+export function maybe_parenthesis_token(word: string): undefined | Token {
     if (word == "(") {
-        return {kind: "TK_LEFT"} as TokenLeft;
+        return {kind: "TokenLeft"} as Token;
     }
     else if (word == ")") {
-        return {kind: "TK_RIGHT"} as TokenRight;
+        return {kind: "TokenRight"} as Token;
     }
     return undefined;
 }
 
-export function maybe_boolean_token(word: string): undefined | TokenBoolean {
+export function maybe_boolean_token(word: string): undefined | Token {
     if (word === 'True') {
-        return {kind: "TK_BOOLEAN", value: true};
+        return {kind: "TokenBoolean", value: true};
     }
     else if (word === 'False') {
-        return {kind: "TK_BOOLEAN", value: false};
+        return {kind: "TokenBoolean", value: false};
     }
     else {
         return undefined;
     }
 }
 
-export function maybe_number_token(word: string): undefined | TokenNumber {
+export function maybe_number_token(word: string): undefined | Token {
     let number = Number(word);
     if (isNaN(number)) {
         return undefined;
     }
     else {
-        return {kind: "TK_NUMBER", value: number} as TokenNumber;
+        return {kind: "TokenNumber", value: number} as Token;
     }
 }
 
-export function maybe_identifier_token(word: string): undefined | TokenIdentifier {
+export function maybe_identifier_token(word: string): undefined | Token {
     if (/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(word)) {
-        return {kind: "TK_IDENTIFIER", value: word} as TokenIdentifier;
+        return {kind: "TokenIdentifier", value: word} as Token;
     }
     else if (/^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+$/.test(word)) {
-        return {kind: "TK_IDENTIFIER", value: word} as TokenIdentifier;
+        return {kind: "TokenIdentifier", value: word} as Token;
     }
     return undefined;
 }
