@@ -25,8 +25,8 @@ const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
     ['*',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left * right; }, about: "(* 5 2)\t\tmultiplication"}],
     ['/',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left / right; }, about: "(/ 5 2)\t\tdivision"}],
     ['%',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left % right; }, about: "(% 5 2)\t\tremainder after division"}],
-    ['<',   {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left < right; }, about: "(< 5 2)\t\tless than"}],
-    ['>',   {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left > right; }, about: "(> 5 2)\t\tgreater than"}],
+    ['<',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left < right; }, about: "(< 5 2)\t\tless than"}],
+    ['>',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left > right; }, about: "(> 5 2)\t\tgreater than"}],
     ['<=',   {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left <= right; }, about: "(<= 5 2)\tless than or equal to"}],
     ['>=',   {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left >= right; }, about: "(>= 5 2)\tgreater than or equal to"}],
     ['==',   {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left == right; }, about: "(== 5 2)\tequal to"}],
@@ -39,7 +39,7 @@ const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
 ]);
 
 function help(environment: Map<string, SymbolEntry>): string {
-    let message: string = "Symbol\tUsage\t\tName\n";
+    let message: string = "\nSymbol\tUsage\t\tName\n------------------------------------------------\n";
     for (const [key, value] of environment.entries()) {
         if (value.arity !== undefined) {
             message += `${key}\t${value.about}\n`;
