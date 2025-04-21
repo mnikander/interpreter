@@ -5,7 +5,14 @@ import { interpret } from "./interpret";
 function run_interpreter() {
     const inputEl = document.getElementById("input") as HTMLInputElement;
     const outputEl = document.getElementById("output") as HTMLPreElement;
-  
+
+    if (outputEl) {
+    const observer = new MutationObserver(() => {
+        outputEl.scrollTop = outputEl.scrollHeight;
+    });
+
+    observer.observe(outputEl, { childList: true });
+}
     const input = inputEl.value;
     const result = interpret(input);
   
