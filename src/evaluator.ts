@@ -34,7 +34,7 @@ const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
     ['&',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left && right; }, about: "(& True False)\tlogical and"}],
     ['|',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left || right; }, about: "(| True False)\tlogical or"}],
     ['!',    {kind: "EV_FUNCTION", arity: 1, value: function (left: boolean) { return !left; }, about: "(! True)\tlogical negation"}],
-    ['if',   {kind: "EV_FUNCTION", arity: 3, value: function (cond: boolean, left: boolean | number, right: boolean | number) { return cond ? left : right; }, about: "(if (< 0 1) 4 8) if-expression"}],
+    ['if',   {kind: "EV_FUNCTION", arity: 3, value: function (cond: boolean, left: boolean | number, right: boolean | number) { return cond ? left : right; }, about: "(if True 4 8)\tif-expression"}],
     ['help', {kind: "EV_FUNCTION", arity: 0, value: function () { return help(environment); }, about: "(help)\t\tprints this dialog"}],
     ['Help', {kind: "EV_FUNCTION", arity: 0, value: function () { return help(environment); }, about: "(Help)\t\tprints this dialog"}],
 ]);
@@ -46,6 +46,8 @@ function help(environment: Map<string, SymbolEntry>): string {
             message += `${key}\t${value.about}\n`;
         }
     }
+    message += "------------------------------------------------\n"
+    message += "\nYou can write nested expressions, such as:\n\n(+ 1 (* 2 4))\n"
     return message;
 }
 
