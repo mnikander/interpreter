@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, Node, NodeAtom, NodeCall, NodeIdentifier, NodeBoolean, NodeNumber} from "./parser";
+import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 
 export interface EvaluationError {
     kind: "EV_ERROR",
@@ -29,20 +29,22 @@ const environment = new Map<string, SymbolEntry>([
     ['!',  {kind: "EV_FUNCTION", arity: 1, value: function (left: boolean) { return !left; }}],
 ]);
 
-export function lookup(identifier: NodeIdentifier, environment: Map<string, SymbolEntry>): undefined | SymbolEntry {
-    return environment.get(identifier.value);
+export function lookup(identifier: ASTAtom, environment: Map<string, SymbolEntry>): undefined | SymbolEntry {
+    return environment.get(String(identifier.value));
 }
 
-export function evaluate(ast: Node): EvaluationError | SymbolEntry | EvaluationValue {
+export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | EvaluationValue {
     // hardcode the use of a single constant OR addition
     if (is_nd_boolean(ast)) {
-        return {kind: 'EV_VALUE', value: (ast as NodeBoolean).value} as EvaluationValue;
+        let v = (ast as {kind: "ND_BOOLEAN", value: boolean}).value;
+        return {kind: 'EV_VALUE', value: v} as EvaluationValue;
     }
     else if (is_nd_number(ast)) {
-        return {kind: 'EV_VALUE', value: (ast as NodeNumber).value} as EvaluationValue;
+        let v = (ast as {kind: "ND_NUMBER", value: number}).value;
+        return {kind: 'EV_VALUE', value: v} as EvaluationValue;
     }
     else if (is_nd_identifier(ast)) {
-        const identifier = ast as NodeIdentifier;
+        const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
         const target     = lookup(identifier, environment);
         if (target !== undefined) {
             return target;
@@ -51,13 +53,14 @@ export function evaluate(ast: Node): EvaluationError | SymbolEntry | EvaluationV
         }
     }
     else if (is_nd_call(ast)) {
-        const call: NodeCall = ast as NodeCall;
-        const identifier: undefined | SymbolEntry = lookup(call.func as NodeIdentifier, environment);
-        if(identifier?.kind === "EV_FUNCTION") {
-            if(identifier.arity == 1 && call.params.length == 1) {
+        const call: ASTNode = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
+        const identifier: ASTNode = call.func as { kind: "ND_IDENTIFIER", value: string };
+        const fn: undefined | SymbolEntry = lookup(identifier, environment);
+        if(fn?.kind === "EV_FUNCTION") {
+            if(fn.arity == 1 && call.params.length == 1) {
                 const left = evaluate(call.params[0]);
                 if (left.kind === "EV_VALUE") {
-                    const f = identifier.value as Function;
+                    const f = fn.value as Function;
                     const l = (left as EvaluationValue).value;
                     return {kind: "EV_VALUE", value: f(l)} as EvaluationValue;
                 }
@@ -65,12 +68,12 @@ export function evaluate(ast: Node): EvaluationError | SymbolEntry | EvaluationV
                     return left;
                 }
             }
-            if(identifier.arity == 2 && call.params.length == 2) {
+            if(fn.arity == 2 && call.params.length == 2) {
                 const left = evaluate(call.params[0]);
                 const right = evaluate(call.params[1]);
                 if (left.kind === "EV_VALUE") {
                     if (right.kind === "EV_VALUE") {
-                    const f = identifier.value as Function;
+                    const f = fn.value as Function;
                     const l = (left as EvaluationValue).value;
                     const r = (right as EvaluationValue).value;
                     return {kind: "EV_VALUE", value: f(l, r)} as EvaluationValue;
@@ -84,11 +87,13 @@ export function evaluate(ast: Node): EvaluationError | SymbolEntry | EvaluationV
                 }
             }
             else {
-                return {kind: "EV_ERROR", message: `${call.params.length} argument(s) provided, expected ${identifier.arity}`} as EvaluationError;
+                return {kind: "EV_ERROR", message: `${call.params.length} argument(s) provided, expected ${fn.arity}`} as EvaluationError;
             }
         }
         else {
-            return {kind: "EV_ERROR", message: `expected a function identifier, got '${(call.func as (NodeBoolean | NodeNumber | NodeIdentifier)).value}'`} as EvaluationError;
+            const atom = call.func as ASTAtom;
+            let m: string = `expected a function identifier, got '${atom.value}'`;
+            return {kind: "EV_ERROR", message: m} as EvaluationError;
         }
     }
     return {kind: "EV_ERROR", message: `invalid expression`} as EvaluationError;

@@ -2,7 +2,7 @@
 
 import { evaluate, EvaluationError, EvaluationValue } from "./evaluator";
 import { is_tk_error, tokenize, Token } from "./lexer";
-import { Node, parse, ParseError, check_for_errors } from "./parser";
+import { ASTNode, parse, check_for_errors } from "./parser";
 
 export function interpret(line: string): undefined | boolean | number | string {
     const tokens: Token[]                = tokenize(line);
@@ -13,8 +13,8 @@ export function interpret(line: string): undefined | boolean | number | string {
         return message;
     }
 
-    const [ast, index]: [Node, number] = parse(tokens);
-    const parser_error: undefined | ParseError = check_for_errors(ast);
+    const [ast, index]: [ASTNode, number]  = parse(tokens);
+    const parser_error: undefined | string = check_for_errors(ast);
     if (parser_error !== undefined)
     {
         const message: string = "ERROR: " + ((parser_error as ParseError).value ?? "unknown");
