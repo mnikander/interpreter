@@ -34,8 +34,8 @@ const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
     ['&',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left && right; }, about: "(& True False)\tlogical and"}],
     ['|',    {kind: "EV_FUNCTION", arity: 2, value: function (left: boolean, right: boolean) { return left || right; }, about: "(| True False)\tlogical or"}],
     ['!',    {kind: "EV_FUNCTION", arity: 1, value: function (left: boolean) { return !left; }, about: "(! True)\tlogical negation"}],
-    ['help', {kind: "EV_FUNCTION", arity: 0, value: function (left: boolean) { return help(environment); }, about: "(help)\t\tprints this dialog"}],
-    ['Help', {kind: "EV_FUNCTION", arity: 0, value: function (left: boolean) { return help(environment); }, about: "(Help)\t\tprints this dialog"}],
+    ['help', {kind: "EV_FUNCTION", arity: 0, value: function () { return help(environment); }, about: "(help)\t\tprints this dialog"}],
+    ['Help', {kind: "EV_FUNCTION", arity: 0, value: function () { return help(environment); }, about: "(Help)\t\tprints this dialog"}],
 ]);
 
 function help(environment: Map<string, SymbolEntry>): string {
