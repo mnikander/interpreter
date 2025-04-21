@@ -9,16 +9,14 @@ export function interpret(line: string): undefined | boolean | number | string {
     const lexer_error: Token | undefined = tokens.find(is_tk_error);
     if (lexer_error !== undefined)
     {
-        let message = "ERROR: " + (lexer_error.value ?? "unknown");
-        return message;
+        return "ERROR: " + (lexer_error.value ?? "unknown error during lexing") + ". ";
     }
 
     const [ast, index]: [ASTNode, number]  = parse(tokens);
     const parser_error: undefined | string = check_for_errors(ast);
     if (parser_error !== undefined)
     {
-        const message: string = "ERROR: " + ((parser_error as ParseError).value ?? "unknown");
-        return message;
+        return "ERROR: " + (parser_error ?? "unknown error during parsing") + ". ";
     }
 
     const result = evaluate(ast);

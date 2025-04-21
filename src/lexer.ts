@@ -59,7 +59,7 @@ export function to_token(word: string): Token {
             maybe_boolean_token(word) ??
             maybe_number_token(word) ??
             maybe_identifier_token(word) ??
-            {kind: "TokenError", value: `invalid character ${word}`};
+            {kind: "TokenError", value: `invalid sequence of characters '${word}'`};
 }
 
 export function maybe_parenthesis_token(word: string): undefined | Token {

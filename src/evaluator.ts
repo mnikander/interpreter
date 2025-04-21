@@ -93,6 +93,9 @@ export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | Evaluati
         else {
             const atom = call.func as ASTAtom;
             let m: string = `expected a function identifier, got '${atom.value}'`;
+            if(typeof atom.value === "number") {
+                m += ".\nMaybe you forgot a space between a '+' or '-' and a number";
+            }
             return {kind: "EV_ERROR", message: m} as EvaluationError;
         }
     }
