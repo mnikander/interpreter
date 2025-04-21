@@ -4,7 +4,7 @@ import { Token } from '../src/lexer.ts'
 
 describe('parse', () => {
     it('(', () => {
-        const tokens: Token[] = [{kind: "TokenLeft", value: "("}]
+        const tokens: Token[] = [{kind: "TokenOpenParen", value: "("}]
         const [ast, index]: [Node, number] = parse(tokens);
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_ERROR");
@@ -28,11 +28,11 @@ describe('parse', () => {
 
     it('(+ 1 2)', () => {
         const tokens: Token[] = [
-            {kind: "TokenLeft", value: "("},
+            {kind: "TokenOpenParen", value: "("},
             {kind: "TokenIdentifier", value: "+"},
             {kind: "TokenNumber", value: 1},
             {kind: "TokenNumber", value: 2},
-            {kind: "TokenRight", value: ")"},
+            {kind: "TokenCloseParen", value: ")"},
         ]
 
         const [call, index]: [NodeCall, number] = parse(tokens) as [NodeCall, number];
@@ -66,15 +66,15 @@ describe('parse', () => {
 
     it('(+ (+ 1 2) 3)', () => {
         const tokens: Token[] = [
-            {kind: "TokenLeft", value: "("},
+            {kind: "TokenOpenParen", value: "("},
             {kind: "TokenIdentifier", value: "+"},
-            {kind: "TokenLeft", value: "("},
+            {kind: "TokenOpenParen", value: "("},
             {kind: "TokenIdentifier", value: "+"},
             {kind: "TokenNumber", value: 1},
             {kind: "TokenNumber", value: 2},
-            {kind: "TokenRight", value: ")"},
+            {kind: "TokenCloseParen", value: ")"},
             {kind: "TokenNumber", value: 3},
-            {kind: "TokenRight", value: ")"},
+            {kind: "TokenCloseParen", value: ")"},
         ]
 
         const [outer_call, index]: [NodeCall, number] = parse(tokens) as [NodeCall, number];
@@ -109,15 +109,15 @@ describe('parse', () => {
 
     it('(+ 1 (+ 2 3))', () => {
         const tokens: Token[] = [
-            {kind: "TokenLeft", value: "("},
+            {kind: "TokenOpenParen", value: "("},
             {kind: "TokenIdentifier", value: "+"},
             {kind: "TokenNumber", value: 1},
-            {kind: "TokenLeft", value: "("},
+            {kind: "TokenOpenParen", value: "("},
             {kind: "TokenIdentifier", value: "+"},
             {kind: "TokenNumber", value: 2},
             {kind: "TokenNumber", value: 3},
-            {kind: "TokenRight", value: ")"},
-            {kind: "TokenRight", value: ")"},
+            {kind: "TokenCloseParen", value: ")"},
+            {kind: "TokenCloseParen", value: ")"},
         ]
 
         const [outer_call, index]: [NodeCall, number] = parse(tokens) as [NodeCall, number];

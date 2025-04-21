@@ -19,12 +19,12 @@ describe('to_token', () => {
     });
 
     it('left', () => {
-        const expected: Token = {kind: "TokenLeft", value: "("};
+        const expected: Token = {kind: "TokenOpenParen", value: "("};
         expect(to_token('(')).toStrictEqual(expected);
     });
 
     it('right', () => {
-        const expected: Token = {kind: "TokenRight", value: ")"};
+        const expected: Token = {kind: "TokenCloseParen", value: ")"};
         expect(to_token(')')).toStrictEqual(expected);
     });
 
@@ -70,11 +70,11 @@ describe('tokenize', () => {
   });
 
     it('one plus two', () => {
-        const expected: Token[] = [{kind: "TokenLeft", value: "("},
+        const expected: Token[] = [{kind: "TokenOpenParen", value: "("},
                                    {kind: "TokenIdentifier", value: "+"},
                                    {kind: "TokenNumber", value: 1},
                                    {kind: "TokenNumber", value: 2},
-                                   {kind: "TokenRight", value: ")"},
+                                   {kind: "TokenCloseParen", value: ")"},
                                   ];
         expect(tokenize('(+ 1 2)')).toStrictEqual(expected);
     });

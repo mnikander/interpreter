@@ -2,12 +2,12 @@
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
 
 export type Token = 
-    | { kind: "TokenBoolean", value: boolean}    // Boolean
-    | { kind: "TokenNumber", value: number }     // Number
-    | { kind: "TokenIdentifier", value: string } // Symbol
-    | { kind: "TokenLeft", value: "(" }          // OpenParen
-    | { kind: "TokenRight", value: ")" }         // CloseParen
-    | { kind: "TokenError", value: string};
+    | { kind: "TokenBoolean", value: boolean }
+    | { kind: "TokenNumber", value: number }
+    | { kind: "TokenIdentifier", value: string }
+    | { kind: "TokenOpenParen", value: "(" }
+    | { kind: "TokenCloseParen", value: ")" }
+    | { kind: "TokenError", value: string };
 
 export function is_tk_error(token: Token): boolean {
     return token.kind == "TokenError";
@@ -26,11 +26,11 @@ export function is_tk_identifier(token: Token): boolean {
 }
 
 export function is_tk_left(token: Token): boolean {
-    return token.kind == "TokenLeft";
+    return token.kind == "TokenOpenParen";
 }
 
 export function is_tk_right(token: Token): boolean {
-    return token.kind == "TokenRight";
+    return token.kind == "TokenCloseParen";
 }
 
 export function tokenize(line: string): Token[] {
@@ -64,10 +64,10 @@ export function to_token(word: string): Token {
 
 export function maybe_parenthesis_token(word: string): undefined | Token {
     if (word == "(") {
-        return {kind: "TokenLeft", value: "("};
+        return {kind: "TokenOpenParen", value: "("};
     }
     else if (word == ")") {
-        return {kind: "TokenRight", value: ")"};
+        return {kind: "TokenCloseParen", value: ")"};
     }
     return undefined;
 }
