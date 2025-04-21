@@ -47,7 +47,8 @@ function help(environment: Map<string, SymbolEntry>): string {
         }
     }
     message += "------------------------------------------------\n"
-    message += "\nYou can write nested expressions, such as:\n\n(+ 1 (* 2 4))\n"
+    message += "You can write nested expressions, such as:\n\n(+ 1 (* 2 4))\n"
+    message += "------------------------------------------------\n"
     return message;
 }
 
