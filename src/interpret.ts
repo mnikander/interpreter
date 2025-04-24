@@ -8,13 +8,13 @@ import { Error, is_error } from "./error";
 export function interpret(line: string): undefined | boolean | number | string {
     const lexingResult: Error | Token[] = tokenize(line);
     if (is_error(lexingResult)) {
-        return "ERROR: " + ((lexingResult as Error).message) + ". ";
+        return "ERROR during lexing: " + ((lexingResult as Error).message) + ". ";
     }
     else {
         const tokens = lexingResult as Token[];
         const parsingResult: Error | [ASTNode, number]  = parse(tokens);
         if (is_error(parsingResult)) {
-            return "ERROR: " + ((parsingResult as Error).message) + ". ";
+            return "ERROR during parsing: " + ((parsingResult as Error).message) + ". ";
         }
         else {
             const [ast, index] = parsingResult as [ASTNode, number];
@@ -24,13 +24,13 @@ export function interpret(line: string): undefined | boolean | number | string {
                 return (result as EvaluationValue).value;
             }
             else if (result.kind === "EV_ENTRY") {
-                return "ERROR: result is a function. ";
+                return "ERROR during evaluation: result is a function. ";
             }
             else if (result.kind === "EV_ERROR") {
-                return `ERROR: ${(result as EvaluationError).message}. `;
+                return `ERROR during evaluation: ${(result as EvaluationError).message}. `;
             }
             else {
-                return "ERROR: unknown evaluation error. "
+                return "ERROR during evaluation: unknown error. "
             }
         }
     }
