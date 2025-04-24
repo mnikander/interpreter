@@ -10,6 +10,11 @@ describe('interpret', () => {
         expect(interpret("+1")).toBe(1);
     });
 
+    it('must report an error if the input consists of more than one expression', () => {
+        const result = interpret("1 2");
+        expect(result).toContain("ERROR");
+    });
+
     it('must add two integers together', () => {
         const result = interpret("(+ 1 2)");
         expect(result).toBe(3);
