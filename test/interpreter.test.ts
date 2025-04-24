@@ -3,38 +3,40 @@ import { interpret } from '../src/interpret'
 
 describe('interpret', () => {
 
-    it('integer', () => {
-        const result = interpret("5");
-        expect(result).toBe(5);
+    it('must evaluate a single integer to itself', () => {
+        expect(interpret("-1")).toBe(-1);
+        expect(interpret("0")).toBe(0);
+        expect(interpret("1")).toBe(1);
+        expect(interpret("+1")).toBe(1);
     });
 
-    it('addition', () => {
+    it('must add two integers together', () => {
         const result = interpret("(+ 1 2)");
         expect(result).toBe(3);
     });
 
-    it('invalid addition', () => {
+    it('must report an error when trying to add 3 integers in one operation', () => {
         const result = interpret("(+ 1 2 3)");
         expect(result).toContain("ERROR");
         expect(result).toContain("argument");
     });
 
-    it('left-nested addition', () => {
+    it('must evaluate left-nested addition', () => {
         const result = interpret("(+ (+ 1 2) 3)");
         expect(result).toBe(6);
     });
 
-    it('right-nested addition', () => {
+    it('must evaluate right-nested addition', () => {
         const result = interpret("(+ 1 (+ 2 3))");
         expect(result).toBe(6);
     });
 
-    it('boolean', () => {
-        const result = interpret("True");
-        expect(result).toBe(true);
+    it('must evaluate a single boolean to itself', () => {
+        expect(interpret("True")).toBe(true);
+        expect(interpret("False")).toBe(false);
     });
 
-    it('and', () => {
+    it("must evaluate logical 'and' expressions", () => {
         const ff = interpret("(& False False)");
         expect(ff).toBe(false);
 
@@ -48,7 +50,7 @@ describe('interpret', () => {
         expect(tt).toBe(true);
     });
 
-    it('or', () => {
+    it("must evaluate logical 'or' expressions", () => {
         const ff = interpret("(| False False)");
         expect(ff).toBe(false);
 
