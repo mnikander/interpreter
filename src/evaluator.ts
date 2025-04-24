@@ -1,11 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
-
-export interface EvaluationError {
-    kind: "EV_ERROR",
-    message: string,
-}
+import { Error, is_error } from "./error";
 
 export interface SymbolEntry {
     kind: string,
@@ -56,7 +52,7 @@ export function lookup(identifier: ASTAtom, environment: Map<string, SymbolEntry
     return environment.get(String(identifier.value));
 }
 
-export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | EvaluationValue {
+export function evaluate(ast: ASTNode): Error | SymbolEntry | EvaluationValue {
     // hardcode the use of a single constant OR addition
     if (is_nd_boolean(ast)) {
         let v = (ast as {kind: "ND_BOOLEAN", value: boolean}).value;
@@ -72,7 +68,7 @@ export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | Evaluati
         if (target !== undefined) {
             return target;
         } else {
-            return {kind: "EV_ERROR", message: `unknown identifier '${identifier.value}'`} as EvaluationError;
+            return {kind: "Evaluation Error", message: `unknown identifier '${identifier.value}'`};
         }
     }
     else if (is_nd_call(ast)) {
@@ -139,7 +135,7 @@ export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | Evaluati
                 }
             }
             else {
-                return {kind: "EV_ERROR", message: `${call.params.length} argument(s) provided, expected ${fn.arity}`} as EvaluationError;
+                return {kind: "Evaluation Error", message: `${call.params.length} argument(s) provided, expected ${fn.arity}`};
             }
         }
         else {
@@ -148,8 +144,8 @@ export function evaluate(ast: ASTNode): EvaluationError | SymbolEntry | Evaluati
             if(typeof atom.value === "number") {
                 m += ".\nMaybe you forgot a space between a '+' or '-' and a number";
             }
-            return {kind: "EV_ERROR", message: m} as EvaluationError;
+            return {kind: "Evaluation Error", message: m};
         }
     }
-    return {kind: "EV_ERROR", message: `invalid expression`} as EvaluationError;
+    return {kind: "Evaluation Error", message: `invalid expression`};
 }

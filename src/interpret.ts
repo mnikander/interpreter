@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { evaluate, EvaluationError, EvaluationValue } from "./evaluator";
+import { evaluate, EvaluationValue } from "./evaluator";
 import { tokenize, Token } from "./lexer";
 import { ASTNode, parse } from "./parser";
 import { Error, is_error } from "./error";
@@ -26,8 +26,8 @@ export function interpret(line: string): undefined | boolean | number | string {
             else if (result.kind === "EV_ENTRY") {
                 return "ERROR during evaluation: result is a function. ";
             }
-            else if (result.kind === "EV_ERROR") {
-                return `ERROR during evaluation: ${(result as EvaluationError).message}. `;
+            else if (is_error(result)) {
+                return `ERROR during evaluation: ${(result as Error).message}. `;
             }
             else {
                 return "ERROR during evaluation: unknown error. "
