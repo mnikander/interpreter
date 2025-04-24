@@ -1,18 +1,21 @@
 import { describe, it, expect } from 'vitest'
 import { ASTNode, parse } from '../src/parser.ts'
 import { Token } from '../src/lexer.ts'
+import { Error } from '../src/error.ts';
 
 describe('parse', () => {
     it('(', () => {
         const tokens: Token[] = [{kind: "TokenOpenParen", value: "("}]
-        const [ast, index]: [ASTNode, number] = parse(tokens);
-        expect(index).toBe(1);
-        expect(ast.kind).toBe("ND_ERROR");
+        const result: Error | [ASTNode, number] = parse(tokens);
+        expect(Array.isArray(result)).toBe(false);
+        expect((result as Error).kind).toBe("Parsing Error");
     });
 
     it('5', () => {
         const tokens: Token[] = [{kind: "TokenNumber", value: 5}];
-        const [ast, index]: [ASTNode, number] = parse(tokens);
+        const result: Error | [ASTNode, number] = parse(tokens);
+        expect(Array.isArray(result)).toBe(true);
+        const [ast, index] = result as [ASTNode, number];
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_NUMBER");
         expect((ast as { kind: "ND_NUMBER", value: number }).value).toBe(5);
@@ -20,7 +23,9 @@ describe('parse', () => {
 
     it('True', () => {
         const tokens: Token[] = [{kind: "TokenBoolean", value: true}];
-        const [ast, index]: [ASTNode, number] = parse(tokens);
+        const result: Error | [ASTNode, number] = parse(tokens);
+        expect(Array.isArray(result)).toBe(true);
+        const [ast, index] = result as [ASTNode, number];
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_BOOLEAN");
         expect((ast as { kind: "ND_BOOLEAN", value: boolean }).value).toBe(true);
@@ -59,9 +64,9 @@ describe('parse', () => {
             {kind: "TokenNumber", value: 2},
         ]
 
-        const [ast, index] = parse(tokens);
-        expect(index).toBe(1);
-        expect(ast.kind).toBe("ND_ERROR");
+        const result: Error | [ASTNode, number] = parse(tokens);
+        expect(Array.isArray(result)).toBe(false);
+        expect((result as Error).kind).toBe("Parsing Error");
     });
 
     it('(+ (+ 1 2) 3)', () => {
