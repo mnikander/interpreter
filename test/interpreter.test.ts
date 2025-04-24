@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { interpret } from '../src/interpret'
 
-describe('interpret', () => {
-
+describe('basic values', () => {
     it('must evaluate a single integer to itself', () => {
         expect(interpret("-1")).toBe(-1);
         expect(interpret("0")).toBe(0);
@@ -10,11 +9,20 @@ describe('interpret', () => {
         expect(interpret("+1")).toBe(1);
     });
 
+    it('must evaluate a single boolean to itself', () => {
+        expect(interpret("True")).toBe(true);
+        expect(interpret("False")).toBe(false);
+    });
+});
+
+describe('single expressions only', () => {
     it('must report an error if the input consists of more than one expression', () => {
         const result = interpret("1 2");
         expect(result).toContain("ERROR");
     });
+});
 
+describe('arithmetic and logical expressions', () => {
     it('must add two integers together', () => {
         const result = interpret("(+ 1 2)");
         expect(result).toBe(3);
@@ -26,24 +34,9 @@ describe('interpret', () => {
         expect(result).toContain("argument");
     });
 
-    it('must evaluate left-nested addition', () => {
-        const result = interpret("(+ (+ 1 2) 3)");
-        expect(result).toBe(6);
-    });
-
-    it('must evaluate right-nested addition', () => {
-        const result = interpret("(+ 1 (+ 2 3))");
-        expect(result).toBe(6);
-    });
-
-    it('must evaluate a single boolean to itself', () => {
-        expect(interpret("True")).toBe(true);
-        expect(interpret("False")).toBe(false);
-    });
-
     it("must evaluate logical 'not' expressions", () => {
-        expect(interpret("(not True)")).toBe(false);
-        expect(interpret("(not False)")).toBe(true);
+        expect(interpret("(! True)")).toBe(false);
+        expect(interpret("(! False)")).toBe(true);
     });
 
     it("must evaluate logical 'and' expressions", () => {
@@ -84,5 +77,17 @@ describe('if-expression', () => {
     it('when the 1st expression is false, "if" must return the 3rd expression', () => {
         const result = interpret("(if False 4 8)");
         expect(result).toBe(8);
+    });
+});
+
+describe('nested expressions', () => {
+    it('must evaluate left-nested addition', () => {
+        const result = interpret("(+ (+ 1 2) 3)");
+        expect(result).toBe(6);
+    });
+
+    it('must evaluate right-nested addition', () => {
+        const result = interpret("(+ 1 (+ 2 3))");
+        expect(result).toBe(6);
     });
 });
