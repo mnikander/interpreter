@@ -4,41 +4,37 @@ import { Error, is_error } from '../src/error';
 
 describe('to_token', () => {
 
-    it('zero', () => {
-        const expected: Token = {kind: "TokenNumber", value: 0};
-        expect(to_token('0')).toStrictEqual(expected);
+    it('must convert an integer into a number token', () => {
+        expect(to_token('-1')).toStrictEqual({kind: "TokenNumber", value: -1});
+        expect(to_token('0')).toStrictEqual({kind: "TokenNumber", value: 0});
+        expect(to_token('1')).toStrictEqual({kind: "TokenNumber", value: 1});
+        expect(to_token('+1')).toStrictEqual({kind: "TokenNumber", value: 1});
     });
 
-    it('True', () => {
-        const expected: Token = {kind: "TokenBoolean", value: true};
-        expect(to_token('True')).toStrictEqual(expected);
+    it('must convert a boolean into a boolean token', () => {
+        expect(to_token('True')).toStrictEqual({kind: "TokenBoolean", value: true});
+        expect(to_token('False')).toStrictEqual({kind: "TokenBoolean", value: false})
     });
 
-    it('False', () => {
-        const expected: Token = {kind: "TokenBoolean", value: false};
-        expect(to_token('False')).toStrictEqual(expected);
+    it('convert an opening parenthesis into an opening parenthesis token', () => {
+        expect(to_token('(')).toStrictEqual({kind: "TokenOpenParen", value: "("});
     });
 
-    it('left', () => {
-        const expected: Token = {kind: "TokenOpenParen", value: "("};
-        expect(to_token('(')).toStrictEqual(expected);
-    });
-
-    it('right', () => {
+    it('convert a closing parenthesis into a closing parenthesis token', () => {
         const expected: Token = {kind: "TokenCloseParen", value: ")"};
         expect(to_token(')')).toStrictEqual(expected);
     });
 
-    it('add', () => {
+    it("must convert '+' into an identifier token", () => {
         const expected: Token = {kind: "TokenIdentifier", value: "+"};
         expect(to_token('+')).toStrictEqual(expected);
     });
 
-    it('custom function', () => {
-        expect(to_token('my_function').kind).toStrictEqual("TokenIdentifier");
+    it('must convert a variable name, which starts with a letter or underscore and does not contain other special characters, into an identifier token', () => {
+        expect(to_token('x').kind).toStrictEqual("TokenIdentifier");
     });
 
-    it('custom operation', () => {
+    it('must convert a sequence of special charaters into an identifier token', () => {
         expect(to_token('???').kind).toStrictEqual("TokenIdentifier");
     });
 
@@ -55,22 +51,22 @@ describe('to_token', () => {
 
 describe('tokenize', () => {
 
-    it('zero', () => {
+    it('must tokenize zero', () => {
         const expected: Token[] = [{kind: "TokenNumber", value: 0}];
         expect(tokenize('0')).toStrictEqual(expected);
     });
 
-    it('positive one', () => {
+    it('must tokenize positive one', () => {
         const expected: Token[] = [{kind: "TokenNumber", value: +1}];
         expect(tokenize('+1')).toStrictEqual(expected);
     });
 
-    it('negative one', () => {
+    it('must tokenize negative one', () => {
       const expected: Token[] = [{kind: "TokenNumber", value: -1}];
       expect(tokenize('-1')).toStrictEqual(expected);
   });
 
-    it('one plus two', () => {
+    it('must tokenize one plus two', () => {
         const expected: Token[] = [{kind: "TokenOpenParen", value: "("},
                                    {kind: "TokenIdentifier", value: "+"},
                                    {kind: "TokenNumber", value: 1},
@@ -80,7 +76,7 @@ describe('tokenize', () => {
         expect(tokenize('(+ 1 2)')).toStrictEqual(expected);
     });
 
-    it('invalid parentheses', () => {
+    it('must report an error on invalid parentheses', () => {
         const result = tokenize('(');
         expect(Array.isArray(result)).toBe(false);
         expect(is_error(result)).toStrictEqual(true);

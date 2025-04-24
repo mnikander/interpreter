@@ -3,28 +3,36 @@ import { check_parentheses } from '../src/parentheses'
 
 describe('check_parentheses', () => {
 
-  it('(', () => {
-    expect(check_parentheses('(')).toBe(false)
-  }); 
+    it('must reject single parentheses', () => {
+        expect(check_parentheses('(')).toBe(false);
+        expect(check_parentheses(')')).toBe(false);
+    });
 
-  it(')', () => {
-    expect(check_parentheses(')')).toBe(false)
-  });
+    it('must check pairs of parentheses for correctness', () => {
+        expect(check_parentheses('((')).toBe(false);
+        expect(check_parentheses('()')).toBe(true);
+        expect(check_parentheses('))')).toBe(false);
+        expect(check_parentheses(')(')).toBe(false);
+    });
 
-  it('((', () => {
-    expect(check_parentheses('((')).toBe(false)
-  })
+    it('must reject triples of parentheses', () => {
+        expect(check_parentheses('(((')).toBe(false);
+        expect(check_parentheses('(()')).toBe(false);
+        expect(check_parentheses('()(')).toBe(false);
+        expect(check_parentheses('())')).toBe(false);
+        expect(check_parentheses(')((')).toBe(false);
+        expect(check_parentheses(')()')).toBe(false);
+        expect(check_parentheses('))(')).toBe(false);
+        expect(check_parentheses(')))')).toBe(false);
+    });
 
-  it('))', () => {
-    expect(check_parentheses('))')).toBe(false)
-  })
+    it('must accept valid pairs of parentheses', () => {
+        expect(check_parentheses('()()')).toBe(true);
+    });
 
-  it(')(', () => {
-    expect(check_parentheses(')(')).toBe(false)
-  })
-
-  it('()', () => {
-    expect(check_parentheses('()')).toBe(true)
-  });
+    it('must accept valid nestings of parentheses', () => {
+        expect(check_parentheses('(())')).toBe(true);
+        expect(check_parentheses('(()())')).toBe(true);
+    });
 
 });
