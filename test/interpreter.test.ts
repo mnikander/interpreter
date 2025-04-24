@@ -41,6 +41,11 @@ describe('interpret', () => {
         expect(interpret("False")).toBe(false);
     });
 
+    it("must evaluate logical 'not' expressions", () => {
+        expect(interpret("(not True)")).toBe(false);
+        expect(interpret("(not False)")).toBe(true);
+    });
+
     it("must evaluate logical 'and' expressions", () => {
         const ff = interpret("(& False False)");
         expect(ff).toBe(false);
