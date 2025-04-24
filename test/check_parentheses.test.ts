@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { check_parentheses } from '../src/parentheses.js'
+import { check_parentheses } from '../src/parentheses'
 
 describe('check_parentheses', () => {
 

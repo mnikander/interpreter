@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { ASTNode, parse } from '../src/parser.ts'
-import { Token } from '../src/lexer.ts'
-import { Error } from '../src/error.ts';
+import { ASTNode, parse } from '../src/parser'
+import { Token } from '../src/lexer'
+import { Error } from '../src/error';
 
 describe('parse', () => {
     it('(', () => {
