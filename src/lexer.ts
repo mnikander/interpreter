@@ -1,17 +1,13 @@
 // Copyright (c) 2025 Marco Nikander
 import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
+import { Error, is_error } from "./error";
 
 export type Token = 
     | { kind: "TokenBoolean", value: boolean }
     | { kind: "TokenNumber", value: number }
     | { kind: "TokenIdentifier", value: string }
     | { kind: "TokenOpenParen", value: "(" }
-    | { kind: "TokenCloseParen", value: ")" }
-    | { kind: "TokenError", value: string };
-
-export function is_tk_error(token: Token): boolean {
-    return token.kind == "TokenError";
-}
+    | { kind: "TokenCloseParen", value: ")" };
 
 export function is_tk_boolean(token: Token): boolean {
     return token.kind == "TokenBoolean";
@@ -33,14 +29,22 @@ export function is_tk_right(token: Token): boolean {
     return token.kind == "TokenCloseParen";
 }
 
-export function tokenize(line: string): Token[] {
+export function tokenize(line: string): Error | Token[] {
     if (!check_parentheses(line)) {
-        return [{kind: "TokenError", value: "invalid parentheses"}];
+        return { kind: "Lexing Error", message: "invalid parentheses"};
     }
     let spaced   = add_whitespace_to_parentheses(line);
     let words    = spaced.split(" ");
     words        = remove_empty_words(words);
-    const tokens = words.map(to_token);
+    const tokens_or_errors = words.map(to_token);
+
+    for (const item of tokens_or_errors) {
+        if (is_error(item)) {
+            return (item as Error);
+        }
+    }
+
+    const tokens = tokens_or_errors as Token[];
     return tokens;
 }
 
@@ -54,12 +58,17 @@ export function remove_empty_words(words: string[]): string[] {
     return result;
 }
 
-export function to_token(word: string): Token {
-    return maybe_parenthesis_token(word) ??
-            maybe_boolean_token(word) ??
-            maybe_number_token(word) ??
-            maybe_identifier_token(word) ??
-            {kind: "TokenError", value: `invalid sequence of characters '${word}'`};
+export function to_token(word: string): Error | Token {
+    let result = maybe_parenthesis_token(word) ??
+                maybe_boolean_token(word) ??
+                maybe_number_token(word) ??
+                maybe_identifier_token(word);
+    if (result === undefined) {
+        return {kind: "Lexing Error", message: `invalid sequence of characters '${word}'`};
+    }
+    else {
+        return result;
+    }
 }
 
 export function maybe_parenthesis_token(word: string): undefined | Token {

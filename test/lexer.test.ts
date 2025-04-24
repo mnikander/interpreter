@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { to_token, tokenize, Token} from '../src/lexer.js'
+import { to_token, tokenize, Token} from '../src/lexer.ts'
+import { Error, is_error } from '../src/error.ts';
 
 describe('to_token', () => {
 
@@ -42,13 +43,13 @@ describe('to_token', () => {
     });
 
     it('invalid identifiers', () => {
-        expect(to_token('$a').kind).toStrictEqual("TokenError");
-        expect(to_token('a$').kind).toStrictEqual("TokenError");
-        expect(to_token('$1').kind).toStrictEqual("TokenError");
-        expect(to_token('1$').kind).toStrictEqual("TokenError");
-        expect(to_token('1a').kind).toStrictEqual("TokenError");
-        expect(to_token('1_').kind).toStrictEqual("TokenError");
-        expect(to_token('_+').kind).toStrictEqual("TokenError");
+        expect(to_token('$a').kind).toStrictEqual("Lexing Error");
+        expect(to_token('a$').kind).toStrictEqual("Lexing Error");
+        expect(to_token('$1').kind).toStrictEqual("Lexing Error");
+        expect(to_token('1$').kind).toStrictEqual("Lexing Error");
+        expect(to_token('1a').kind).toStrictEqual("Lexing Error");
+        expect(to_token('1_').kind).toStrictEqual("Lexing Error");
+        expect(to_token('_+').kind).toStrictEqual("Lexing Error");
     });
 });
 
@@ -80,7 +81,9 @@ describe('tokenize', () => {
     });
 
     it('invalid parentheses', () => {
-        expect(tokenize('(')[0].kind).toStrictEqual("TokenError");
+        const result = tokenize('(');
+        expect(Array.isArray(result)).toBe(false);
+        expect(is_error(result)).toStrictEqual(true);
     });
 
 });
