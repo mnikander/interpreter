@@ -76,62 +76,67 @@ export function evaluate(ast: ASTNode): Error | SymbolEntry | EvaluationValue {
         const identifier: ASTNode = call.func as { kind: "ND_IDENTIFIER", value: string };
         const fn: undefined | SymbolEntry = lookup(identifier, environment);
         if(fn?.kind === "EV_FUNCTION") {
-            if(fn.arity == 0 && call.params.length == 0) {
-                const f = fn.value as Function;
-                return {kind: "EV_VALUE", value: f()} as EvaluationValue;
-            }
-            if(fn.arity == 1 && call.params.length == 1) {
-                const left = evaluate(call.params[0]);
-                if (left.kind === "EV_VALUE") {
+            if(fn.arity === call.params.length) {
+                if(fn.arity == 0) {
                     const f = fn.value as Function;
-                    const l = (left as EvaluationValue).value;
-                    return {kind: "EV_VALUE", value: f(l)} as EvaluationValue;
+                    return {kind: "EV_VALUE", value: f()} as EvaluationValue;
                 }
-                else {
-                    return left;
-                }
-            }
-            if(fn.arity == 2 && call.params.length == 2) {
-                const left = evaluate(call.params[0]);
-                const right = evaluate(call.params[1]);
-                if (left.kind === "EV_VALUE") {
-                    if (right.kind === "EV_VALUE") {
-                    const f = fn.value as Function;
-                    const l = (left as EvaluationValue).value;
-                    const r = (right as EvaluationValue).value;
-                    return {kind: "EV_VALUE", value: f(l, r)} as EvaluationValue;
+                if(fn.arity == 1) {
+                    const left = evaluate(call.params[0]);
+                    if (left.kind === "EV_VALUE") {
+                        const f = fn.value as Function;
+                        const l = (left as EvaluationValue).value;
+                        return {kind: "EV_VALUE", value: f(l)} as EvaluationValue;
                     }
                     else {
-                        return right;
+                        return left;
                     }
                 }
-                else {
-                    return left;
-                }
-            }
-            if(fn.arity == 3 && call.params.length == 3) {
-                const zero = evaluate(call.params[0]);
-                const one = evaluate(call.params[1]);
-                const two = evaluate(call.params[2]);
-                if (zero.kind === "EV_VALUE") {
-                    if (one.kind === "EV_VALUE") {
-                        if (two.kind === "EV_VALUE") {
-                            const f = fn.value as Function;
-                            const z = (zero as EvaluationValue).value;
-                            const o = (one as EvaluationValue).value;
-                            const t = (two as EvaluationValue).value;
-                            return {kind: "EV_VALUE", value: f(z, o, t)} as EvaluationValue;
+                if(fn.arity == 2) {
+                    const left  = evaluate(call.params[0]);
+                    const right = evaluate(call.params[1]);
+                    if (left.kind === "EV_VALUE") {
+                        if (right.kind === "EV_VALUE") {
+                        const f = fn.value as Function;
+                        const l = (left as EvaluationValue).value;
+                        const r = (right as EvaluationValue).value;
+                        return {kind: "EV_VALUE", value: f(l, r)} as EvaluationValue;
                         }
                         else {
-                            return two;
+                            return right;
                         }
                     }
                     else {
-                        return one;
+                        return left;
+                    }
+                }
+                if(fn.arity == 3) {
+                    const zero = evaluate(call.params[0]);
+                    const one  = evaluate(call.params[1]);
+                    const two  = evaluate(call.params[2]);
+                    if (zero.kind === "EV_VALUE") {
+                        if (one.kind === "EV_VALUE") {
+                            if (two.kind === "EV_VALUE") {
+                                const f = fn.value as Function;
+                                const z = (zero as EvaluationValue).value;
+                                const o = (one as EvaluationValue).value;
+                                const t = (two as EvaluationValue).value;
+                                return {kind: "EV_VALUE", value: f(z, o, t)} as EvaluationValue;
+                            }
+                            else {
+                                return two;
+                            }
+                        }
+                        else {
+                            return one;
+                        }
+                    }
+                    else {
+                        return zero;
                     }
                 }
                 else {
-                    return zero;
+                    return {kind: "Evaluation Error", message: `Only functions with 0, 1, 2, or 3 arguments can be evaluated, but ${call.params.length} argument(s) were provided`};
                 }
             }
             else {
