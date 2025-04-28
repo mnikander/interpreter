@@ -64,9 +64,9 @@ export function evaluate(ast: ASTNode): Error | Entry | Value {
     }
     else if (is_nd_identifier(ast)) {
         const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
-        const target: undefined | Entry = lookup(identifier, environment);
-        if (target !== undefined) {
-            return target;
+        const entry: undefined | Entry = lookup(identifier, environment);
+        if (entry !== undefined) {
+            return entry;
         } else {
             return {kind: "Evaluation Error", message: `unknown identifier '${identifier.value}'`};
         }
@@ -74,17 +74,17 @@ export function evaluate(ast: ASTNode): Error | Entry | Value {
     else if (is_nd_call(ast)) {
         const call: ASTNode = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
         const identifier: ASTNode = call.func as { kind: "ND_IDENTIFIER", value: string };
-        const fn: undefined | Entry = lookup(identifier, environment);
-        if(fn?.kind === "EV_FUNCTION") {
-            if(fn.arity === call.params.length) {
-                if(fn.arity == 0) {
-                    const f = fn.value as Function;
+        const entry: undefined | Entry = lookup(identifier, environment);
+        if(entry?.kind === "EV_FUNCTION") {
+            if(entry.arity === call.params.length) {
+                if(entry.arity == 0) {
+                    const f = entry.value as Function;
                     return {kind: "EV_VALUE", value: f()} as Value;
                 }
-                if(fn.arity == 1) {
+                if(entry.arity == 1) {
                     const left = evaluate(call.params[0]);
                     if (left.kind === "EV_VALUE") {
-                        const f = fn.value as Function;
+                        const f = entry.value as Function;
                         const l = (left as Value).value;
                         return {kind: "EV_VALUE", value: f(l)} as Value;
                     }
@@ -92,12 +92,12 @@ export function evaluate(ast: ASTNode): Error | Entry | Value {
                         return left;
                     }
                 }
-                if(fn.arity == 2) {
+                if(entry.arity == 2) {
                     const left  = evaluate(call.params[0]);
                     const right = evaluate(call.params[1]);
                     if (left.kind === "EV_VALUE") {
                         if (right.kind === "EV_VALUE") {
-                        const f = fn.value as Function;
+                        const f = entry.value as Function;
                         const l = (left as Value).value;
                         const r = (right as Value).value;
                         return {kind: "EV_VALUE", value: f(l, r)} as Value;
@@ -110,14 +110,14 @@ export function evaluate(ast: ASTNode): Error | Entry | Value {
                         return left;
                     }
                 }
-                if(fn.arity == 3) {
+                if(entry.arity == 3) {
                     const zero = evaluate(call.params[0]);
                     const one  = evaluate(call.params[1]);
                     const two  = evaluate(call.params[2]);
                     if (zero.kind === "EV_VALUE") {
                         if (one.kind === "EV_VALUE") {
                             if (two.kind === "EV_VALUE") {
-                                const f = fn.value as Function;
+                                const f = entry.value as Function;
                                 const z = (zero as Value).value;
                                 const o = (one as Value).value;
                                 const t = (two as Value).value;
@@ -140,7 +140,7 @@ export function evaluate(ast: ASTNode): Error | Entry | Value {
                 }
             }
             else {
-                return {kind: "Evaluation Error", message: `${call.params.length} argument(s) provided, expected ${fn.arity}`};
+                return {kind: "Evaluation Error", message: `${call.params.length} argument(s) provided, expected ${entry.arity}`};
             }
         }
         else {
