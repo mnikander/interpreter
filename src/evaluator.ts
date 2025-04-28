@@ -3,19 +3,19 @@
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, is_error } from "./error";
 
-export interface SymbolEntry {
-    kind: string,
+export interface Entry {
+    kind: "EV_FUNCTION",
+    value: boolean | number | ((...args: any[]) => any),
     arity?: number,
-    value: boolean | number | Function,
-    about: string,
+    about?: string,
 };
 
-export interface EvaluationValue {
+export interface Value {
     kind: "EV_VALUE",
-    value: boolean | number,
+    value: boolean | number | ((...args: any[]) => any),
 }
 
-const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
+const environment: Map<string, Entry> = new Map<string, Entry>([
     ['+',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left + right; }, about: "(+ 5 2)\t\taddition"}],
     ['-',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left - right; }, about: "(- 5 2)\t\tsubtraction"}],
     ['*',    {kind: "EV_FUNCTION", arity: 2, value: function (left: number, right: number) { return left * right; }, about: "(* 5 2)\t\tmultiplication"}],
@@ -35,7 +35,7 @@ const environment: Map<string, SymbolEntry> = new Map<string, SymbolEntry>([
     ['Help', {kind: "EV_FUNCTION", arity: 0, value: function () { return help(environment); }, about: "(Help)\t\tprints this dialog"}],
 ]);
 
-function help(environment: Map<string, SymbolEntry>): string {
+function help(environment: Map<string, Entry>): string {
     let message: string = "\nSymbol\tUsage\t\tName\n------------------------------------------------\n";
     for (const [key, value] of environment.entries()) {
         if (value.arity !== undefined) {
@@ -48,23 +48,23 @@ function help(environment: Map<string, SymbolEntry>): string {
     return message;
 }
 
-export function lookup(identifier: ASTAtom, environment: Map<string, SymbolEntry>): undefined | SymbolEntry {
+export function lookup(identifier: ASTAtom, environment: Map<string, Entry>): undefined | Entry {
     return environment.get(String(identifier.value));
 }
 
-export function evaluate(ast: ASTNode): Error | SymbolEntry | EvaluationValue {
+export function evaluate(ast: ASTNode): Error | Entry | Value {
     // hardcode the use of a single constant OR addition
     if (is_nd_boolean(ast)) {
         let v = (ast as {kind: "ND_BOOLEAN", value: boolean}).value;
-        return {kind: 'EV_VALUE', value: v} as EvaluationValue;
+        return {kind: 'EV_VALUE', value: v} as Value;
     }
     else if (is_nd_number(ast)) {
         let v = (ast as {kind: "ND_NUMBER", value: number}).value;
-        return {kind: 'EV_VALUE', value: v} as EvaluationValue;
+        return {kind: 'EV_VALUE', value: v} as Value;
     }
     else if (is_nd_identifier(ast)) {
         const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
-        const target     = lookup(identifier, environment);
+        const target: undefined | Entry = lookup(identifier, environment);
         if (target !== undefined) {
             return target;
         } else {
@@ -74,19 +74,19 @@ export function evaluate(ast: ASTNode): Error | SymbolEntry | EvaluationValue {
     else if (is_nd_call(ast)) {
         const call: ASTNode = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
         const identifier: ASTNode = call.func as { kind: "ND_IDENTIFIER", value: string };
-        const fn: undefined | SymbolEntry = lookup(identifier, environment);
+        const fn: undefined | Entry = lookup(identifier, environment);
         if(fn?.kind === "EV_FUNCTION") {
             if(fn.arity === call.params.length) {
                 if(fn.arity == 0) {
                     const f = fn.value as Function;
-                    return {kind: "EV_VALUE", value: f()} as EvaluationValue;
+                    return {kind: "EV_VALUE", value: f()} as Value;
                 }
                 if(fn.arity == 1) {
                     const left = evaluate(call.params[0]);
                     if (left.kind === "EV_VALUE") {
                         const f = fn.value as Function;
-                        const l = (left as EvaluationValue).value;
-                        return {kind: "EV_VALUE", value: f(l)} as EvaluationValue;
+                        const l = (left as Value).value;
+                        return {kind: "EV_VALUE", value: f(l)} as Value;
                     }
                     else {
                         return left;
@@ -98,9 +98,9 @@ export function evaluate(ast: ASTNode): Error | SymbolEntry | EvaluationValue {
                     if (left.kind === "EV_VALUE") {
                         if (right.kind === "EV_VALUE") {
                         const f = fn.value as Function;
-                        const l = (left as EvaluationValue).value;
-                        const r = (right as EvaluationValue).value;
-                        return {kind: "EV_VALUE", value: f(l, r)} as EvaluationValue;
+                        const l = (left as Value).value;
+                        const r = (right as Value).value;
+                        return {kind: "EV_VALUE", value: f(l, r)} as Value;
                         }
                         else {
                             return right;
@@ -118,10 +118,10 @@ export function evaluate(ast: ASTNode): Error | SymbolEntry | EvaluationValue {
                         if (one.kind === "EV_VALUE") {
                             if (two.kind === "EV_VALUE") {
                                 const f = fn.value as Function;
-                                const z = (zero as EvaluationValue).value;
-                                const o = (one as EvaluationValue).value;
-                                const t = (two as EvaluationValue).value;
-                                return {kind: "EV_VALUE", value: f(z, o, t)} as EvaluationValue;
+                                const z = (zero as Value).value;
+                                const o = (one as Value).value;
+                                const t = (two as Value).value;
+                                return {kind: "EV_VALUE", value: f(z, o, t)} as Value;
                             }
                             else {
                                 return two;
