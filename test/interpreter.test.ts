@@ -15,10 +15,15 @@ describe('basic values', () => {
     });
 });
 
-describe('single expressions only', () => {
+describe('valid input and output', () => {
     it('must report an error if the input consists of more than one expression', () => {
         const result = interpret("1 2");
         expect(result).toContain("ERROR");
+    });
+
+    it('must report an error if the result is a function', () => {
+        expect(interpret("(! +)")).toContain("ERROR");
+        expect(interpret("(+ * *)")).toContain("ERROR");
     });
 });
 
