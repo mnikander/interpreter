@@ -96,8 +96,8 @@ describe('nested expressions', () => {
     });
 });
 
-describe('type system', () => {
-    it.skip('must report an error when implicitly converting to boolean', () => {
+describe.skip('type system', () => {
+    it('must report an error when implicitly converting to boolean', () => {
         expect(interpret("(! 0)")).toContain("ERROR");
         expect(interpret("(! 1)")).toContain("ERROR");
         expect(interpret("(! +)")).toContain("ERROR");
