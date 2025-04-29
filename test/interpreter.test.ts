@@ -21,11 +21,7 @@ describe('valid input and output', () => {
         expect(result).toContain("ERROR");
     });
 
-    it('must report an error if the result is a function', () => {
-        expect(interpret("(+ - -)")).toContain("ERROR");
-    });
-
-    it('must report an error when trying to add 3 integers in one operation', () => {
+    it('must report an error when calling a function with an incorrect number of arguments', () => {
         const result = interpret("(+ 1 2 3)");
         expect(result).toContain("ERROR");
         expect(result).toContain("argument");
@@ -97,14 +93,19 @@ describe('nested expressions', () => {
 });
 
 describe.skip('type system', () => {
-    it('must report an error when implicitly converting to boolean', () => {
+    it('must report an error when implicitly converting to a boolean', () => {
         expect(interpret("(! 0)")).toContain("ERROR");
         expect(interpret("(! 1)")).toContain("ERROR");
         expect(interpret("(! +)")).toContain("ERROR");
     });
 
-    it('must report an error when implicitly converting to string', () => {
+    it('must report an error when implicitly converting to a string', () => {
         expect(interpret("(+ 1 (help))")).toContain("ERROR");
+        expect(interpret("(+ - -)")).toContain("ERROR");
+    });
+
+    it('must report an error when implicitly converting to a number', () => {
+        expect(interpret("(* + +)")).toContain("ERROR");
     });
 
     it('must report an error when mixing integer and floating point arithmetic', () => {
