@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { evaluate, Value } from "./evaluator";
+import { evaluate, Symbol } from "./evaluator";
 import { tokenize, Token } from "./lexer";
 import { ASTNode, parse } from "./parser";
 import { Error, is_error } from "./error";
@@ -21,9 +21,9 @@ export function interpret(line: string): undefined | boolean | number | string {
             const result = evaluate(ast);
 
             if(result.kind === "EV_VALUE") {
-                return (result as Value).value;
+                return result.value;
             }
-            else if (result.kind === "EV_ENTRY") {
+            else if (result.kind === "EV_FUNCTION") {
                 return "ERROR during evaluation: result is a function. ";
             }
             else if (is_error(result)) {
