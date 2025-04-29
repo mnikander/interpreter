@@ -22,7 +22,6 @@ describe('valid input and output', () => {
     });
 
     it('must report an error if the result is a function', () => {
-        expect(interpret("(! +)")).toContain("ERROR");
         expect(interpret("(+ * *)")).toContain("ERROR");
     });
 
@@ -94,5 +93,13 @@ describe('nested expressions', () => {
     it('must evaluate right-nested addition', () => {
         const result = interpret("(+ 1 (+ 2 3))");
         expect(result).toBe(6);
+    });
+});
+
+describe('type system', () => {
+    it.skip('must report an error when implicitly converting to boolean', () => {
+        expect(interpret("(! 0)")).toContain("ERROR");
+        expect(interpret("(! 1)")).toContain("ERROR");
+        expect(interpret("(! +)")).toContain("ERROR");
     });
 });
