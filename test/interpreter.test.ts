@@ -102,4 +102,18 @@ describe.skip('type system', () => {
         expect(interpret("(! 1)")).toContain("ERROR");
         expect(interpret("(! +)")).toContain("ERROR");
     });
+
+    it('must report an error when implicitly converting to string', () => {
+        expect(interpret("(+ 1 (help))")).toContain("ERROR");
+    });
+
+    it('must report an error when mixing integer and floating point arithmetic', () => {
+        expect(interpret("(+ 1.1 2)")).toContain("ERROR");
+    });
+
+    it('must report an error when applying functions to incompatible types', () => {
+        expect(interpret("(& 1 True)")).toContain("ERROR");
+        expect(interpret("(+ 1 True)")).toContain("ERROR");
+        expect(interpret("(+ 1 +)")).toContain("ERROR");
+    });
 });
