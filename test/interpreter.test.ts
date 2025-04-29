@@ -32,6 +32,12 @@ describe('valid input and output', () => {
         expect(result).toContain("ERROR");
         expect(result).toContain("argument");
     });
+
+    it('must report an error when calling undefined functions', () => {
+        const result = interpret('(+++ 2 3)');
+        expect(result).toContain("ERROR");
+        expect(result).toContain("+++");
+    });
 });
 
 describe('arithmetic and logical expressions', () => {
@@ -95,6 +101,18 @@ describe('nested expressions', () => {
     it('must evaluate right-nested addition', () => {
         const result = interpret("(+ 1 (+ 2 3))");
         expect(result).toBe(6);
+    });
+
+    it('must forward error messages from nested functions', () => {
+        const result = interpret('(+ 1 (+++ 2 3))');
+        expect(result).toContain("ERROR");
+        expect(result).toContain("+++");
+    });
+
+    it('must report the first error to occur from nested functions', () => {
+        const result = interpret('(+++ 1 (+ 2))');
+        expect(result).toContain("ERROR");
+        expect(result).toContain("+++");
     });
 });
 
