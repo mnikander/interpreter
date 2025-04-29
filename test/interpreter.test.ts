@@ -1,6 +1,12 @@
 import { describe, it, expect } from 'vitest'
 import { interpret } from '../src/interpret'
 
+describe('help dialog', () => {
+    it('must print help', () => {
+        expect(interpret("(help)")).toContain("help");
+    });
+});
+
 describe('basic values', () => {
     it('must evaluate a single integer to itself', () => {
         expect(interpret("-1")).toBe(-1);
