@@ -25,18 +25,18 @@ describe('valid input and output', () => {
         expect(interpret("(! +)")).toContain("ERROR");
         expect(interpret("(+ * *)")).toContain("ERROR");
     });
+
+    it('must report an error when trying to add 3 integers in one operation', () => {
+        const result = interpret("(+ 1 2 3)");
+        expect(result).toContain("ERROR");
+        expect(result).toContain("argument");
+    });
 });
 
 describe('arithmetic and logical expressions', () => {
     it('must add two integers together', () => {
         const result = interpret("(+ 1 2)");
         expect(result).toBe(3);
-    });
-
-    it('must report an error when trying to add 3 integers in one operation', () => {
-        const result = interpret("(+ 1 2 3)");
-        expect(result).toContain("ERROR");
-        expect(result).toContain("argument");
     });
 
     it("must evaluate logical 'not' expressions", () => {
