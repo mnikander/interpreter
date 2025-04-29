@@ -22,7 +22,7 @@ describe('valid input and output', () => {
     });
 
     it('must report an error if the result is a function', () => {
-        expect(interpret("(+ * *)")).toContain("ERROR");
+        expect(interpret("(+ - -)")).toContain("ERROR");
     });
 
     it('must report an error when trying to add 3 integers in one operation', () => {
