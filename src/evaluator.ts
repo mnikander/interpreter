@@ -67,22 +67,25 @@ export function evaluate(ast: ASTNode): Error | Symbol {
         const call: ASTNode         = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
         const id: ASTNode           = call.func as { kind: "ND_IDENTIFIER", value: string };
         const entry: Error | Symbol = evaluate(id);
-        if(entry?.kind === "EV_FUNCTION") {
+        if(entry.kind === "EV_FUNCTION") {
             if(entry.arity === call.params.length) {
                 const ev_args: (Error | Symbol)[] = call.params.map(evaluate);
-                const ok: boolean                 = (ev_args.find(is_error) === undefined);
-                if(ok) {
+                const err: undefined | Error      = ev_args.find(is_error) as (undefined | Error);
+                if(err === undefined) {
                     const fn   = entry.value as Function;
                     const args = (ev_args as Symbol[]).map((s: Symbol) => { return s.value; });
                     return {kind: "EV_VALUE", value: fn(args)};
                 }
                 else {
-                    return { kind: "Evaluation Error", message: `could not evaluate function arguments`};
+                    return err;
                 }
             }
             else {
                 return {kind: "Evaluation Error", message: `${call.params.length} argument(s) provided, expected ${entry.arity}`};
             }
+        }
+        else if (is_error(entry)) {
+            return entry;
         }
         else {
             const atom = call.func as ASTAtom;
