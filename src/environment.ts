@@ -10,7 +10,9 @@ export function lookup(identifier: ASTAtom, builtin: Map<string, Symbol>): undef
     return builtin.get(String(identifier.value));
 }
 
-export const builtin: Map<string, Symbol> = new Map<string, Symbol>([
+export type Environment = Map<string, Symbol>;
+
+export const builtin: Environment = new Map<string, Symbol>([
     ['+',    {kind: "EV_FUNCTION", arity: 2, value: function ( args: number[] ) { return args[0] + args[1]; }, about: "(+ 5 2)\t\taddition"}],
     ['-',    {kind: "EV_FUNCTION", arity: 2, value: function ( args: number[] ) { return args[0] - args[1]; }, about: "(- 5 2)\t\tsubtraction"}],
     ['*',    {kind: "EV_FUNCTION", arity: 2, value: function ( args: number[] ) { return args[0] * args[1]; }, about: "(* 5 2)\t\tmultiplication"}],
@@ -30,7 +32,7 @@ export const builtin: Map<string, Symbol> = new Map<string, Symbol>([
     ['Help', {kind: "EV_FUNCTION", arity: 0, value: function ( args: any[] ) { return help(builtin); }, about: "(Help)\t\tprints this dialog"}],
 ]);
 
-function help(builtin: Map<string, Symbol>): string {
+function help(builtin: Environment): string {
     let message: string = "\nSymbol\tUsage\t\tName\n------------------------------------------------\n";
     for (const [key, value] of builtin.entries()) {
         if ( value.kind === "EV_FUNCTION" && value.arity !== undefined) {

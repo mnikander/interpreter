@@ -1,10 +1,10 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { builtin, lookup, Symbol} from "./environment";
+import { Environment, Symbol, lookup } from "./environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, is_error } from "./error";
 
-export function evaluate(ast: ASTNode): Error | Symbol {
+export function evaluate(ast: ASTNode, env: Environment): Error | Symbol {
     if (is_nd_boolean(ast)) {
         let v = (ast as {kind: "ND_BOOLEAN", value: boolean}).value;
         return {kind: 'EV_VALUE', value: v};
@@ -15,13 +15,13 @@ export function evaluate(ast: ASTNode): Error | Symbol {
     }
     else if (is_nd_identifier(ast)) {
         const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
-        return lookup(identifier, builtin) as Symbol;
+        return lookup(identifier, env) as Symbol;
     }
     else if (is_nd_call(ast)) {
         const call: ASTNode               = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
         const id: ASTNode                 = call.func as { kind: "ND_IDENTIFIER", value: string };
-        const entry: Error | Symbol       = evaluate(id);
-        const ev_args: (Error | Symbol)[] = call.params.map(evaluate);
+        const entry: Error | Symbol       = evaluate(id, env);
+        const ev_args: (Error | Symbol)[] = call.params.map((ast: ASTNode) => evaluate(ast, env));
         const err: undefined | Error      = ev_args.find(is_error) as (undefined | Error);
         if(err === undefined) {
             const fn   = (entry as Symbol).value as Function;

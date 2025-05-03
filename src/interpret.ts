@@ -5,6 +5,7 @@ import { tokenize, Token } from "./lexer";
 import { ASTNode, parse } from "./parser";
 import { Error, OK, is_error } from "./error";
 import { analyze } from "./analyzer";
+import { builtin } from "./environment";
 
 export function interpret(line: string): undefined | boolean | number | string {
     const lexingResult: Error | Token[] = tokenize(line);
@@ -19,12 +20,12 @@ export function interpret(line: string): undefined | boolean | number | string {
         }
         else {
             const [ast, index] = parsingResult as [ASTNode, number];
-            const semanticResult: Error | OK = analyze(ast);
+            const semanticResult: Error | OK = analyze(ast, builtin);
             if (is_error(semanticResult)) {
                 return (semanticResult as Error).kind + ": " + (semanticResult as Error).message + ". ";
             }
             else {
-                const result = evaluate(ast);
+                const result = evaluate(ast, builtin);
 
                 if(result.kind === "EV_VALUE") {
                     return result.value;
