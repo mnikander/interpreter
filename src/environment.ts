@@ -28,11 +28,11 @@ export const builtin: Environment = new Map<string, Symbol>([
     ['|',    {kind: "EV_FUNCTION", arity: 2, value: function ( args: boolean[] ) { return args[0] || args[1]; }, about: "(| True False)\tlogical or"}],
     ['!',    {kind: "EV_FUNCTION", arity: 1, value: function ( args: boolean[] ) { return !args[0]; }, about: "(! True)\tlogical negation"}],
     ['if',   {kind: "EV_FUNCTION", arity: 3, value: function ( args: any[] ) { return args[0] ? args[1] : args[2]; }, about: "(if True 4 8)\tif-expression"}],
-    ['help', {kind: "EV_FUNCTION", arity: 0, value: function ( args: any[] ) { return help(builtin); }, about: "(help)\t\tprints this dialog"}],
-    ['Help', {kind: "EV_FUNCTION", arity: 0, value: function ( args: any[] ) { return help(builtin); }, about: "(Help)\t\tprints this dialog"}],
+    ['help', {kind: "EV_FUNCTION", arity: 0, value: function ( args: any[] ) { return help(); }, about: "(help)\t\tprints this dialog"}],
+    ['Help', {kind: "EV_FUNCTION", arity: 0, value: function ( args: any[] ) { return help(); }, about: "(Help)\t\tprints this dialog"}],
 ]);
 
-function help(builtin: Environment): string {
+function help(): string {
     let message: string = "\nSymbol\tUsage\t\tName\n------------------------------------------------\n";
     for (const [key, value] of builtin.entries()) {
         if ( value.kind === "EV_FUNCTION" && value.arity !== undefined) {
