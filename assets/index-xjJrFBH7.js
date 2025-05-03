@@ -10,7 +10,27 @@ Symbol	Usage		Name
 `,n}function $(e,n){return n.get(String(e.value))}function d(e){if(U(e))return{kind:"EV_VALUE",value:e.value};if(F(e))return{kind:"EV_VALUE",value:e.value};if(L(e)){const n=e,t=$(n,c);return t!==void 0?t:{kind:"Evaluation Error",message:`unknown identifier '${n.value}'`}}else if(R(e)){const n=e,t=n.func,r=d(t);if(r.kind==="EV_FUNCTION")if(r.arity===n.params.length){const i=n.params.map(d),u=i.find(a);if(u===void 0){const o=r.value,s=i.map(l=>l.value);return{kind:"EV_VALUE",value:o(s)}}else return u}else return{kind:"Evaluation Error",message:`${n.params.length} argument(s) provided, expected ${r.arity}`};else{if(a(r))return r;{const i=n.func;let u=`expected a function identifier, got '${i.value}'`;return typeof i.value=="number"&&(u+=`.
 Maybe you forgot a space between a '+' or '-' and a number`),{kind:"Evaluation Error",message:u}}}}return{kind:"Evaluation Error",message:"invalid expression"}}function D(e){const n=b(e);if(a(n))return"ERROR during lexing: "+n.message+". ";{const r=P(n);if(a(r))return"ERROR during parsing: "+r.message+". ";{const[i,u]=r,o=d(i);return o.kind==="EV_VALUE"?o.value:o.kind==="EV_FUNCTION"?"ERROR during evaluation: result is a function. ":a(o)?`ERROR during evaluation: ${o.message}. `:"ERROR during evaluation: unknown error. "}}}function A(){const e=document.getElementById("input"),n=document.getElementById("output");n&&new MutationObserver(()=>{n.scrollTop=n.scrollHeight}).observe(n,{childList:!0});const t=e.value,r=D(t);n.textContent+=`> ${t}
 ${r}
-`}document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("output");e&&(e.textContent=`Welcome! Try typing:
+`}document.addEventListener("DOMContentLoaded",()=>{const e=document.getElementById("output");e&&(e.textContent=`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Welcome! Try typing:
 
 (+ 1 2)
 
