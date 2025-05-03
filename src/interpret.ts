@@ -9,19 +9,19 @@ import { analyze } from "./analyzer";
 export function interpret(line: string): undefined | boolean | number | string {
     const lexingResult: Error | Token[] = tokenize(line);
     if (is_error(lexingResult)) {
-        return "ERROR during lexing: " + ((lexingResult as Error).message) + ". ";
+        return (lexingResult as Error).kind + ": " + (lexingResult as Error).message + ". ";
     }
     else {
         const tokens = lexingResult as Token[];
         const parsingResult: Error | [ASTNode, number]  = parse(tokens);
         if (is_error(parsingResult)) {
-            return "ERROR during parsing: " + ((parsingResult as Error).message) + ". ";
+            return (parsingResult as Error).kind +  ": " + (parsingResult as Error).message + ". ";
         }
         else {
             const [ast, index] = parsingResult as [ASTNode, number];
             const semanticResult: Error | OK = analyze(ast);
             if (is_error(semanticResult)) {
-                return "ERROR during semantic analysis: " + ((semanticResult as Error).message) + ". ";
+                return (semanticResult as Error).kind + ": " + (semanticResult as Error).message + ". ";
             }
             else {
                 const result = evaluate(ast);
@@ -30,13 +30,13 @@ export function interpret(line: string): undefined | boolean | number | string {
                     return result.value;
                 }
                 else if (result.kind === "EV_FUNCTION") {
-                    return "ERROR during evaluation: result is a function. ";
+                    return "Evaluation Error: result is a function. ";
                 }
                 else if (is_error(result)) {
-                    return `ERROR during evaluation: ${(result as Error).message}. `;
+                    return `${(result as Error).kind}: ${(result as Error).message}. `;
                 }
                 else {
-                    return "ERROR during evaluation: unknown error. "
+                    return "Evaluation Error: unknown error. "
                 }
             }
         }
