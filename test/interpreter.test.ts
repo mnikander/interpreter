@@ -33,6 +33,13 @@ describe('valid input and output', () => {
         expect(result).toContain("argument");
     });
 
+    it('must report an error when evaluating undefined identifiers', () => {
+        const result = interpret('x');
+        expect(result).toContain("Error");
+        expect(result).toContain("identifier");
+        expect(result).toContain("x");
+    });
+
     it('must report an error when calling undefined functions', () => {
         const result = interpret('(+++ 2 3)');
         expect(result).toContain("Error");
