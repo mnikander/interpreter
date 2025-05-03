@@ -1,6 +1,14 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Symbol } from "./analyzer";
+import { ASTAtom } from "./parser";
+
+export type Symbol =
+    | { kind: "EV_FUNCTION", value: boolean | number | ((...args: any[]) => any), arity: number, about?: string, }
+    | { kind: "EV_VALUE",    value: boolean | number };
+
+export function lookup(identifier: ASTAtom, builtin: Map<string, Symbol>): undefined | Symbol {
+    return builtin.get(String(identifier.value));
+}
 
 export const builtin: Map<string, Symbol> = new Map<string, Symbol>([
     ['+',    {kind: "EV_FUNCTION", arity: 2, value: function ( args: number[] ) { return args[0] + args[1]; }, about: "(+ 5 2)\t\taddition"}],

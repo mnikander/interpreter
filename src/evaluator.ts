@@ -1,9 +1,8 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { builtin } from "./builtin";
+import { builtin, lookup, Symbol} from "./environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, is_error } from "./error";
-import { lookup, Symbol } from "./analyzer";
 
 export function evaluate(ast: ASTNode): Error | Symbol {
     if (is_nd_boolean(ast)) {

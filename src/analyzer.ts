@@ -1,16 +1,8 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { builtin } from "./builtin";
+import { builtin, lookup, Symbol } from "./environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, OK, is_error } from "./error";
-
-export type Symbol =
-    | { kind: "EV_FUNCTION", value: boolean | number | ((...args: any[]) => any), arity: number, about?: string, }
-    | { kind: "EV_VALUE",    value: boolean | number };
-
-export function lookup(identifier: ASTAtom, builtin: Map<string, Symbol>): undefined | Symbol {
-    return builtin.get(String(identifier.value));
-}
 
 export function analyze(ast: ASTNode): Error | OK {
     if (is_nd_boolean(ast)) {
