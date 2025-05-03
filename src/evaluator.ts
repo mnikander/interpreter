@@ -1,8 +1,9 @@
 // Copyright (c) 2025 Marco Nikander
 
+import { builtin } from "./builtin";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, is_error } from "./error";
-import { analyze, environment, lookup, Symbol } from "./analyzer";
+import { lookup, Symbol } from "./analyzer";
 
 export function evaluate(ast: ASTNode): Error | Symbol {
     if (is_nd_boolean(ast)) {
@@ -15,7 +16,7 @@ export function evaluate(ast: ASTNode): Error | Symbol {
     }
     else if (is_nd_identifier(ast)) {
         const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
-        return lookup(identifier, environment) as Symbol;
+        return lookup(identifier, builtin) as Symbol;
     }
     else if (is_nd_call(ast)) {
         const call: ASTNode               = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
