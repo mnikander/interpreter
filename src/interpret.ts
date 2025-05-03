@@ -1,9 +1,10 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { evaluate, Symbol } from "./evaluator";
+import { evaluate } from "./evaluator";
 import { tokenize, Token } from "./lexer";
 import { ASTNode, parse } from "./parser";
-import { Error, is_error } from "./error";
+import { Error, OK, is_error } from "./error";
+import { analyze } from "./analyzer";
 
 export function interpret(line: string): undefined | boolean | number | string {
     const lexingResult: Error | Token[] = tokenize(line);
@@ -18,19 +19,25 @@ export function interpret(line: string): undefined | boolean | number | string {
         }
         else {
             const [ast, index] = parsingResult as [ASTNode, number];
-            const result = evaluate(ast);
-
-            if(result.kind === "EV_VALUE") {
-                return result.value;
-            }
-            else if (result.kind === "EV_FUNCTION") {
-                return "ERROR during evaluation: result is a function. ";
-            }
-            else if (is_error(result)) {
-                return `ERROR during evaluation: ${(result as Error).message}. `;
+            const semanticResult: Error | OK = analyze(ast);
+            if (is_error(semanticResult)) {
+                return "ERROR during semantic analysis: " + ((semanticResult as Error).message) + ". ";
             }
             else {
-                return "ERROR during evaluation: unknown error. "
+                const result = evaluate(ast);
+
+                if(result.kind === "EV_VALUE") {
+                    return result.value;
+                }
+                else if (result.kind === "EV_FUNCTION") {
+                    return "ERROR during evaluation: result is a function. ";
+                }
+                else if (is_error(result)) {
+                    return `ERROR during evaluation: ${(result as Error).message}. `;
+                }
+                else {
+                    return "ERROR during evaluation: unknown error. "
+                }
             }
         }
     }

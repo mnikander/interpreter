@@ -13,3 +13,5 @@ export function is_error(item: any) {
            item.kind === "Semantic Error" ||
            item.kind === "Evaluation Error");
 }
+
+export type OK = { kind: "OK" };
