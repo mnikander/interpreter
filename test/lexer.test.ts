@@ -39,13 +39,13 @@ describe('to_token', () => {
     });
 
     it('invalid identifiers', () => {
-        expect(to_token('$a').kind).toStrictEqual("Lexing Error");
-        expect(to_token('a$').kind).toStrictEqual("Lexing Error");
-        expect(to_token('$1').kind).toStrictEqual("Lexing Error");
-        expect(to_token('1$').kind).toStrictEqual("Lexing Error");
-        expect(to_token('1a').kind).toStrictEqual("Lexing Error");
-        expect(to_token('1_').kind).toStrictEqual("Lexing Error");
-        expect(to_token('_+').kind).toStrictEqual("Lexing Error");
+        expect(to_token('$a').kind).toStrictEqual("Lexing error");
+        expect(to_token('a$').kind).toStrictEqual("Lexing error");
+        expect(to_token('$1').kind).toStrictEqual("Lexing error");
+        expect(to_token('1$').kind).toStrictEqual("Lexing error");
+        expect(to_token('1a').kind).toStrictEqual("Lexing error");
+        expect(to_token('1_').kind).toStrictEqual("Lexing error");
+        expect(to_token('_+').kind).toStrictEqual("Lexing error");
     });
 });
 

@@ -17,7 +17,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
         if (entry !== undefined) {
             return {kind: 'OK'};
         } else {
-            return {kind: "Semantic Error", message: `unknown identifier '${identifier.value}'`};
+            return {kind: "Semantic error", message: `unknown identifier '${identifier.value}'`};
         }
     }
     else if (is_nd_call(ast)) {
@@ -36,7 +36,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
                 }
             }
             else {
-                return {kind: "Semantic Error", message: `${call.params.length} argument(s) provided, expected ${entry.arity}`};
+                return {kind: "Semantic error", message: `${call.params.length} argument(s) provided, expected ${entry.arity}`};
             }
         }
         else {
@@ -45,8 +45,8 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
             if(typeof atom.value === "number") {
                 m += ".\nMaybe you forgot a space between a '+' or '-' and a number";
             }
-            return {kind: "Semantic Error", message: m};
+            return {kind: "Semantic error", message: m};
         }
     }
-    return {kind: "Semantic Error", message: `invalid expression`};
+    return {kind: "Semantic error", message: `invalid expression`};
 }

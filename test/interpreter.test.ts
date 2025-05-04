@@ -24,25 +24,25 @@ describe('basic values', () => {
 describe('valid input and output', () => {
     it('must report an error if the input consists of more than one expression', () => {
         const result = interpret("1 2");
-        expect(result).toContain("Error");
+        expect(result).toContain("error");
     });
 
     it('must report an error when calling a function with an incorrect number of arguments', () => {
         const result = interpret("(+ 1 2 3)");
-        expect(result).toContain("Error");
+        expect(result).toContain("error");
         expect(result).toContain("argument");
     });
 
     it('must report an error when evaluating undefined identifiers', () => {
         const result = interpret('x');
-        expect(result).toContain("Error");
+        expect(result).toContain("error");
         expect(result).toContain("identifier");
         expect(result).toContain("x");
     });
 
     it('must report an error when calling undefined functions', () => {
         const result = interpret('(+++ 2 3)');
-        expect(result).toContain("Error");
+        expect(result).toContain("error");
         expect(result).toContain("+++");
     });
 });
@@ -112,40 +112,40 @@ describe('nested expressions', () => {
 
     it('must forward error messages from nested functions', () => {
         const result = interpret('(+ 1 (+++ 2 3))');
-        expect(result).toContain("Error");
+        expect(result).toContain("error");
         expect(result).toContain("+++");
     });
 
     it('must report the first error to occur from nested functions', () => {
         const result = interpret('(+++ 1 (+ 2))');
-        expect(result).toContain("Error");
+        expect(result).toContain("error");
         expect(result).toContain("+++");
     });
 });
 
 describe.skip('type system', () => {
     it('must report an error when implicitly converting to a boolean', () => {
-        expect(interpret("(! 0)")).toContain("Error");
-        expect(interpret("(! 1)")).toContain("Error");
-        expect(interpret("(! +)")).toContain("Error");
+        expect(interpret("(! 0)")).toContain("error");
+        expect(interpret("(! 1)")).toContain("error");
+        expect(interpret("(! +)")).toContain("error");
     });
 
     it('must report an error when implicitly converting to a string', () => {
-        expect(interpret("(+ 1 (help))")).toContain("Error");
-        expect(interpret("(+ - -)")).toContain("Error");
+        expect(interpret("(+ 1 (help))")).toContain("error");
+        expect(interpret("(+ - -)")).toContain("error");
     });
 
     it('must report an error when implicitly converting to a number', () => {
-        expect(interpret("(* + +)")).toContain("Error");
+        expect(interpret("(* + +)")).toContain("error");
     });
 
     it('must report an error when mixing integer and floating point arithmetic', () => {
-        expect(interpret("(+ 1.1 2)")).toContain("Error");
+        expect(interpret("(+ 1.1 2)")).toContain("error");
     });
 
     it('must report an error when applying functions to incompatible types', () => {
-        expect(interpret("(& 1 True)")).toContain("Error");
-        expect(interpret("(+ 1 True)")).toContain("Error");
-        expect(interpret("(+ 1 +)")).toContain("Error");
+        expect(interpret("(& 1 True)")).toContain("error");
+        expect(interpret("(+ 1 True)")).toContain("error");
+        expect(interpret("(+ 1 +)")).toContain("error");
     });
 });

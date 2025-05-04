@@ -8,7 +8,7 @@ describe('parse', () => {
         const tokens: Token[] = [{kind: "TokenOpenParen", value: "("}]
         const result: Error | [ASTNode, number] = parse(tokens);
         expect(Array.isArray(result)).toBe(false);
-        expect((result as Error).kind).toBe("Parsing Error");
+        expect((result as Error).kind).toBe("Parsing error");
     });
 
     it('must parse an integer token', () => {
@@ -40,6 +40,6 @@ describe('parse', () => {
 
         const result: Error | [ASTNode, number] = parse(tokens);
         expect(Array.isArray(result)).toBe(false);
-        expect((result as Error).kind).toBe("Parsing Error");
+        expect((result as Error).kind).toBe("Parsing error");
     });
 });

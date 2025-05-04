@@ -39,10 +39,10 @@ export function parse(tokens: Token[]): Error | [ASTNode, number] {
             return [expression, index];
         }
         else if (index < tokens.length) {
-            return { kind: "Parsing Error", message: "expected a single expression"};
+            return { kind: "Parsing error", message: "expected a single expression"};
         }
         else {
-            return { kind: "Parsing Error", message: "not all tokens could be evaluated"};
+            return { kind: "Parsing error", message: "not all tokens could be evaluated"};
         }
     }
 }
@@ -93,15 +93,15 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
                         }
                     }
                 }
-                return {kind: "Parsing Error", message: "expected closing parentheses"};
+                return {kind: "Parsing error", message: "expected closing parentheses"};
             }
         }
         else {
             index++; // consume the unparsable token
-            return {kind: "Parsing Error", message: `unable to parse token of kind ${tokens[index].kind}`};
+            return {kind: "Parsing error", message: `unable to parse token of kind ${tokens[index].kind}`};
         }
     }
     else {
-        return {kind: "Parsing Error", message: "expected another token"};
+        return {kind: "Parsing error", message: "expected another token"};
     }
 }

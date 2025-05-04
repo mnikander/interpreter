@@ -31,13 +31,13 @@ export function interpret(line: string): undefined | boolean | number | string {
                     return result.value;
                 }
                 else if (result.kind === "EV_FUNCTION") {
-                    return "Evaluation Error: result is a function. ";
+                    return "Evaluation error: result is a function. ";
                 }
                 else if (is_error(result)) {
                     return `${(result as Error).kind}: ${(result as Error).message}. `;
                 }
                 else {
-                    return "Evaluation Error: unknown error. "
+                    return "Evaluation error: unknown error. "
                 }
             }
         }

@@ -31,7 +31,7 @@ export function is_tk_right(token: Token): boolean {
 
 export function tokenize(line: string): Error | Token[] {
     if (!check_parentheses(line)) {
-        return { kind: "Lexing Error", message: "invalid parentheses"};
+        return { kind: "Lexing error", message: "invalid parentheses"};
     }
     let spaced   = add_whitespace_to_parentheses(line);
     let words    = spaced.split(" ");
@@ -64,7 +64,7 @@ export function to_token(word: string): Error | Token {
                 maybe_number_token(word) ??
                 maybe_identifier_token(word);
     if (result === undefined) {
-        return {kind: "Lexing Error", message: `invalid sequence of characters '${word}'`};
+        return {kind: "Lexing error", message: `invalid sequence of characters '${word}'`};
     }
     else {
         return result;
