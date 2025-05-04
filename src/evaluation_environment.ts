@@ -3,8 +3,8 @@
 import { ASTAtom } from "./parser";
 
 export type EvaluationSymbol =
-    | { kind: "EV_FUNCTION", value: boolean | number | ((...args: any[]) => any), about?: string, }
-    | { kind: "EV_VALUE",    value: boolean | number };
+    | { kind: "EVALUATOR_FUNCTION", value: boolean | number | ((...args: any[]) => any), about?: string, }
+    | { kind: "EVALUATOR_VALUE",    value: boolean | number };
 
 export function evaluation_lookup(identifier: ASTAtom, environment: EvaluationEnvironment): undefined | EvaluationSymbol {
     const entry: undefined | EvaluationSymbol = environment.symbols.get(String(identifier.value));

@@ -3,8 +3,8 @@
 import { ASTAtom } from "./parser";
 
 export type SemanticSymbol =
-    | { kind: "EV_FUNCTION", arity: number }
-    | { kind: "EV_VALUE" };
+    | { kind: "ANALYZER_FUNCTION", arity: number }
+    | { kind: "ANALYZER_VALUE" };
 
 export function semantic_lookup(identifier: ASTAtom, environment: SemanticEnvironment): undefined | SemanticSymbol {
     const entry: undefined | SemanticSymbol = environment.symbols.get(String(identifier.value));

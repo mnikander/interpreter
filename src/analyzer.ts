@@ -24,7 +24,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
         const call: ASTNode             = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
         const id: ASTNode               = call.func as { kind: "ND_IDENTIFIER", value: string };
         const entry: undefined | SemanticSymbol = semantic_lookup(id, env);
-        if(entry !== undefined && entry.kind === "EV_FUNCTION") {
+        if(entry !== undefined && entry.kind === "ANALYZER_FUNCTION") {
             if(entry.arity === call.params.length) {
                 const ev_args: (Error | OK)[] = call.params.map((ast: ASTNode) => analyze(ast, env));
                 const err: undefined | Error  = ev_args.find(is_error) as (undefined | Error);

@@ -27,10 +27,10 @@ export function interpret(line: string): undefined | boolean | number | string {
             else {
                 const result = evaluate(ast, global_evaluation_environment);
 
-                if(result.kind === "EV_VALUE") {
+                if(result.kind === "EVALUATOR_VALUE") {
                     return result.value;
                 }
-                else if (result.kind === "EV_FUNCTION") {
+                else if (result.kind === "EVALUATOR_FUNCTION") {
                     return "Evaluation error: result is a function. ";
                 }
                 else if (is_error(result)) {

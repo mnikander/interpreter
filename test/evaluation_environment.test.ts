@@ -23,8 +23,8 @@ describe('local environment lookup', () => {
     const local_evaluation_environment: EvaluationEnvironment = {
         parent: global_evaluation_environment,
         symbols: new Map<string, EvaluationSymbol>([
-            ['?', { kind: "EV_FUNCTION", value: function ( args: any[] )    { return args[0] ? args[1] : args[2]; } }],
-            ['-', { kind: "EV_FUNCTION", value: function ( args: number[] ) { return -args[0]; } }], // override minus to mean negation
+            ['?', { kind: "EVALUATOR_FUNCTION", value: function ( args: any[] )    { return args[0] ? args[1] : args[2]; } }],
+            ['-', { kind: "EVALUATOR_FUNCTION", value: function ( args: number[] ) { return -args[0]; } }], // override minus to mean negation
         ]),
     };
 

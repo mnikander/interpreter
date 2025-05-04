@@ -7,11 +7,11 @@ import { Error, is_error } from "./error";
 export function evaluate(ast: ASTNode, env: EvaluationEnvironment): Error | EvaluationSymbol {
     if (is_nd_boolean(ast)) {
         let v = (ast as {kind: "ND_BOOLEAN", value: boolean}).value;
-        return {kind: 'EV_VALUE', value: v};
+        return {kind: 'EVALUATOR_VALUE', value: v};
     }
     else if (is_nd_number(ast)) {
         let v = (ast as {kind: "ND_NUMBER", value: number}).value;
-        return {kind: 'EV_VALUE', value: v};
+        return {kind: 'EVALUATOR_VALUE', value: v};
     }
     else if (is_nd_identifier(ast)) {
         const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
@@ -26,7 +26,7 @@ export function evaluate(ast: ASTNode, env: EvaluationEnvironment): Error | Eval
         if(err === undefined) {
             const fn   = (entry as EvaluationSymbol).value as Function;
             const args = (ev_args as EvaluationSymbol[]).map((s: EvaluationSymbol) => { return s.value; });
-            return {kind: "EV_VALUE", value: fn(args)};
+            return {kind: "EVALUATOR_VALUE", value: fn(args)};
         }
         else {
             return err;
