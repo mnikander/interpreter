@@ -2,8 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from '../src/evaluation_environment'
 import { global_evaluation_environment } from '../src/global_environments';
 
-describe('global environment lookup', () => {
-
+describe('global functions', () => {
     it('must return the definition when an identifier is defined globally', () => {
         const symbol: undefined | EvaluationSymbol = evaluation_lookup({ kind: 'ND_IDENTIFIER', value: '+'}, global_evaluation_environment);
         expect(symbol).toBeTruthy();
@@ -15,11 +14,9 @@ describe('global environment lookup', () => {
         const symbol: undefined | EvaluationSymbol = evaluation_lookup({ kind: 'ND_IDENTIFIER', value: '?'}, global_evaluation_environment);
         expect(symbol).toBe(undefined);
     });
-
 });
 
-describe('local environment lookup', () => {
-
+describe('local functions', () => {
     const local_evaluation_environment: EvaluationEnvironment = {
         parent: global_evaluation_environment,
         symbols: new Map<string, EvaluationSymbol>([
@@ -53,5 +50,18 @@ describe('local environment lookup', () => {
         const symbol: undefined | EvaluationSymbol = evaluation_lookup({ kind: 'ND_IDENTIFIER', value: '+++'}, local_evaluation_environment);
         expect(symbol).toBe(undefined);
     });
+});
 
+describe('local variables', () => {
+    it('must return the value of a variable', () => {
+        const env: EvaluationEnvironment = {
+            parent: undefined,
+            symbols: new Map<string, EvaluationSymbol>([
+                ['the_answer', { kind: "EVALUATOR_VALUE", value: 42 }],
+            ]),
+        };
+
+        const result: undefined | EvaluationSymbol = evaluation_lookup({ kind: 'ND_IDENTIFIER', value: 'the_answer'}, env);
+        expect(result?.value).toBe(42);
+    });
 });
