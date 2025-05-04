@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { EvaluationEnvironment, EvaluationSymbol, global_evaluation_environment, evaluation_lookup } from '../src/evaluation_environment'
 import { ASTAtom } from '../src/parser';
+import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from '../src/evaluation_environment'
+import { global_evaluation_environment } from '../src/global_environments';
 
 describe('global environment lookup', () => {
 

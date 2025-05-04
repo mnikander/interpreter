@@ -5,8 +5,7 @@ import { tokenize, Token } from "./lexer";
 import { ASTNode, parse } from "./parser";
 import { Error, OK, is_error } from "./error";
 import { analyze } from "./analyzer";
-import { global_semantic_environment } from "./semantic_environment";
-import { global_evaluation_environment } from "./evaluation_environment";
+import { global_semantic_environment, global_evaluation_environment } from "./global_environments";
 
 export function interpret(line: string): undefined | boolean | number | string {
     const lexingResult: Error | Token[] = tokenize(line);

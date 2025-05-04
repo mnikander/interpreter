@@ -26,25 +26,3 @@ export type SemanticEnvironment = {
     parent: undefined | SemanticEnvironment,
     symbols: Map<string, SemanticSymbol>,
 };
-
-export const global_semantic_environment: SemanticEnvironment = {
-    parent: undefined,
-    symbols: new Map<string, SemanticSymbol>([
-        ['+',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['-',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['*',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['/',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['%',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['<',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['>',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['<=',   { kind: "EV_FUNCTION", arity: 2 }],
-        ['>=',   { kind: "EV_FUNCTION", arity: 2 }],
-        ['==',   { kind: "EV_FUNCTION", arity: 2 }],
-        ['!=',   { kind: "EV_FUNCTION", arity: 2 }],
-        ['&',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['|',    { kind: "EV_FUNCTION", arity: 2 }],
-        ['!',    { kind: "EV_FUNCTION", arity: 1 }],
-        ['if',   { kind: "EV_FUNCTION", arity: 3 }],
-        ['help', { kind: "EV_FUNCTION", arity: 0 }],
-        ['Help', { kind: "EV_FUNCTION", arity: 0 }],
-])}; 
