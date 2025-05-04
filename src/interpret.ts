@@ -5,7 +5,8 @@ import { tokenize, Token } from "./lexer";
 import { ASTNode, parse } from "./parser";
 import { Error, OK, is_error } from "./error";
 import { analyze } from "./analyzer";
-import { builtin } from "./environment";
+import { global_semantic_environment } from "./semantic_environment";
+import { global_evaluation_environment } from "./evaluation_environment";
 
 export function interpret(line: string): undefined | boolean | number | string {
     const lexingResult: Error | Token[] = tokenize(line);
@@ -20,12 +21,12 @@ export function interpret(line: string): undefined | boolean | number | string {
         }
         else {
             const [ast, index] = parsingResult as [ASTNode, number];
-            const semanticResult: Error | OK = analyze(ast, builtin);
+            const semanticResult: Error | OK = analyze(ast, global_semantic_environment);
             if (is_error(semanticResult)) {
                 return (semanticResult as Error).kind + ": " + (semanticResult as Error).message + ". ";
             }
             else {
-                const result = evaluate(ast, builtin);
+                const result = evaluate(ast, global_evaluation_environment);
 
                 if(result.kind === "EV_VALUE") {
                     return result.value;

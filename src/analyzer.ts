@@ -1,10 +1,10 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Environment, Symbol, lookup } from "./environment";
+import { SemanticEnvironment, SemanticSymbol, semantic_lookup } from "./semantic_environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, OK, is_error } from "./error";
 
-export function analyze(ast: ASTNode, env: Environment): Error | OK {
+export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
     if (is_nd_boolean(ast)) {
         return {kind: 'OK'};
     }
@@ -13,7 +13,7 @@ export function analyze(ast: ASTNode, env: Environment): Error | OK {
     }
     else if (is_nd_identifier(ast)) {
         const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
-        const entry: undefined | Symbol = lookup(identifier, env);
+        const entry: undefined | SemanticSymbol = semantic_lookup(identifier, env);
         if (entry !== undefined) {
             return {kind: 'OK'};
         } else {
@@ -23,7 +23,7 @@ export function analyze(ast: ASTNode, env: Environment): Error | OK {
     else if (is_nd_call(ast)) {
         const call: ASTNode             = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
         const id: ASTNode               = call.func as { kind: "ND_IDENTIFIER", value: string };
-        const entry: undefined | Symbol = lookup(id, env);
+        const entry: undefined | SemanticSymbol = semantic_lookup(id, env);
         if(entry !== undefined && entry.kind === "EV_FUNCTION") {
             if(entry.arity === call.params.length) {
                 const ev_args: (Error | OK)[] = call.params.map((ast: ASTNode) => analyze(ast, env));
