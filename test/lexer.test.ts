@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { to_token, tokenize, Token} from '../src/lexer'
-import { Error, is_error } from '../src/error';
+import { is_error } from '../src/error';
 
 describe('to_token', () => {
 

@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest'
-import { ASTAtom } from '../src/parser';
 import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from '../src/evaluation_environment'
 import { global_evaluation_environment } from '../src/global_environments';
 
