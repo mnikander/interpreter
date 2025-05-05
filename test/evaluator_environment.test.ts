@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from '../src/evaluation_environment'
+import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from '../src/evaluator_environment'
 import { global_evaluation_environment } from '../src/global_environments';
 
 describe('global functions', () => {
