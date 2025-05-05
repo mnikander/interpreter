@@ -131,36 +131,37 @@ function peek_let(token: Token): boolean {
 function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLet, number] {
     index++; // consume the TK_IDENTIFIER which is equal to "let"
     const first: Error | [ASTNode, number] = parse_expression(tokens, index);
-    if (!is_error(first)) {
+
+    if (is_error(first)) {
+        return first;
+    }
+    else {
         let [name, index] = first;
-        if (is_nd_identifier(name)) {
+        if (!is_nd_identifier(name)) {
+            return { kind: "Parsing error", message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
+        }
+        else {
             const second: Error | [ASTNode, number] = parse_expression(tokens, index);
-            if (!is_error(second)) {
+            if (is_error(second)) {
+                return second;
+            }
+            else {
                 let [expr, index] = second;
                 const third: Error | [ASTNode, number] = parse_expression(tokens, index);
-                if (!is_error(third)) {
+                if (is_error(third)) {
+                    return third;
+                }
+                else {
                     let [body, index] = third;
                     if (is_tk_right(tokens[index])) {
-                        index++; // consume the TK_RIGHT
+                        index++; // consume the TokenCloseParen
                         return [{ kind: "ND_LET", name: name, expr: expr, body: body }, index];
                     }
                     else {
-                        return { kind: 'Parsing error', message: `too many arguments for let-binding` };
+                        return { kind: 'Parsing error', message: `too many arguments for let-binding, expected 3` };
                     }
                 }
-                else {
-                    return third;
-                }
-            }
-            else {
-                return second;
             }
         }
-        else {
-            return { kind: "Parsing error", message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
-        }
-    }
-    else {
-        return first;
     }
 }
