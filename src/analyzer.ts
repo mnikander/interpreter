@@ -12,21 +12,19 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
         return {kind: 'OK'};
     }
     else if (is_nd_identifier(ast)) {
-        const identifier = ast as { kind: "ND_IDENTIFIER", value: string};
-        const entry: undefined | SemanticSymbol = semantic_lookup(identifier, env);
+        const entry: undefined | SemanticSymbol = semantic_lookup(ast, env);
         if (entry !== undefined) {
             return {kind: 'OK'};
         } else {
-            return {kind: "Semantic error", message: `unknown identifier '${identifier.value}'`};
+            return {kind: "Semantic error", message: `unknown identifier '${ast.value}'`};
         }
     }
     else if (is_nd_call(ast)) {
-        const call: ASTNode             = ast as { kind: "ND_CALL", func: ASTNode, params: ASTNode[]};
-        const id: ASTNode               = call.func as { kind: "ND_IDENTIFIER", value: string };
+        const id: ASTNode = ast.func as { kind: "ND_IDENTIFIER", value: string };
         const entry: undefined | SemanticSymbol = semantic_lookup(id, env);
         if(entry !== undefined && entry.kind === "ANALYZER_FUNCTION") {
-            if(entry.arity === call.params.length) {
-                const ev_args: (Error | OK)[] = call.params.map((ast: ASTNode) => analyze(ast, env));
+            if(entry.arity === ast.params.length) {
+                const ev_args: (Error | OK)[] = ast.params.map((ast: ASTNode) => analyze(ast, env));
                 const err: undefined | Error  = ev_args.find(is_error);
                 if(err === undefined) {
                     return {kind: 'OK'};
@@ -36,11 +34,11 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
                 }
             }
             else {
-                return {kind: "Semantic error", message: `${call.params.length} argument(s) provided, expected ${entry.arity}`};
+                return {kind: "Semantic error", message: `${ast.params.length} argument(s) provided, expected ${entry.arity}`};
             }
         }
         else {
-            const atom = call.func as ASTAtom;
+            const atom = ast.func as ASTAtom;
             let m: string = `expected a function identifier, got '${atom.value}'`;
             if(typeof atom.value === "number") {
                 m += ".\nMaybe you forgot a space between a '+' or '-' and a number";

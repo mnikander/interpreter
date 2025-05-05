@@ -12,19 +12,19 @@ export type ASTNode =
     | ASTAtom
     | { kind: "ND_CALL", func: ASTNode, params: ASTNode[] };
 
-export function is_nd_boolean(node: ASTNode): boolean {
+export function is_nd_boolean(node: ASTNode): node is { kind: "ND_BOOLEAN", value: boolean } {
     return node.kind == "ND_BOOLEAN";
 }
 
-export function is_nd_number(node: ASTNode): boolean {
+export function is_nd_number(node: ASTNode): node is { kind: "ND_NUMBER", value: number } {
     return node.kind == "ND_NUMBER";
 }
 
-export function is_nd_identifier(node: ASTNode): boolean {
+export function is_nd_identifier(node: ASTNode): node is { kind: "ND_IDENTIFIER", value: string } {
     return node.kind == "ND_IDENTIFIER";
 }
 
-export function is_nd_call(node: ASTNode): boolean {
+export function is_nd_call(node: ASTNode): node is { kind: "ND_CALL", func: ASTNode, params: ASTNode[] } {
     return node.kind == "ND_CALL";
 }
 
@@ -34,7 +34,7 @@ export function parse(tokens: Token[]): Error | [ASTNode, number] {
         return result;
     }
     else {
-        let [expression, index] = (result as [ASTNode, number]);
+        let [expression, index] = result;
         if (index == tokens.length) {
             return [expression, index];
         }
@@ -71,7 +71,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
                 return parseResult;
             }
             else {
-                let [func, i] = parseResult as [ASTNode, number];
+                let [func, i] = parseResult;
                 index = i;
                 while (index < tokens.length) {
                     if (is_tk_right(tokens[index])) {
@@ -84,7 +84,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
                             return item;
                         }
                         else {
-                            let [node, i] = item as [ASTNode, number];
+                            let [node, i] = item;
                             index = i;
                             params.push(node);
                         }

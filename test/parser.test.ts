@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import { ASTNode, parse } from '../src/parser'
 import { Token } from '../src/lexer'
-import { Error } from '../src/error';
+import { Error, is_error } from '../src/error';
 
 describe('parse', () => {
     it('must report an error for an incomplete sequence of tokens', () => {
         const tokens: Token[] = [{kind: "TokenOpenParen", value: "("}]
         const result: Error | [ASTNode, number] = parse(tokens);
         expect(Array.isArray(result)).toBe(false);
+        expect(is_error(result)).toBe(true);
         expect((result as Error).kind).toBe("Parsing error");
     });
 
@@ -15,6 +16,7 @@ describe('parse', () => {
         const tokens: Token[] = [{kind: "TokenNumber", value: 5}];
         const result: Error | [ASTNode, number] = parse(tokens);
         expect(Array.isArray(result)).toBe(true);
+        expect(is_error(result)).toBe(false);
         const [ast, index] = result as [ASTNode, number];
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_NUMBER");
@@ -25,6 +27,7 @@ describe('parse', () => {
         const tokens: Token[] = [{kind: "TokenBoolean", value: true}];
         const result: Error | [ASTNode, number] = parse(tokens);
         expect(Array.isArray(result)).toBe(true);
+        expect(is_error(result)).toBe(false);
         const [ast, index] = result as [ASTNode, number];
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_BOOLEAN");
@@ -40,6 +43,7 @@ describe('parse', () => {
 
         const result: Error | [ASTNode, number] = parse(tokens);
         expect(Array.isArray(result)).toBe(false);
+        expect(is_error(result)).toBe(true);
         expect((result as Error).kind).toBe("Parsing error");
     });
 });

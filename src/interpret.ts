@@ -19,7 +19,7 @@ export function interpret(line: string): undefined | boolean | number | string {
             return parsingResult.kind +  ": " + parsingResult.message + ". ";
         }
         else {
-            const [ast, index] = parsingResult as [ASTNode, number];
+            const [ast, index] = parsingResult;
             const semanticResult: Error | OK = analyze(ast, global_semantic_environment);
             if (is_error(semanticResult)) {
                 return semanticResult.kind + ": " + semanticResult.message + ". ";
