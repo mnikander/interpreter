@@ -130,29 +130,29 @@ function peek_let(token: Token): boolean {
 
 function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLet, number] {
     index++; // consume the TK_IDENTIFIER which is equal to "let"
-    const first: Error | [ASTNode, number] = parse_expression(tokens, index);
+    const parsedFirst: Error | [ASTNode, number] = parse_expression(tokens, index);
 
-    if (is_error(first)) {
-        return first;
+    if (is_error(parsedFirst)) {
+        return parsedFirst;
     }
     else {
-        let [name, index] = first;
+        let [name, index] = parsedFirst;
         if (!is_nd_identifier(name)) {
             return { kind: "Parsing error", message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
         }
         else {
-            const second: Error | [ASTNode, number] = parse_expression(tokens, index);
-            if (is_error(second)) {
-                return second;
+            const parsedSecond: Error | [ASTNode, number] = parse_expression(tokens, index);
+            if (is_error(parsedSecond)) {
+                return parsedSecond;
             }
             else {
-                let [expr, index] = second;
-                const third: Error | [ASTNode, number] = parse_expression(tokens, index);
-                if (is_error(third)) {
-                    return third;
+                let [expr, index] = parsedSecond;
+                const parsedThird: Error | [ASTNode, number] = parse_expression(tokens, index);
+                if (is_error(parsedThird)) {
+                    return parsedThird;
                 }
                 else {
-                    let [body, index] = third;
+                    let [body, index] = parsedThird;
                     if (is_tk_right(tokens[index])) {
                         index++; // consume the TokenCloseParen
                         return [{ kind: "ND_LET", name: name, expr: expr, body: body }, index];
