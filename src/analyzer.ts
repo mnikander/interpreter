@@ -20,27 +20,33 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
         }
     }
     else if (is_nd_call(ast)) {
-        const id: ASTNode = ast.func as { kind: "ND_IDENTIFIER", value: string };
-        const entry: undefined | SemanticSymbol = semantic_lookup(id, env);
-        if(entry !== undefined && entry.kind === "ANALYZER_FUNCTION") {
-            if(entry.arity === ast.params.length) {
-                const ev_args: (Error | OK)[] = ast.params.map((ast: ASTNode) => analyze(ast, env));
-                const err: undefined | Error  = ev_args.find(is_error);
-                if(err === undefined) {
-                    return {kind: 'OK'};
+        if (is_nd_identifier(ast.func)) {
+            const entry: undefined | SemanticSymbol = semantic_lookup(ast.func, env);
+            if(entry !== undefined && entry.kind === "ANALYZER_FUNCTION") {
+                if(entry.arity === ast.params.length) {
+                    const ev_args: (Error | OK)[] = ast.params.map((ast: ASTNode) => analyze(ast, env));
+                    const err: undefined | Error  = ev_args.find(is_error);
+                    if(err === undefined) {
+                        return {kind: 'OK'};
+                    }
+                    else {
+                        return err;
+                    }
                 }
                 else {
-                    return err;
+                    return {kind: "Semantic error", message: `${ast.params.length} argument(s) provided, expected ${entry.arity}`};
                 }
             }
             else {
-                return {kind: "Semantic error", message: `${ast.params.length} argument(s) provided, expected ${entry.arity}`};
+                return {kind: "Semantic error", message: `unknown identifier '${ast.func.value}'`};
             }
         }
+        else if (is_nd_call(ast.func)) {
+            return analyze(ast.func, env);
+        }
         else {
-            const atom = ast.func as ASTAtom;
-            let m: string = `expected a function identifier, got '${atom.value}'`;
-            if(typeof atom.value === "number") {
+            let m: string = `expected a function identifier, got '${ast.func.value}'`;
+            if(typeof ast.func.value === "number") {
                 m += ".\nMaybe you forgot a space between a '+' or '-' and a number";
             }
             return {kind: "Semantic error", message: m};
