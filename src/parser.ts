@@ -104,7 +104,7 @@ function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeC
     const func: ASTNode = result[0];
     while (result[1] < tokens.length) {
         if (is_tk_right(tokens[result[1]])) {
-            result[1]++; // consume the TK_RIGHT
+            result = consumeToken(result); // consume the TK_RIGHT
             return [{kind: "ND_CALL", func: func, params: params}, result[1]];
         }
         else {
@@ -122,6 +122,7 @@ function is_let(token: Token): boolean {
 
 function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLet, number] {
     index++; // consume the TK_IDENTIFIER which is equal to "let"
+
     let result: ParseResult = parse_expression(tokens, index);
     if (is_error(result)) return result;
     const name: ASTNode = result[0];
@@ -140,6 +141,12 @@ function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLe
         return { kind: 'Parsing error', message: `too many arguments for let-binding, expected 3` };
     }
 
-    result[1]++; // consume the TokenCloseParen
+    result = consumeToken(result); // consume the TokenCloseParen
     return [{ kind: "ND_LET", name: name, expr: expr, body: body }, result[1]];
+}
+
+function consumeToken(result: [ASTNode, number]): [ASTNode, number] {
+    let [ast, index] = result;
+    index++;
+    return [ast, index];
 }
