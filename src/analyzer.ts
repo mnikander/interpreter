@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { SemanticEnvironment, SemanticSymbol, semantic_lookup } from "./semantic_environment";
+import { SemanticEnvironment, SemanticSymbol, semantic_lookup } from "./analyzer_environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, OK, is_error } from "./error";
 
