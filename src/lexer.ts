@@ -3,29 +3,35 @@ import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses"
 import { Error, is_error } from "./error";
 
 export type Token = 
-    | { kind: "TokenBoolean", value: boolean }
-    | { kind: "TokenNumber", value: number }
-    | { kind: "TokenIdentifier", value: string }
-    | { kind: "TokenOpenParen", value: "(" }
-    | { kind: "TokenCloseParen", value: ")" };
+    | TokenBoolean
+    | TokenNumber
+    | TokenIdentifier
+    | TokenOpenParen
+    | TokenCloseParen
 
-export function is_tk_boolean(token: Token): token is { kind: "TokenBoolean", value: boolean } {
+export interface TokenBoolean    { kind: "TokenBoolean",    value: boolean };
+export interface TokenNumber     { kind: "TokenNumber",     value: number };
+export interface TokenIdentifier { kind: "TokenIdentifier", value: string };
+export interface TokenOpenParen  { kind: "TokenOpenParen",  value: "(" };
+export interface TokenCloseParen { kind: "TokenCloseParen", value: ")" };
+
+export function is_tk_boolean(token: Token): token is TokenBoolean {
     return token.kind == "TokenBoolean";
 }
 
-export function is_tk_number(token: Token): token is { kind: "TokenNumber", value: number } {
+export function is_tk_number(token: Token): token is TokenNumber {
     return token.kind == "TokenNumber";
 }
 
-export function is_tk_identifier(token: Token): token is { kind: "TokenIdentifier", value: string } {
+export function is_tk_identifier(token: Token): token is TokenIdentifier {
     return token.kind == "TokenIdentifier";
 }
 
-export function is_tk_left(token: Token): token is { kind: "TokenOpenParen", value: "(" } {
+export function is_tk_left(token: Token): token is TokenOpenParen {
     return token.kind == "TokenOpenParen";
 }
 
-export function is_tk_right(token: Token): token is { kind: "TokenCloseParen", value: ")" } {
+export function is_tk_right(token: Token): token is TokenCloseParen {
     return token.kind === "TokenCloseParen";
 }
 
