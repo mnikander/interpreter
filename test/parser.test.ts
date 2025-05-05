@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { ASTNode, parse } from '../src/parser'
+import { ASTNode, NodeBoolean, NodeNumber, parse } from '../src/parser'
 import { Token } from '../src/lexer'
 import { Error, is_error } from '../src/error';
 
@@ -20,7 +20,7 @@ describe('parse', () => {
         const [ast, index] = result as [ASTNode, number];
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_NUMBER");
-        expect((ast as { kind: "ND_NUMBER", value: number }).value).toBe(5);
+        expect((ast as NodeNumber).value).toBe(5);
     });
 
     it('must parse a boolean token', () => {
@@ -31,7 +31,7 @@ describe('parse', () => {
         const [ast, index] = result as [ASTNode, number];
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_BOOLEAN");
-        expect((ast as { kind: "ND_BOOLEAN", value: boolean }).value).toBe(true);
+        expect((ast as NodeBoolean).value).toBe(true);
     });
 
     it('must report an error when tokens for multiple unrelated expressions are parsed', () => {
