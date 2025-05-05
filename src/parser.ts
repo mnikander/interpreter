@@ -67,33 +67,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
             return [{kind: "ND_IDENTIFIER", value: token.value}, index];
         }
         else if (is_tk_left(token)) {
-            let params: ASTNode[] = [];
-            let parseResult = parse_expression(tokens, index);
-            if(is_error(parseResult)) {
-                return parseResult;
-            }
-            else {
-                let [func, i] = parseResult;
-                index = i;
-                while (index < tokens.length) {
-                    if (is_tk_right(tokens[index])) {
-                        index++; // consume the TK_RIGHT
-                        return [{kind: "ND_CALL", func: func, params: params}, index];
-                    }
-                    else {
-                        let item = parse_expression(tokens, index);
-                        if (is_error(item)) {
-                            return item;
-                        }
-                        else {
-                            let [node, i] = item;
-                            index = i;
-                            params.push(node);
-                        }
-                    }
-                }
-                return {kind: "Parsing error", message: "expected closing parentheses"};
-            }
+            return parse_call(tokens, index);
         }
         else {
             return {kind: "Parsing error", message: `unable to parse token of kind ${tokens[index].kind}`};
@@ -101,5 +75,35 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
     }
     else {
         return {kind: "Parsing error", message: "expected another token"};
+    }
+}
+
+function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeCall, number] {
+    let params: ASTNode[] = [];
+    let parseResult = parse_expression(tokens, index);
+    if(is_error(parseResult)) {
+        return parseResult;
+    }
+    else {
+        let [func, i] = parseResult;
+        index = i;
+        while (index < tokens.length) {
+            if (is_tk_right(tokens[index])) {
+                index++; // consume the TK_RIGHT
+                return [{kind: "ND_CALL", func: func, params: params}, index];
+            }
+            else {
+                let item = parse_expression(tokens, index);
+                if (is_error(item)) {
+                    return item;
+                }
+                else {
+                    let [node, i] = item;
+                    index = i;
+                    params.push(node);
+                }
+            }
+        }
+        return {kind: "Parsing error", message: "expected closing parentheses"};
     }
 }
