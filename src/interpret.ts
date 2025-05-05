@@ -10,19 +10,19 @@ import { global_semantic_environment, global_evaluation_environment } from "./gl
 export function interpret(line: string): undefined | boolean | number | string {
     const lexingResult: Error | Token[] = tokenize(line);
     if (is_error(lexingResult)) {
-        return (lexingResult as Error).kind + ": " + (lexingResult as Error).message + ". ";
+        return lexingResult.kind + ": " + lexingResult.message + ". ";
     }
     else {
         const tokens = lexingResult as Token[];
         const parsingResult: Error | [ASTNode, number]  = parse(tokens);
         if (is_error(parsingResult)) {
-            return (parsingResult as Error).kind +  ": " + (parsingResult as Error).message + ". ";
+            return parsingResult.kind +  ": " + parsingResult.message + ". ";
         }
         else {
             const [ast, index] = parsingResult as [ASTNode, number];
             const semanticResult: Error | OK = analyze(ast, global_semantic_environment);
             if (is_error(semanticResult)) {
-                return (semanticResult as Error).kind + ": " + (semanticResult as Error).message + ". ";
+                return semanticResult.kind + ": " + semanticResult.message + ". ";
             }
             else {
                 const result = evaluate(ast, global_evaluation_environment);
@@ -34,7 +34,7 @@ export function interpret(line: string): undefined | boolean | number | string {
                     return "Evaluation error: result is a function. ";
                 }
                 else if (is_error(result)) {
-                    return `${(result as Error).kind}: ${(result as Error).message}. `;
+                    return `${result.kind}: ${result.message}. `;
                 }
                 else {
                     return "Evaluation error: unknown error. "

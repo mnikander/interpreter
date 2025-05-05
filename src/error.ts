@@ -6,7 +6,7 @@ export type Error =
     | { kind: "Semantic error", message: string, column?: number }
     | { kind: "Evaluation error", message: string, column?: number };
 
-export function is_error(item: any) {
+export function is_error(item: any): item is Error {
     return 'kind' in item && (
            item.kind === "Lexing error" ||
            item.kind === "Parsing error" ||

@@ -22,7 +22,7 @@ export function evaluate(ast: ASTNode, env: EvaluationEnvironment): Error | Eval
         const id: ASTNode                 = call.func as { kind: "ND_IDENTIFIER", value: string };
         const entry: Error | EvaluationSymbol       = evaluate(id, env);
         const ev_args: (Error | EvaluationSymbol)[] = call.params.map((ast: ASTNode) => evaluate(ast, env));
-        const err: undefined | Error      = ev_args.find(is_error) as (undefined | Error);
+        const err: undefined | Error      = ev_args.find(is_error);
         if(err === undefined) {
             const fn   = (entry as EvaluationSymbol).value as Function;
             const args = (ev_args as EvaluationSymbol[]).map((s: EvaluationSymbol) => { return s.value; });

@@ -40,7 +40,7 @@ export function tokenize(line: string): Error | Token[] {
 
     for (const item of tokens_or_errors) {
         if (is_error(item)) {
-            return (item as Error);
+            return item;
         }
     }
 

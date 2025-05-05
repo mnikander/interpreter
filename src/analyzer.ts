@@ -27,7 +27,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
         if(entry !== undefined && entry.kind === "ANALYZER_FUNCTION") {
             if(entry.arity === call.params.length) {
                 const ev_args: (Error | OK)[] = call.params.map((ast: ASTNode) => analyze(ast, env));
-                const err: undefined | Error  = ev_args.find(is_error) as (undefined | Error);
+                const err: undefined | Error  = ev_args.find(is_error);
                 if(err === undefined) {
                     return {kind: 'OK'};
                 }
