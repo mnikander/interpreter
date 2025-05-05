@@ -4,8 +4,16 @@ import { Token, tokenize } from '../src/lexer'
 import { Error, is_error } from '../src/error';
 
 describe('parse', () => {
-    it('must report an error for an incomplete sequence of tokens', () => {
+    it('must report an error for a lone opening parenthesis', () => {
         const tokens: Token[] = [{kind: "TokenOpenParen", value: "("}]
+        const result: Error | [ASTNode, number] = parse(tokens);
+        expect(Array.isArray(result)).toBe(false);
+        expect(is_error(result)).toBe(true);
+        expect((result as Error).kind).toBe("Parsing error");
+    });
+
+    it('must report an error for a lone closing parenthesis', () => {
+        const tokens: Token[] = [{kind: "TokenCloseParen", value: ")"}]
         const result: Error | [ASTNode, number] = parse(tokens);
         expect(Array.isArray(result)).toBe(false);
         expect(is_error(result)).toBe(true);

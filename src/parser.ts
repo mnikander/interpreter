@@ -81,7 +81,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
             }
         }
         else {
-            return {kind: "Parsing error", message: `unable to parse token of kind ${tokens[index].kind}`};
+            return {kind: "Parsing error", message: `unable to parse token of kind ${token.kind}`};
         }
     }
     else {
