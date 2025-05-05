@@ -55,21 +55,18 @@ export function parse(tokens: Token[]): Error | [ASTNode, number] {
 export function parse_expression(tokens: readonly Token[], index: number = 0): Error | [ASTNode, number] {
     if (index < tokens.length) {
         let token: Token = tokens[index];
+        index++; // consume the token
 
         if (is_tk_boolean(token)) {
-            index++; // consume the TK_BOOLEAN
             return [{kind: "ND_BOOLEAN", value: token.value}, index];
         }
         else if (is_tk_number(token)) {
-            index++; // consume the TK_NUMBER
             return [{kind: "ND_NUMBER", value: token.value}, index];
         }
         else if (is_tk_identifier(token)) {
-            index++; // consume the TK_IDENTIFIER
             return [{kind: "ND_IDENTIFIER", value: token.value}, index];
         }
         else if (is_tk_left(token)) {
-            index++; // consume the TK_LEFT
             let params: ASTNode[] = [];
             let parseResult = parse_expression(tokens, index);
             if(is_error(parseResult)) {
@@ -99,7 +96,6 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
             }
         }
         else {
-            index++; // consume the unparsable token
             return {kind: "Parsing error", message: `unable to parse token of kind ${tokens[index].kind}`};
         }
     }
