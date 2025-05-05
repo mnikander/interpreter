@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from "./evaluation_environment";
+import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from "./evaluator_environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
 import { Error, is_error } from "./error";
 

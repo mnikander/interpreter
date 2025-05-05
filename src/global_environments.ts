@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { SemanticEnvironment, SemanticSymbol } from "./analyzer_environment";
-import { EvaluationEnvironment, EvaluationSymbol } from "./evaluation_environment";
+import { EvaluationEnvironment, EvaluationSymbol } from "./evaluator_environment";
 
 export const global_semantic_environment: SemanticEnvironment = {
     parent: undefined,
