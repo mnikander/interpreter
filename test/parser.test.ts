@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { ASTNode, NodeBoolean, NodeNumber, parse } from '../src/parser'
-import { Token } from '../src/lexer'
+import { ASTNode, is_nd_call, is_nd_identifier, is_nd_let, NodeBoolean, NodeNumber, parse } from '../src/parser'
+import { Token, tokenize } from '../src/lexer'
 import { Error, is_error } from '../src/error';
 
 describe('parse', () => {
@@ -32,6 +32,51 @@ describe('parse', () => {
         expect(index).toBe(1);
         expect(ast.kind).toBe("ND_BOOLEAN");
         expect((ast as NodeBoolean).value).toBe(true);
+    });
+
+    it('must parse a simple let-binding', () => {
+        const tokens: Error | Token[] = tokenize('(let x 42 x)');
+        expect(is_error(tokens)).toBe(false);
+        const result: Error | [ASTNode, number] = parse(tokens as Token[]);
+        expect(is_error(result)).toBe(false);
+        if (!is_error(result)) {
+            const [ast, index] = result;
+            expect(is_nd_let(ast)).toBe(true);
+            if (is_nd_let(ast)) {
+                expect(is_nd_identifier(ast.name)).toBe(true);
+                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x" });
+                expect(ast.expr).toStrictEqual({ kind: "ND_NUMBER", value: 42} );
+                expect(ast.body).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x" });
+            }
+        }
+    });
+
+    it('must parse a nested let-binding', () => {
+        const tokens: Error | Token[] = tokenize('(let x (* 4 10) (+ x 2))');
+        expect(is_error(tokens)).toBe(false);
+        const result: Error | [ASTNode, number] = parse(tokens as Token[]);
+        expect(is_error(result)).toBe(false);
+        if (!is_error(result)) {
+            const [ast, index] = result;
+            expect(is_nd_let(ast)).toBe(true);
+            if (is_nd_let(ast)) {
+                expect(is_nd_identifier(ast.name)).toBe(true);
+                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x" });
+                expect(is_nd_call(ast.expr)).toBe(true);
+                if(is_nd_call(ast.expr)) {
+                    expect(ast.expr.func).toStrictEqual({ kind: "ND_IDENTIFIER", value: '*'} );
+                    expect(ast.expr.params[0]).toStrictEqual({ kind: "ND_NUMBER", value: 4} );
+                    expect(ast.expr.params[1]).toStrictEqual({ kind: "ND_NUMBER", value: 10} );
+                }
+                expect(is_nd_call(ast.body)).toBe(true);
+                if (is_nd_call(ast.body)) {
+                    expect(ast.body.func).toStrictEqual({ kind: "ND_IDENTIFIER", value: "+"} );
+                    expect(ast.body.params.length).toBe(2);
+                    expect(ast.body.params[0]).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x"} );
+                    expect(ast.body.params[1]).toStrictEqual({ kind: "ND_NUMBER", value: 2} );
+                }
+            }
+        }
     });
 
     it('must report an error when tokens for multiple unrelated expressions are parsed', () => {

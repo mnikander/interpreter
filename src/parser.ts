@@ -10,12 +10,14 @@ export type ASTAtom =
 
 export type ASTNode =
     | ASTAtom
-    | NodeCall;
+    | NodeCall
+    | NodeLet;
 
 export interface NodeBoolean    { kind: "ND_BOOLEAN",    value: boolean };
 export interface NodeNumber     { kind: "ND_NUMBER",     value: number };
 export interface NodeIdentifier { kind: "ND_IDENTIFIER", value: string };
 export interface NodeCall       { kind: "ND_CALL",       func: ASTNode, params: ASTNode[] };
+export interface NodeLet        { kind: "ND_LET",        name: NodeIdentifier, expr: ASTNode, body: ASTNode };
 
 export function is_nd_boolean(node: ASTNode): node is NodeBoolean {
     return node.kind == "ND_BOOLEAN";
@@ -31,6 +33,10 @@ export function is_nd_identifier(node: ASTNode): node is NodeIdentifier {
 
 export function is_nd_call(node: ASTNode): node is NodeCall {
     return node.kind == "ND_CALL";
+}
+
+export function is_nd_let(node: ASTNode): node is NodeLet {
+    return node.kind == "ND_LET";
 }
 
 export function parse(tokens: Token[]): Error | [ASTNode, number] {
@@ -67,7 +73,12 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
             return [{kind: "ND_IDENTIFIER", value: token.value}, index];
         }
         else if (is_tk_left(token)) {
-            return parse_call(tokens, index);
+            if (index < tokens.length && peek_let(tokens[index])) {
+                return parse_let(tokens, index);
+            }
+            else {
+                return parse_call(tokens, index);
+            }
         }
         else {
             return {kind: "Parsing error", message: `unable to parse token of kind ${tokens[index].kind}`};
@@ -105,5 +116,46 @@ function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeC
             }
         }
         return {kind: "Parsing error", message: "expected closing parentheses"};
+    }
+}
+
+function peek_let(token: Token): boolean {
+    return is_tk_identifier(token) && token.value === "let";
+}
+
+function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLet, number] {
+    index++; // consume the TK_IDENTIFIER which is equal to "let"
+    const first: Error | [ASTNode, number] = parse_expression(tokens, index);
+    if (!is_error(first)) {
+        let [name, index] = first;
+        if (is_nd_identifier(name)) {
+            const second: Error | [ASTNode, number] = parse_expression(tokens, index);
+            if (!is_error(second)) {
+                let [expr, index] = second;
+                const third: Error | [ASTNode, number] = parse_expression(tokens, index);
+                if (!is_error(third)) {
+                    let [body, index] = third;
+                    if (is_tk_right(tokens[index])) {
+                        index++; // consume the TK_RIGHT
+                        return [{ kind: "ND_LET", name: name, expr: expr, body: body }, index];
+                    }
+                    else {
+                        return { kind: 'Parsing error', message: `too many arguments for let-binding` };
+                    }
+                }
+                else {
+                    return third;
+                }
+            }
+            else {
+                return second;
+            }
+        }
+        else {
+            return { kind: "Parsing error", message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
+        }
+    }
+    else {
+        return first;
     }
 }
