@@ -3,6 +3,8 @@
 import { is_tk_boolean, is_tk_number, is_tk_identifier, is_tk_left, is_tk_right, Token } from "./lexer";
 import { Error, is_error } from "./error";
 
+export type ParseResult = Error | [ASTNode, number];
+
 export type ASTAtom =
     | NodeBoolean
     | NodeNumber
@@ -96,32 +98,22 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
 
 function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeCall, number] {
     let params: ASTNode[] = [];
-    let parseResult = parse_expression(tokens, index);
-    if(is_error(parseResult)) {
-        return parseResult;
-    }
-    else {
-        let [func, i] = parseResult;
-        index = i;
-        while (index < tokens.length) {
-            if (is_tk_right(tokens[index])) {
-                index++; // consume the TK_RIGHT
-                return [{kind: "ND_CALL", func: func, params: params}, index];
-            }
-            else {
-                let item = parse_expression(tokens, index);
-                if (is_error(item)) {
-                    return item;
-                }
-                else {
-                    let [node, i] = item;
-                    index = i;
-                    params.push(node);
-                }
-            }
+    let result: ParseResult = parse_expression(tokens, index);
+    if(is_error(result)) return result;
+
+    const func: ASTNode = result[0];
+    while (result[1] < tokens.length) {
+        if (is_tk_right(tokens[result[1]])) {
+            result[1]++; // consume the TK_RIGHT
+            return [{kind: "ND_CALL", func: func, params: params}, result[1]];
         }
-        return {kind: "Parsing error", message: "expected closing parentheses"};
+        else {
+            result = parse_expression(tokens, result[1]);
+            if (is_error(result)) return result;
+            params.push(result[0]);
+        }
     }
+    return {kind: "Parsing error", message: "expected closing parentheses"};
 }
 
 function is_let(token: Token): boolean {
@@ -130,38 +122,24 @@ function is_let(token: Token): boolean {
 
 function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLet, number] {
     index++; // consume the TK_IDENTIFIER which is equal to "let"
-    const parsedFirst: Error | [ASTNode, number] = parse_expression(tokens, index);
+    let result: ParseResult = parse_expression(tokens, index);
+    if (is_error(result)) return result;
+    const name: ASTNode = result[0];
+    if (!is_nd_identifier(name))
+        return { kind: "Parsing error", message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
 
-    if (is_error(parsedFirst)) {
-        return parsedFirst;
+    result = parse_expression(tokens, result[1]);
+    if (is_error(result)) return result;
+    const expr = result[0];
+
+    result = parse_expression(tokens, result[1]);
+    if (is_error(result)) return result;
+    const body = result[0];
+
+    if (!is_tk_right(tokens[result[1]])) {
+        return { kind: 'Parsing error', message: `too many arguments for let-binding, expected 3` };
     }
-    else {
-        let [name, index] = parsedFirst;
-        if (!is_nd_identifier(name)) {
-            return { kind: "Parsing error", message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
-        }
-        else {
-            const parsedSecond: Error | [ASTNode, number] = parse_expression(tokens, index);
-            if (is_error(parsedSecond)) {
-                return parsedSecond;
-            }
-            else {
-                let [expr, index] = parsedSecond;
-                const parsedThird: Error | [ASTNode, number] = parse_expression(tokens, index);
-                if (is_error(parsedThird)) {
-                    return parsedThird;
-                }
-                else {
-                    let [body, index] = parsedThird;
-                    if (is_tk_right(tokens[index])) {
-                        index++; // consume the TokenCloseParen
-                        return [{ kind: "ND_LET", name: name, expr: expr, body: body }, index];
-                    }
-                    else {
-                        return { kind: 'Parsing error', message: `too many arguments for let-binding, expected 3` };
-                    }
-                }
-            }
-        }
-    }
+
+    result[1]++; // consume the TokenCloseParen
+    return [{ kind: "ND_LET", name: name, expr: expr, body: body }, result[1]];
 }
