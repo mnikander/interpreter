@@ -48,10 +48,10 @@ export function parse(tokens: Token[]): Error | [ASTNode, number] {
     }
     else {
         let [expression, index] = result;
-        if (index == tokens.length) {
-            return [expression, index];
+        if (result[1] == tokens.length) {
+            return [expression, result[1]];
         }
-        else if (index < tokens.length) {
+        else if (result[1] < tokens.length) {
             return { kind: "Parsing error", message: "expected a single expression"};
         }
         else {
