@@ -80,8 +80,13 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
                 return parse_call(tokens, index);
             }
         }
+        else if (is_tk_right(token)) {
+            // closing parentheses are handled by the parsers specific to function calls, let-bindings, etc
+            // a closing parenthesis should never occur in the control flow of this general parsing function
+            return {kind: "Parsing error", message: `unexpected ')'`};
+        }
         else {
-            return {kind: "Parsing error", message: `unable to parse token of kind ${token.kind}`};
+            return {kind: "Parsing error", message: 'unknown token type'};
         }
     }
     else {
