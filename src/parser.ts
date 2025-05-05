@@ -72,8 +72,8 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
         else if (is_tk_identifier(token)) {
             return [{kind: "ND_IDENTIFIER", value: token.value}, index];
         }
-        else if (is_tk_left(token)) {
-            if (index < tokens.length && peek_let(tokens[index])) {
+        else if (is_tk_left(token) && index < tokens.length) {
+            if (is_let(tokens[index])) {
                 return parse_let(tokens, index);
             }
             else {
@@ -124,7 +124,7 @@ function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeC
     }
 }
 
-function peek_let(token: Token): boolean {
+function is_let(token: Token): boolean {
     return is_tk_identifier(token) && token.value === "let";
 }
 
