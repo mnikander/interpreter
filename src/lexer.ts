@@ -9,24 +9,24 @@ export type Token =
     | { kind: "TokenOpenParen", value: "(" }
     | { kind: "TokenCloseParen", value: ")" };
 
-export function is_tk_boolean(token: Token): boolean {
+export function is_tk_boolean(token: Token): token is { kind: "TokenBoolean", value: boolean } {
     return token.kind == "TokenBoolean";
 }
 
-export function is_tk_number(token: Token): boolean {
+export function is_tk_number(token: Token): token is { kind: "TokenNumber", value: number } {
     return token.kind == "TokenNumber";
 }
 
-export function is_tk_identifier(token: Token): boolean {
+export function is_tk_identifier(token: Token): token is { kind: "TokenIdentifier", value: string } {
     return token.kind == "TokenIdentifier";
 }
 
-export function is_tk_left(token: Token): boolean {
+export function is_tk_left(token: Token): token is { kind: "TokenOpenParen", value: "(" } {
     return token.kind == "TokenOpenParen";
 }
 
-export function is_tk_right(token: Token): boolean {
-    return token.kind == "TokenCloseParen";
+export function is_tk_right(token: Token): token is { kind: "TokenCloseParen", value: ")" } {
+    return token.kind === "TokenCloseParen";
 }
 
 export function tokenize(line: string): Error | Token[] {

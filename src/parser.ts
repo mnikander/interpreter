@@ -53,18 +53,15 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
 
         if (is_tk_boolean(token)) {
             index++; // consume the TK_BOOLEAN
-            const v: boolean = token.value as boolean;
-            return [{kind: "ND_BOOLEAN", value: v}, index];
+            return [{kind: "ND_BOOLEAN", value: token.value}, index];
         }
         else if (is_tk_number(token)) {
             index++; // consume the TK_NUMBER
-            const v: number = token.value as number;
-            return [{kind: "ND_NUMBER", value: v}, index];
+            return [{kind: "ND_NUMBER", value: token.value}, index];
         }
         else if (is_tk_identifier(token)) {
             index++; // consume the TK_IDENTIFIER
-            const v: string = token.value as string;
-            return [{kind: "ND_IDENTIFIER", value: v}, index];
+            return [{kind: "ND_IDENTIFIER", value: token.value}, index];
         }
         else if (is_tk_left(token)) {
             index++; // consume the TK_LEFT

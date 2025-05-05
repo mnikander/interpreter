@@ -13,7 +13,7 @@ export function interpret(line: string): undefined | boolean | number | string {
         return lexingResult.kind + ": " + lexingResult.message + ". ";
     }
     else {
-        const tokens = lexingResult as Token[];
+        const tokens = lexingResult;
         const parsingResult: Error | [ASTNode, number]  = parse(tokens);
         if (is_error(parsingResult)) {
             return parsingResult.kind +  ": " + parsingResult.message + ". ";
