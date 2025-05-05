@@ -4,27 +4,32 @@ import { is_tk_boolean, is_tk_number, is_tk_identifier, is_tk_left, is_tk_right,
 import { Error, is_error } from "./error";
 
 export type ASTAtom =
-    | { kind: "ND_BOOLEAN", value: boolean }
-    | { kind: "ND_NUMBER", value: number }
-    | { kind: "ND_IDENTIFIER", value: string };
+    | NodeBoolean
+    | NodeNumber
+    | NodeIdentifier;
 
 export type ASTNode =
     | ASTAtom
-    | { kind: "ND_CALL", func: ASTNode, params: ASTNode[] };
+    | NodeCall;
 
-export function is_nd_boolean(node: ASTNode): node is { kind: "ND_BOOLEAN", value: boolean } {
+export interface NodeBoolean    { kind: "ND_BOOLEAN",    value: boolean };
+export interface NodeNumber     { kind: "ND_NUMBER",     value: number };
+export interface NodeIdentifier { kind: "ND_IDENTIFIER", value: string };
+export interface NodeCall       { kind: "ND_CALL",       func: ASTNode, params: ASTNode[] };
+
+export function is_nd_boolean(node: ASTNode): node is NodeBoolean {
     return node.kind == "ND_BOOLEAN";
 }
 
-export function is_nd_number(node: ASTNode): node is { kind: "ND_NUMBER", value: number } {
+export function is_nd_number(node: ASTNode): node is NodeNumber {
     return node.kind == "ND_NUMBER";
 }
 
-export function is_nd_identifier(node: ASTNode): node is { kind: "ND_IDENTIFIER", value: string } {
+export function is_nd_identifier(node: ASTNode): node is NodeIdentifier {
     return node.kind == "ND_IDENTIFIER";
 }
 
-export function is_nd_call(node: ASTNode): node is { kind: "ND_CALL", func: ASTNode, params: ASTNode[] } {
+export function is_nd_call(node: ASTNode): node is NodeCall {
     return node.kind == "ND_CALL";
 }
 
