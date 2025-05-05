@@ -123,6 +123,18 @@ describe('nested expressions', () => {
     });
 });
 
+describe.skip('variable binding', () => {
+    it('must support variable definitions', () => {
+        expect(interpret('(let x 42 x)')).toBe(42);
+        expect(interpret('(let x True x)')).toBe(true);
+    });
+
+    it('must support variable definitions inside of nested expressions', () => {
+        expect(interpret('(let x 41 (+ x 1))')).toBe(42);
+        expect(interpret('(let x 1 (+ x (x*2)))')).toBe(3);
+    });
+});
+
 describe.skip('type system', () => {
     it('must report an error when implicitly converting to a boolean', () => {
         expect(interpret("(! 0)")).toContain("error");
