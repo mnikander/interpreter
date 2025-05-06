@@ -5,25 +5,25 @@ import { Item } from "./item";
 export interface Token extends Item {
     kind: "Token",
     subkind: string,
-    token_id: number,
+    id: number,
 }
 
 export interface TokenOpen extends Token {
     kind: "Token",
     subkind: "Open",
-    token_id: number,
+    id: number,
 }
 
 export interface TokenClose extends Token {
     kind: "Token",
     subkind: "Close",
-    token_id: number,
+    id: number,
 }
 
 export interface TokenAtom extends Token {
     kind: "Token",
     subkind: "Atom",
-    token_id: number,
+    id: number,
 }
 
 // type predicates
