@@ -4,7 +4,7 @@ import { ASTAtom,NodeLet } from "./parser";
 import { Error, OK } from "./error";
 
 export type EvaluationSymbol =
-    | { kind: "EVALUATOR_FUNCTION", value: boolean | number | ((...args: any[]) => any), about?: string, }
+    | { kind: "EVALUATOR_FUNCTION", value: boolean | number | ((...args: any[]) => any), }
     | { kind: "EVALUATOR_VALUE",    value: boolean | number };
 
 export function evaluation_lookup(identifier: ASTAtom, environment: EvaluationEnvironment): undefined | EvaluationSymbol {
