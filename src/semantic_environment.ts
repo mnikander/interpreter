@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Error, OK } from "./error";
-import { ASTAtom, NodeIdentifier, NodeLet } from "./parser";
+import { ASTAtom, is_nd_identifier, NodeLet } from "./parser";
 
 export type SemanticSymbol =
     | { kind: "SEMANTIC_FUNCTION", arity: number }
@@ -28,10 +28,33 @@ export function semantic_define(node: NodeLet, env: SemanticEnvironment): Error 
         return { kind: "Semantic error", token_id: node.token_id, message: "attempted to redefine an identifier which already exists"}
     }
     else {
-        // TODO: what about functions? How do I figure out if the body is a function and has an arity which needs to be set?
-        env.symbols.set(node.name.value, { kind: "SEMANTIC_VALUE" });
-        return { kind: "OK" };
+        if (is_nd_identifier(node.expr)) {
+            const lookup = semantic_lookup(node.expr, env);
+            if (lookup === undefined) {
+                env.symbols.set(node.name.value, { kind: "SEMANTIC_VALUE" });
+                return { kind: "OK" };
+            }
+            else {
+                if (lookup.kind === "SEMANTIC_FUNCTION" ) {
+                    env.symbols.set(node.name.value, { kind: "SEMANTIC_FUNCTION", arity: lookup.arity });
+                }
+                else if (lookup.kind === "SEMANTIC_VALUE" ) {
+                    env.symbols.set(node.name.value, { kind: "SEMANTIC_VALUE" });
+                }
+                else {
+                    return { kind: "Semantic error", token_id: node.expr.token_id, message: "unknown semantics, neither a function nor a value"}
+                }
+            }
+        }
+        else {
+            env.symbols.set(node.name.value, { kind: "SEMANTIC_VALUE" });
+            // TODO:
+            // - this will break for lambda expressions, they are not a value, and the arity must be set somehow
+            // - functions of higher order will also be problematic here, their arity must be deduced somehow
+            // - I need a clean solution to deduce the arity of an arbitrary AST node / subtree
+        }
     }
+    return { kind: "OK" };
 }
 
 export function semantic_extend(env: SemanticEnvironment): SemanticEnvironment {

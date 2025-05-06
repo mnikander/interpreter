@@ -20,6 +20,8 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
         }
     }
     else if (is_nd_let(ast)) {
+        // TODO:
+        // - should I allow redefining the builtin functions? If not, I need to ensure the builtins are not shadowed, right here
 
         const checked_expression = analyze(ast.expr, env);
         if (is_error(checked_expression)) return checked_expression;
