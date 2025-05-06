@@ -57,9 +57,14 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
                 return {kind: "Semantic error", token_id: ast.token_id, message: `unknown identifier '${ast.func.value}'`};
             }
         }
+        // TODO: can I simplify this so that a recursive call is all that's needed, instead of treating is_nd_call as a special case?
+        // - that would scale much better, once let-bindings, lambdas, closures, and other special forms are added as well
         else if (is_nd_call(ast.func)) {
             return analyze(ast.func, env);
         }
+        // TODO: do I need to handle 'let' here too?
+        // - theoretically it's possible to rename a function: ((let add + add) 1 2)
+        // - maybe that's useful for certain higher-order functions?
         else {
             return {kind: "Semantic error", token_id: ast.token_id, message: "expected a function identifier"};
         }
