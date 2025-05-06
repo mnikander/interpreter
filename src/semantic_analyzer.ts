@@ -45,11 +45,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
             return analyze(ast.func, env);
         }
         else {
-            let m: string = `expected a function identifier, got '${ast.func.value}'`;
-            if(typeof ast.func.value === "number") {
-                m += ".\nMaybe you forgot a space between a '+' or '-' and a number";
-            }
-            return {kind: "Semantic error", token_id: ast.token_id, message: m};
+            return {kind: "Semantic error", token_id: ast.token_id, message: "expected a function identifier"};
         }
     }
     return {kind: "Semantic error", token_id: ast.token_id, message: `invalid expression`};
