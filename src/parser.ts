@@ -130,7 +130,7 @@ function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLe
     if (is_error(result)) return result;
     const name: ASTNode = result[0];
     if (!is_nd_identifier(name))
-        return { kind: "Parsing error", token_id: result[1]-1, message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
+        return { kind: "Parsing error", token_id: result[1]-1, message: "expected an identifier" };
 
     if (is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", 1, 3, result[1]);
     result = parse_expression(tokens, result[1]);

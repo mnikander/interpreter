@@ -134,6 +134,24 @@ describe('let-bindings', () => {
         expect(interpret('(let x 1 (+ x (* x 2)))')).toBe(3);
     });
 
+    it('must report an error if the 1st argument the let-binding is not an identifier', () => {
+        const result = interpret('(let 4 2 x)');
+        expect(result).toContain("error");
+        expect(result).toContain("identifier");
+    });
+
+    it('must report an error if the 2nd argument the let-binding contains undefined variables', () => {
+        const result = interpret('(let x 2 (+ x y))');
+        expect(result).toContain("error");
+        expect(result).toContain("identifier");
+    });
+
+    it('must report an error if the 3rd argument the let-binding contains undefined variables', () => {
+        const result = interpret('(let x 2 (+ x y))');
+        expect(result).toContain("error");
+        expect(result).toContain("identifier");
+    });
+
     it('must report an error if a let-binding is provided too few arguments', () => {
         const result = interpret('(let x 42)');
         expect(result).toContain("error");
