@@ -1,28 +1,28 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { SemanticEnvironment, SemanticSymbol } from "./analyzer_environment";
+import { SemanticEnvironment, SemanticSymbol } from "./semantic_environment";
 import { EvaluationEnvironment, EvaluationSymbol } from "./evaluator_environment";
 
 export const global_semantic_environment: SemanticEnvironment = {
     parent: undefined,
     symbols: new Map<string, SemanticSymbol>([
-        ['+',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['-',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['*',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['/',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['%',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['<',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['>',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['<=',   { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['>=',   { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['==',   { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['!=',   { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['&',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['|',    { kind: "ANALYZER_FUNCTION", arity: 2 }],
-        ['!',    { kind: "ANALYZER_FUNCTION", arity: 1 }],
-        ['if',   { kind: "ANALYZER_FUNCTION", arity: 3 }],
-        ['help', { kind: "ANALYZER_FUNCTION", arity: 0 }],
-        ['Help', { kind: "ANALYZER_FUNCTION", arity: 0 }],
+        ['+',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['-',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['*',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['/',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['%',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['<',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['>',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['<=',   { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['>=',   { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['==',   { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['!=',   { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['&',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['|',    { kind: "SEMANTIC_FUNCTION", arity: 2 }],
+        ['!',    { kind: "SEMANTIC_FUNCTION", arity: 1 }],
+        ['if',   { kind: "SEMANTIC_FUNCTION", arity: 3 }],
+        ['help', { kind: "SEMANTIC_FUNCTION", arity: 0 }],
+        ['Help', { kind: "SEMANTIC_FUNCTION", arity: 0 }],
 ])}; 
 
 export const global_evaluation_environment: EvaluationEnvironment = {

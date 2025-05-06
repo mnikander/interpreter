@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { SemanticEnvironment, SemanticSymbol, semantic_lookup } from "./analyzer_environment";
-import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
+import { SemanticEnvironment, SemanticSymbol, semantic_lookup } from "./semantic_environment";
+import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom, is_nd_let} from "./parser";
 import { Error, OK, is_error } from "./error";
 
 export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
@@ -22,7 +22,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
     else if (is_nd_call(ast)) {
         if (is_nd_identifier(ast.func)) {
             const entry: undefined | SemanticSymbol = semantic_lookup(ast.func, env);
-            if(entry !== undefined && entry.kind === "ANALYZER_FUNCTION") {
+            if(entry !== undefined && entry.kind === "SEMANTIC_FUNCTION") {
                 if(entry.arity === ast.params.length) {
                     const ev_args: (Error | OK)[] = ast.params.map((ast: ASTNode) => analyze(ast, env));
                     const err: undefined | Error  = ev_args.find(is_error);

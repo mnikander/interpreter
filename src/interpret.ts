@@ -4,7 +4,7 @@ import { evaluate } from "./evaluator";
 import { tokenize, Token } from "./lexer";
 import { ASTNode, parse } from "./parser";
 import { Error, OK, is_error, error_to_string } from "./error";
-import { analyze } from "./analyzer";
+import { analyze } from "./semantic_analyzer";
 import { global_semantic_environment, global_evaluation_environment } from "./global_environments";
 
 export function interpret(line: string): undefined | boolean | number | string {
