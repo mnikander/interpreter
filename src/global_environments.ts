@@ -71,7 +71,7 @@ const help_text: Description[] = [
 
 function help(): string {
     const line: string = "--------------------------------------------------------\n";
-    let message: string = "\nSymbol\tUsage\t\tName\n" + line;
+    let message: string = "\nSymbol\tUsage\t\t\tName\n" + line;
     for (const description of help_text) {
         message += `${description.op}\t${description.example}\t${description.about}\n`;
     }
