@@ -6,15 +6,15 @@ import { Error, OK, is_error, number_of_arguments_error } from "./error";
 
 export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
     if (is_nd_boolean(ast)) {
-        return {kind: 'OK'};
+        return { kind: "OK" };
     }
     else if (is_nd_number(ast)) {
-        return {kind: 'OK'};
+        return { kind: "OK" };
     }
     else if (is_nd_identifier(ast)) {
         const entry: undefined | SemanticSymbol = semantic_lookup(ast, env);
         if (entry !== undefined) {
-            return {kind: 'OK'};
+            return { kind: "OK" };
         } else {
             return {kind: "Semantic error", token_id: ast.token_id, message: `unknown identifier '${ast.value}'`};
         }
@@ -43,7 +43,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
                     const ev_args: (Error | OK)[] = ast.params.map((ast: ASTNode) => analyze(ast, env));
                     const err: undefined | Error  = ev_args.find(is_error);
                     if(err === undefined) {
-                        return {kind: 'OK'};
+                        return { kind: "OK" };
                     }
                     else {
                         return err;
