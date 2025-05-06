@@ -27,5 +27,5 @@ export function evaluate(ast: ASTNode, env: EvaluationEnvironment): Error | Eval
             return err;
         }
     }
-    return {kind: "Evaluation error", message: `invalid expression`};
+    return {kind: "Evaluation error", token_id: ast.token_id, message: `invalid expression`};
 }
