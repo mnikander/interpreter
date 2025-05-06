@@ -133,6 +133,18 @@ describe.skip('variable binding', () => {
         expect(interpret('(let x 41 (+ x 1))')).toBe(42);
         expect(interpret('(let x 1 (+ x (x*2)))')).toBe(3);
     });
+
+    it('must report an error if a let-binding is provided too few arguments', () => {
+        const result = interpret('(let x 42)');
+        expect(result).toContain("error");
+        expect(result).toContain("argument");
+    });
+
+    it('must report an error if a let-binding is provided too many arguments', () => {
+        const result = interpret('(let x 2 x x)');
+        expect(result).toContain("error");
+        expect(result).toContain("argument");
+    });
 });
 
 describe.skip('type system', () => {

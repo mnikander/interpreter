@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { is_tk_boolean, is_tk_number, is_tk_identifier, is_tk_left, is_tk_right, Token } from "./lexer";
-import { Error, is_error } from "./error";
+import { Error, number_of_arguments_error, is_error } from "./error";
 
 export type ParseResult = Error | [ASTNode, number];
 
@@ -92,7 +92,7 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
         }
     }
     else {
-        return {kind: "Parsing error", token_id: index-1, message: "expected another token"};
+        return {kind: "Parsing error", token_id: index-1, message: "expected more tokens"};
     }
 }
 
@@ -125,23 +125,25 @@ function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLe
     const start_num = index;
     index++; // consume the TK_IDENTIFIER which is equal to "let"
 
+    if (is_tk_right(tokens[index])) return { kind: "Parsing error", token_id: index, message: "expected 3 arguments for a let-binding, 0 provided"};
     let result: ParseResult = parse_expression(tokens, index);
     if (is_error(result)) return result;
     const name: ASTNode = result[0];
     if (!is_nd_identifier(name))
         return { kind: "Parsing error", token_id: result[1]-1, message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
 
+    if (is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", 1, 3, result[1]);
+    if (is_tk_right(tokens[result[1]])) return { kind: "Parsing error", token_id: result[1], message: "expected 3 arguments for a let-binding, 1 provided"};
     result = parse_expression(tokens, result[1]);
     if (is_error(result)) return result;
     const expr = result[0];
 
+    if (is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", 2, 3, result[1]);
     result = parse_expression(tokens, result[1]);
     if (is_error(result)) return result;
     const body = result[0];
 
-    if (!is_tk_right(tokens[result[1]])) {
-        return { kind: 'Parsing error', token_id: result[1], message: `too many arguments for let-binding, expected 3` };
-    }
+    if (!is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", "too many", 3, result[1]);
 
     result = consumeToken(result); // consume the TokenCloseParen
     return [{ kind: "ND_LET", token_id: start_num, name: name, expr: expr, body: body }, result[1]];
