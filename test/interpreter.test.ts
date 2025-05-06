@@ -123,7 +123,7 @@ describe('nested expressions', () => {
     });
 });
 
-describe.skip('variable binding', () => {
+describe('variable binding', () => {
     it('must support variable definitions', () => {
         expect(interpret('(let x 42 x)')).toBe(42);
         expect(interpret('(let x True x)')).toBe(true);

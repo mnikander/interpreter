@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { ASTAtom } from "./parser";
+import { Error, OK } from "./error";
+import { ASTAtom, NodeIdentifier, NodeLet } from "./parser";
 
 export type SemanticSymbol =
     | { kind: "SEMANTIC_FUNCTION", arity: number }
@@ -20,6 +21,21 @@ export function semantic_lookup(identifier: ASTAtom, environment: SemanticEnviro
             return undefined;
         }
     }
+}
+
+export function semantic_define(node: NodeLet, env: SemanticEnvironment): Error | OK {
+    if (env.symbols.get(node.name.value)) {
+        return { kind: "Semantic error", token_id: node.token_id, message: "attempted to redefine an identifier which already exists"}
+    }
+    else {
+        // TODO: what about functions? How do I figure out if the body is a function and has an arity which needs to be set?
+        env.symbols.set(node.name.value, { kind: "SEMANTIC_VALUE" });
+        return { kind: "OK" };
+    }
+}
+
+export function semantic_extend(env: SemanticEnvironment): SemanticEnvironment {
+    return { parent: env, symbols: new Map<string, SemanticSymbol>()};
 }
 
 export type SemanticEnvironment = {

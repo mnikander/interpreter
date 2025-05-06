@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { SemanticEnvironment, SemanticSymbol, semantic_lookup } from "./semantic_environment";
+import { SemanticEnvironment, SemanticSymbol, semantic_define, semantic_extend, semantic_lookup } from "./semantic_environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom, is_nd_let} from "./parser";
 import { Error, OK, is_error } from "./error";
 
@@ -18,6 +18,20 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
         } else {
             return {kind: "Semantic error", token_id: ast.token_id, message: `unknown identifier '${ast.value}'`};
         }
+    }
+    else if (is_nd_let(ast)) {
+
+        const checked_expression = analyze(ast.expr, env);
+        if (is_error(checked_expression)) return checked_expression;
+
+        let sub_env: SemanticEnvironment = semantic_extend(env);
+        const defined_symbol: Error | OK = semantic_define(ast, sub_env);
+        if (is_error(defined_symbol)) return defined_symbol;
+
+        const checked_body: Error | OK = analyze(ast.body, sub_env);
+        if (is_error(checked_body)) return checked_body;
+
+        return { kind: "OK" };
     }
     else if (is_nd_call(ast)) {
         if (is_nd_identifier(ast.func)) {

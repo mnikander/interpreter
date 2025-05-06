@@ -1,8 +1,8 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from "./evaluator_environment";
-import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom} from "./parser";
-import { Error, is_error } from "./error";
+import { EvaluationEnvironment, EvaluationSymbol, evaluation_define, evaluation_extend, evaluation_lookup } from "./evaluator_environment";
+import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom, is_nd_let} from "./parser";
+import { Error, OK, is_error } from "./error";
 
 export function evaluate(ast: ASTNode, env: EvaluationEnvironment): Error | EvaluationSymbol {
     if (is_nd_boolean(ast)) {
@@ -13,6 +13,20 @@ export function evaluate(ast: ASTNode, env: EvaluationEnvironment): Error | Eval
     }
     else if (is_nd_identifier(ast)) {
         return evaluation_lookup(ast, env) as EvaluationSymbol;
+    }
+    else if (is_nd_let(ast)) {
+        let sub_env = evaluation_extend(env);
+
+        const value = evaluate(ast.expr, env);
+        if (is_error(value)) return value;
+
+        let defined: Error | OK = evaluation_define( ast, value, sub_env);
+        if (is_error(defined)) {
+            return defined;
+        }
+        else {
+            return evaluate(ast.body, sub_env);
+        }
     }
     else if (is_nd_call(ast)) {
         const entry: Error | EvaluationSymbol       = evaluate(ast.func, env);
