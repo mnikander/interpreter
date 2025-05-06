@@ -2,7 +2,7 @@
 
 import { SemanticEnvironment, SemanticSymbol, semantic_define, semantic_extend, semantic_lookup } from "./semantic_environment";
 import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom, is_nd_let} from "./parser";
-import { Error, OK, is_error } from "./error";
+import { Error, OK, is_error, number_of_arguments_error } from "./error";
 
 export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
     if (is_nd_boolean(ast)) {
@@ -48,7 +48,7 @@ export function analyze(ast: ASTNode, env: SemanticEnvironment): Error | OK {
                     }
                 }
                 else {
-                    return {kind: "Semantic error", token_id: ast.token_id, message: `${ast.params.length} argument(s) provided, expected ${entry.arity}`};
+                    return number_of_arguments_error("Semantic error", ast.params.length, entry.arity, ast.token_id);
                 }
             }
             else {

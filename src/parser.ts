@@ -125,7 +125,7 @@ function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLe
     const start_num = index;
     index++; // consume the TK_IDENTIFIER which is equal to "let"
 
-    if (is_tk_right(tokens[index])) return { kind: "Parsing error", token_id: index, message: "expected 3 arguments for a let-binding, 0 provided"};
+    if (is_tk_right(tokens[index])) return number_of_arguments_error("Parsing error", 0, 3, index);
     let result: ParseResult = parse_expression(tokens, index);
     if (is_error(result)) return result;
     const name: ASTNode = result[0];
@@ -133,7 +133,6 @@ function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLe
         return { kind: "Parsing error", token_id: result[1]-1, message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
 
     if (is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", 1, 3, result[1]);
-    if (is_tk_right(tokens[result[1]])) return { kind: "Parsing error", token_id: result[1], message: "expected 3 arguments for a let-binding, 1 provided"};
     result = parse_expression(tokens, result[1]);
     if (is_error(result)) return result;
     const expr = result[0];

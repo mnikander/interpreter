@@ -24,6 +24,6 @@ export function error_to_string(error: Error, tokens: Token[]): string {
     return `${error.kind} at '${tokens[error.token_id].value}': ${error.message}.`;
 }
 
-export function number_of_arguments_error(kind: ErrorKind, provided: number | string, expected: number, token_id: number): Error {
-    return { kind: kind, token_id: token_id, message: `expected ${expected} arguments, ${provided} provided`};
+export function number_of_arguments_error(kind: ErrorKind, actual: number | string, expected: number, token_id: number): Error {
+    return { kind: kind, token_id: token_id, message: `expected ${expected} arguments, received ${actual}`};
 }
