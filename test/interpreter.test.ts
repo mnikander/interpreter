@@ -131,7 +131,7 @@ describe.skip('variable binding', () => {
 
     it('must support variable definitions inside of nested expressions', () => {
         expect(interpret('(let x 41 (+ x 1))')).toBe(42);
-        expect(interpret('(let x 1 (+ x (x*2)))')).toBe(3);
+        expect(interpret('(let x 1 (+ x (* x 2)))')).toBe(3);
     });
 
     it('must report an error if a let-binding is provided too few arguments', () => {
