@@ -52,9 +52,9 @@ describe('parse', () => {
             expect(is_nd_let(ast)).toBe(true);
             if (is_nd_let(ast)) {
                 expect(is_nd_identifier(ast.name)).toBe(true);
-                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x" });
-                expect(ast.expr).toStrictEqual({ kind: "ND_NUMBER", value: 42} );
-                expect(ast.body).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x" });
+                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 2, value: "x" });
+                expect(ast.expr).toStrictEqual({ kind: "ND_NUMBER", token_id: 3, value: 42} );
+                expect(ast.body).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 4, value: "x" });
             }
         }
     });
@@ -69,19 +69,19 @@ describe('parse', () => {
             expect(is_nd_let(ast)).toBe(true);
             if (is_nd_let(ast)) {
                 expect(is_nd_identifier(ast.name)).toBe(true);
-                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x" });
+                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 2, value: "x" });
                 expect(is_nd_call(ast.expr)).toBe(true);
                 if(is_nd_call(ast.expr)) {
-                    expect(ast.expr.func).toStrictEqual({ kind: "ND_IDENTIFIER", value: '*'} );
-                    expect(ast.expr.params[0]).toStrictEqual({ kind: "ND_NUMBER", value: 4} );
-                    expect(ast.expr.params[1]).toStrictEqual({ kind: "ND_NUMBER", value: 10} );
+                    expect(ast.expr.func).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 4, value: '*'} );
+                    expect(ast.expr.params[0]).toStrictEqual({ kind: "ND_NUMBER", token_id: 5, value: 4} );
+                    expect(ast.expr.params[1]).toStrictEqual({ kind: "ND_NUMBER", token_id: 6, value: 10} );
                 }
                 expect(is_nd_call(ast.body)).toBe(true);
                 if (is_nd_call(ast.body)) {
-                    expect(ast.body.func).toStrictEqual({ kind: "ND_IDENTIFIER", value: "+"} );
+                    expect(ast.body.func).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 9, value: "+"} );
                     expect(ast.body.params.length).toBe(2);
-                    expect(ast.body.params[0]).toStrictEqual({ kind: "ND_IDENTIFIER", value: "x"} );
-                    expect(ast.body.params[1]).toStrictEqual({ kind: "ND_NUMBER", value: 2} );
+                    expect(ast.body.params[0]).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 10, value: "x"} );
+                    expect(ast.body.params[1]).toStrictEqual({ kind: "ND_NUMBER", token_id: 11, value: 2} );
                 }
             }
         }

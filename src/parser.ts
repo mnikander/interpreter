@@ -15,11 +15,11 @@ export type ASTNode =
     | NodeCall
     | NodeLet;
 
-export interface NodeBoolean    { kind: "ND_BOOLEAN",    value: boolean };
-export interface NodeNumber     { kind: "ND_NUMBER",     value: number };
-export interface NodeIdentifier { kind: "ND_IDENTIFIER", value: string };
-export interface NodeCall       { kind: "ND_CALL",       func: ASTNode, params: ASTNode[] };
-export interface NodeLet        { kind: "ND_LET",        name: NodeIdentifier, expr: ASTNode, body: ASTNode };
+export interface NodeBoolean    { kind: "ND_BOOLEAN",    token_id: number, value: boolean };
+export interface NodeNumber     { kind: "ND_NUMBER",     token_id: number, value: number };
+export interface NodeIdentifier { kind: "ND_IDENTIFIER", token_id: number, value: string };
+export interface NodeCall       { kind: "ND_CALL",       token_id: number, func: ASTNode, params: ASTNode[] };
+export interface NodeLet        { kind: "ND_LET",        token_id: number, name: NodeIdentifier, expr: ASTNode, body: ASTNode };
 
 export function is_nd_boolean(node: ASTNode): node is NodeBoolean {
     return node.kind == "ND_BOOLEAN";
@@ -52,10 +52,10 @@ export function parse(tokens: Token[]): Error | [ASTNode, number] {
             return [expression, result[1]];
         }
         else if (result[1] < tokens.length) {
-            return { kind: "Parsing error", message: "expected a single expression"};
+            return { kind: "Parsing error", token_id: result[1], message: "expected a single expression"};
         }
         else {
-            return { kind: "Parsing error", message: "not all tokens could be evaluated"};
+            return { kind: "Parsing error", token_id: result[1], message: "not all tokens could be evaluated"};
         }
     }
 }
@@ -66,13 +66,13 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
         index++; // consume the token
 
         if (is_tk_boolean(token)) {
-            return [{kind: "ND_BOOLEAN", value: token.value}, index];
+            return [{kind: "ND_BOOLEAN", token_id: index-1, value: token.value}, index];
         }
         else if (is_tk_number(token)) {
-            return [{kind: "ND_NUMBER", value: token.value}, index];
+            return [{kind: "ND_NUMBER", token_id: index-1, value: token.value}, index];
         }
         else if (is_tk_identifier(token)) {
-            return [{kind: "ND_IDENTIFIER", value: token.value}, index];
+            return [{kind: "ND_IDENTIFIER", token_id: index-1, value: token.value}, index];
         }
         else if (is_tk_left(token) && index < tokens.length) {
             if (is_let(tokens[index])) {
@@ -85,19 +85,20 @@ export function parse_expression(tokens: readonly Token[], index: number = 0): E
         else if (is_tk_right(token)) {
             // closing parentheses are handled by the parsers specific to function calls, let-bindings, etc
             // a closing parenthesis should never occur in the control flow of this general parsing function
-            return {kind: "Parsing error", message: `unexpected ')'`};
+            return {kind: "Parsing error", token_id: index-1, message: `unexpected ')'`};
         }
         else {
-            return {kind: "Parsing error", message: 'unknown token type'};
+            return {kind: "Parsing error", token_id: index-1, message: 'unknown token type'};
         }
     }
     else {
-        return {kind: "Parsing error", message: "expected another token"};
+        return {kind: "Parsing error", token_id: index-1, message: "expected another token"};
     }
 }
 
 function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeCall, number] {
     let params: ASTNode[] = [];
+    const start_num = index;
     let result: ParseResult = parse_expression(tokens, index);
     if(is_error(result)) return result;
 
@@ -105,7 +106,7 @@ function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeC
     while (result[1] < tokens.length) {
         if (is_tk_right(tokens[result[1]])) {
             result = consumeToken(result); // consume the TK_RIGHT
-            return [{kind: "ND_CALL", func: func, params: params}, result[1]];
+            return [{kind: "ND_CALL", token_id: start_num, func: func, params: params}, result[1]];
         }
         else {
             result = parse_expression(tokens, result[1]);
@@ -113,7 +114,7 @@ function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeC
             params.push(result[0]);
         }
     }
-    return {kind: "Parsing error", message: "expected closing parentheses"};
+    return {kind: "Parsing error", token_id: result[1]-1, message: "expected closing parentheses"};
 }
 
 function is_let(token: Token): boolean {
@@ -121,13 +122,14 @@ function is_let(token: Token): boolean {
 }
 
 function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLet, number] {
+    const start_num = index;
     index++; // consume the TK_IDENTIFIER which is equal to "let"
 
     let result: ParseResult = parse_expression(tokens, index);
     if (is_error(result)) return result;
     const name: ASTNode = result[0];
     if (!is_nd_identifier(name))
-        return { kind: "Parsing error", message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
+        return { kind: "Parsing error", token_id: result[1]-1, message: `let-binding expects an identifier to define but got a '${name.kind}' instead` };
 
     result = parse_expression(tokens, result[1]);
     if (is_error(result)) return result;
@@ -138,11 +140,11 @@ function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLe
     const body = result[0];
 
     if (!is_tk_right(tokens[result[1]])) {
-        return { kind: 'Parsing error', message: `too many arguments for let-binding, expected 3` };
+        return { kind: 'Parsing error', token_id: result[1], message: `too many arguments for let-binding, expected 3` };
     }
 
     result = consumeToken(result); // consume the TokenCloseParen
-    return [{ kind: "ND_LET", name: name, expr: expr, body: body }, result[1]];
+    return [{ kind: "ND_LET", token_id: start_num, name: name, expr: expr, body: body }, result[1]];
 }
 
 function consumeToken(result: [ASTNode, number]): [ASTNode, number] {
