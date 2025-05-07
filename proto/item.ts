@@ -2,5 +2,5 @@
 
 export interface Item {
     kind: string,
-    subkind: string,
+    subkind?: string,
 }

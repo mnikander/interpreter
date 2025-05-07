@@ -18,7 +18,6 @@ const rule = {
 
 interface TokenizerState extends Item {
     kind: "TokenizerState",
-    subkind: "None",
     success: boolean,
     index: number,
     line: string,
@@ -28,7 +27,7 @@ interface TokenizerState extends Item {
 // handles errors and implements the production rule:
 //      line ::= expr *space
 export function lex(line: string): Result<Token[]> {
-    let state: TokenizerState = { kind: "TokenizerState", subkind: "None", success: true, index: 0, line: line, tokens: []};
+    let state: TokenizerState = { kind: "TokenizerState", success: true, index: 0, line: line, tokens: []};
     let result: Result<TokenizerState> = lex_expression(state);
     if (is_error(result)) {
         return result;
