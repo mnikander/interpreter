@@ -8,18 +8,18 @@ export type AST = Leaf | Node;
 
 export interface Leaf extends Item {
     kind: string,
-    subkind: string,
-    token_id: number,
-    node_id: number,
-    value: boolean | number | string,
+    subkind?: string,
+    token_id?: number,
+    node_id?: number,
+    value?: boolean | number | string,
 }
 
 export interface Node extends Item {
     kind: string,
-    subkind: string,
-    token_id: number,
-    node_id: number,
-    data: Item[]
+    subkind?: string,
+    token_id?: number,
+    node_id?: number,
+    data?: Item[]
 };
 
 // specific types for the AST
@@ -58,15 +58,17 @@ export function is_leaf_reference(item: Item): item is LeafReference { return is
 export function is_node(item: Item): item is Node { return item.kind === "Node"; }
 
 export function is_node_call(item: Item): item is NodeCall {
-    return (is_node(item))
-    && (item.subkind === "Call")
-    && (item.data.length >= 1);
+    return is_node(item)
+    && item.subkind === "Call"
+    && item.data !== undefined
+    && item.data.length >= 1;
 }
 
 export function is_node_let(item: Item): item is NodeLet {
-    return (is_node(item))
-    && (item.subkind === "Let")
-    && (item.data.length === 4)
+    return is_node(item)
+    && item.subkind === "Let"
+    && item.data !== undefined
+    && item.data.length === 4
     && is_leaf_identifier(item.data[0])
     && item.data[0].value === 'let'
     && is_leaf_identifier(item.data[1]);
