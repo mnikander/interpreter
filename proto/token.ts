@@ -64,9 +64,11 @@ export const make_token = {
     open: function (id: number, offset: number, word: string): TokenOpen {
        return { kind: "Token", subkind: "Open", id: id, offset: offset, value: "(" };
     },
+
     close: function (id: number, offset: number, word: string): TokenClose {
         return { kind: "Token", subkind: "Close", id: id, offset: offset, value: ")" };
     },
+
     boolean: function (id: number, offset: number, word: "true" | "True" | "false" | "False"): TokenBoolean {
         if (word === "false" || word === "False") {
             return { kind: "Token", subkind: "Boolean", id: id, offset: offset, value: false };
@@ -75,12 +77,15 @@ export const make_token = {
             return { kind: "Token", subkind: "Boolean", id: id, offset: offset, value: true };
         }
     },
+
     number: function (id: number, offset: number, word: string): TokenNumber {
         return { kind: "Token", subkind: "Number", id: id, offset: offset, value: Number(word) };
     },
+
     string: function (id: number, offset: number, word: string): TokenString {
         return { kind: "Token", subkind: "String", id: id, offset: offset, value: word };
     },
+
     identifier: function (id: number, offset: number, word: string): TokenIdentifier {
         return { kind: "Token", subkind: "Identifier", id: id, offset: offset, value: word };
     },
