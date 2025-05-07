@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../proto/simple_lexer'
 import { is_error, is_ok } from '../proto/error';
-import { parse } from '../proto/parser';
+import { parse_line } from '../proto/parser';
 import { is_leaf_boolean } from '../proto/ast';
 
 describe('parse atoms', () => {
@@ -10,7 +10,7 @@ describe('parse atoms', () => {
         const lexing_result = lex('true');
         expect(is_ok(lexing_result)).toBe(true);
         if (is_ok(lexing_result)) {
-            const parsing_result = parse(lexing_result.value);
+            const parsing_result = parse_line(lexing_result.value);
             expect(is_ok(parsing_result)).toBe(true);
             if (is_ok(parsing_result)) {
                 let ast = parsing_result.value;
@@ -32,7 +32,7 @@ describe('valid and invalid parentheses', () => {
         const lexing_result = lex("(");
         expect(is_ok(lexing_result)).toBe(true);
         if(is_ok(lexing_result)) {
-            let parsing_result = parse(lexing_result.value);
+            let parsing_result = parse_line(lexing_result.value);
             expect(is_error(parsing_result)).toBe(true);
         }
     });
@@ -41,7 +41,7 @@ describe('valid and invalid parentheses', () => {
         const lexing_result = lex(")");
         expect(is_ok(lexing_result)).toBe(true);
         if(is_ok(lexing_result)) {
-            let parsing_result = parse(lexing_result.value);
+            let parsing_result = parse_line(lexing_result.value);
             expect(is_error(parsing_result)).toBe(true);
         }
     });
@@ -50,7 +50,7 @@ describe('valid and invalid parentheses', () => {
         const lexing_result = lex(")(");
         expect(is_ok(lexing_result)).toBe(true);
         if(is_ok(lexing_result)) {
-            let parsing_result = parse(lexing_result.value);
+            let parsing_result = parse_line(lexing_result.value);
             expect(is_error(parsing_result)).toBe(true);
         }
     });
@@ -60,7 +60,7 @@ describe('valid and invalid parentheses', () => {
         const lexing_result = lex(")(");
         expect(is_ok(lexing_result)).toBe(true);
         if(is_ok(lexing_result)) {
-            let parsing_result = parse(lexing_result.value);
+            let parsing_result = parse_line(lexing_result.value);
             expect(is_error(parsing_result)).toBe(true);
         }
     });
