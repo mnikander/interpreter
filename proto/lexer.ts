@@ -5,15 +5,15 @@ import { Error, Result, is_error, is_ok } from './error'
 import { Item } from './item'
 
 const rule = {
-    space:       /^\s/,
-    open:        /\(/,
-    close:       /\)/,
-    bool:        /^(true|false)/,
-    int:         /^[-+]?[0-9]+/,
-    float:       /^[-+]?((\d+\.\d*)|(\d*\.\d+))/,
-    string:      /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
-    id_alphanum: /^[_a-zA-Z][_a-zA-Z0-9]*/,
-    id_special:  /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/,
+    space:       { description: "a whitespace character",     regex: /^\s/},
+    open:        { description: "(",                          regex: /\(/},
+    close:       { description: ")",                          regex: /\)/},
+    bool:        { description: "a boolean",                  regex: /^(true|false)/},
+    int:         { description: "an integer",                 regex: /^[-+]?[0-9]+/},
+    float:       { description: "a float",                    regex: /^[-+]?((\d+\.\d*)|(\d*\.\d+))/},
+    string:      { description: "a string",                   regex: /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/},
+    id_alphanum: { description: "an alphanumeric identifier", regex: /^[_a-zA-Z][_a-zA-Z0-9]*/},
+    id_special:  { description: "a operation identifier",     regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
 }
 
 interface TokenizerState extends Item {
@@ -109,11 +109,11 @@ function try_atom(state: TokenizerState): Result<TokenizerState> {
     result = try_token(rule.id_special, make_token.identifier, state);
     if (is_ok(result)) return result;
 
-    return result;
+    return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `invalid token, expected an atom`} };
 }
 
-function try_token(regex: RegExp, make_token: undefined | Function, state: TokenizerState): Result<TokenizerState> {
-    const match = regex.exec(state.line);
+function try_token(rule: { description: string, regex: RegExp }, make_token: undefined | Function, state: TokenizerState): Result<TokenizerState> {
+    const match = rule.regex.exec(state.line);
     if (match && match.index === 0) { // verify the match starts at the beginning
         const word = match[0];
         state.success = true;
@@ -125,6 +125,6 @@ function try_token(regex: RegExp, make_token: undefined | Function, state: Token
         return { ok: true, value: state };
     }
     else {
-        return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `could not match token ${regex}`} };
+        return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `invalid token, expected ${rule.description}`} };
     }
 }
