@@ -6,24 +6,28 @@ export interface Token extends Item {
     kind: "Token",
     subkind: string,
     id: number,
+    value: any,
 }
 
 export interface TokenOpen extends Token {
     kind: "Token",
     subkind: "Open",
     id: number,
+    value: "(",
 }
 
 export interface TokenClose extends Token {
     kind: "Token",
     subkind: "Close",
     id: number,
+    value: ")",
 }
 
 export interface TokenAtom extends Token {
     kind: "Token",
     subkind: "Atom",
     id: number,
+    value: boolean | number | string,
 }
 
 // type predicates
