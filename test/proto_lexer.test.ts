@@ -28,6 +28,17 @@ describe('tokenize boolean', () => {
 });
 
 describe('tokenize expressions', () => {
+    it('must report an error for empty expressions', () => {
+        // TODO: this could be delayed to the semantic analysis
+        const result = lex('()');
+        expect(is_error(result)).toBe(true);
+    });
+
+    it('must report an error when spaces beween identifiers are missing', () => {
+        const result = lex('(+a b)');
+        expect(is_error(result)).toBe(true);
+    });
+
     it('must tokenize integer expressions', () => {
         const result = lex('(+ 1 2)');
         expect(is_error(result)).toBe(false);

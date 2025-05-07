@@ -43,6 +43,12 @@ export function lex(line: string): Error | Token[] {
 }
 
 export function tokenize(state: TokenizerState): Error | TokenizerState {
+    // currently this function implements the production rule:
+    //      expr ::= *space (atom | (open *(*space atom)))
+    //
+    // which is not quite correct, there MUST be at least one atom and there must be at least one space between atoms inside a function call:
+    //      expr ::= *space (atom | (open *space atom *(space *space atom)))
+    //                                           ^      ^
     state = remove_whitespace(state);
 
     const atom: undefined | TokenizerState = try_atom(state);
@@ -57,9 +63,11 @@ export function tokenize(state: TokenizerState): Error | TokenizerState {
         while(!is_error(result)) {
             const closeParen = try_token(rule.close, make_token.close, result);
             if (closeParen !== undefined) {
+                // TODO: I need to ensure there is at least one atom
                 return closeParen;
             }
             else {
+                // TODO: I need to ensure that when there are spaces between atoms
                 result = tokenize(result);
             }
         }
