@@ -9,12 +9,12 @@ export interface Error extends Item {
     message: string,
 }
 
-export function is_error(item: Item | Item[]): item is Error {
-    if (Array.isArray(item)) {
-        const first_error = item.find(is_error);
-        return first_error !== undefined;
-    }
-    else {
-        return item.kind === "Error";
-    }
+export type Result<T> = { ok: true, value: T } | { ok: false, error: Error };
+
+export function is_ok<T>(result: Result<T>): result is { ok: true, value: T } {
+    return result.ok === true;
+}
+
+export function is_error<T>(result: Result<T>): result is { ok: false, error: Error } {
+    return result.ok === false;
 }

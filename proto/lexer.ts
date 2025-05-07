@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { make_token, Token } from './token'
-import { Error, is_error } from './error'
+import { Error, Result, is_error, is_ok } from './error'
 import { Item } from './item'
 
 const rule = {
@@ -27,24 +27,24 @@ interface TokenizerState extends Item {
 
 // handles errors and implements the production rule:
 //      line ::= expr *space
-export function lex(line: string): Error | Token[] {
+export function lex(line: string): Result<Token[]> {
     let state: TokenizerState = { kind: "TokenizerState", subkind: "None", success: true, index: 0, line: line, tokens: []};
-    let result: Error | TokenizerState = lex_expression(state);
+    let result: Result<TokenizerState> = lex_expression(state);
     if (is_error(result)) {
         return result;
     }
     else {
-        result = remove_whitespace(result);
-        if(result.line.length == 0) {
-            return result.tokens;
+        result.value = remove_whitespace(result.value);
+        if(result.value.line.length == 0) {
+            return { ok: true, value: result.value.tokens };
         }
         else {
-            return { kind: "Error", subkind: "Lexing", token_id: result.tokens.length, message: "expected a single expression"}
+            return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: result.value.tokens.length, message: "expected a single expression"}};
         }
     }
 }
 
-export function lex_expression(state: TokenizerState): Error | TokenizerState {
+export function lex_expression(state: TokenizerState): Result<TokenizerState> {
     // currently this function implements the production rule:
     //      expr ::= *space (atom | (open *(*space expr)))
     //
@@ -53,51 +53,67 @@ export function lex_expression(state: TokenizerState): Error | TokenizerState {
     //                                           ^      ^
     state = remove_whitespace(state);
 
-    const atom: undefined | TokenizerState = try_atom(state);
-    if (atom !== undefined) {
-        state = atom;
+    const atom: Result<TokenizerState> = try_atom(state);
+    if (is_ok(atom)) {
+        return atom;
     }
     else {
-        const openParen = try_token(rule.open, make_token.open, state);
-        if (openParen === undefined) return { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `expected a '('`};
+        let function_call = try_token(rule.open, make_token.open, state);
+        if (is_error(function_call)) return function_call;
 
-        let result: Error | TokenizerState = openParen;
-        while(!is_error(result)) {
-            const closeParen = try_token(rule.close, make_token.close, result);
-            if (closeParen !== undefined) {
+        while(is_ok(function_call)) {
+            const closeParen = try_token(rule.close, make_token.close, function_call.value);
+            if (is_ok(closeParen)) {
                 // TODO: I need to ensure there is at least one atom
                 return closeParen;
             }
             else {
                 // TODO: I need to ensure that when there are spaces between atoms
-                result = lex_expression(result);
+                function_call = lex_expression(function_call.value);
             }
         }
-        return result;
+        return function_call;
     }
-    return state;
 }
 
 function remove_whitespace(state: TokenizerState): TokenizerState {
-    let result: undefined | TokenizerState = state;
-    while (result !== undefined) {
-        state  = result; // update state only if the previous result was ok
-        result = try_token(rule.space, undefined, result);
+    let result: Result<TokenizerState> = { ok: true, value: state };
+    while (is_ok(result)) {
+        state  = result.value; // update state only if the previous result was ok
+        result = try_token(rule.space, undefined, result.value);
     }
-    return state;
+    return state; // return the last successful state
 }
 
-function try_atom(state: TokenizerState): undefined | TokenizerState {
-    let result: undefined | TokenizerState = state;
-    return try_token(rule.bool, make_token.boolean, result) ??
-        try_token(rule.int, make_token.number, result) ??
-        try_token(rule.float, make_token.number, result) ??
-        try_token(rule.string, make_token.string, result) ??
-        try_token(rule.id_alphanum, make_token.identifier, result) ??
-        try_token(rule.id_special, make_token.identifier, result);
+function try_space(state: TokenizerState): Result<TokenizerState> {
+    return try_token(rule.space, undefined, state);
 }
 
-function try_token(regex: RegExp, make_token: undefined | Function, state: TokenizerState): undefined | TokenizerState {
+function try_atom(state: TokenizerState): Result<TokenizerState> {
+    let result: Result<TokenizerState> = { ok: true, value: state };
+
+    result = try_token(rule.bool, make_token.boolean, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.int, make_token.number, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.float, make_token.number, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.string, make_token.string, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.id_alphanum, make_token.identifier, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.id_special, make_token.identifier, state);
+    if (is_ok(result)) return result;
+
+    return result;
+}
+
+function try_token(regex: RegExp, make_token: undefined | Function, state: TokenizerState): Result<TokenizerState> {
     const match = regex.exec(state.line);
     if (match && match.index === 0) { // verify the match starts at the beginning
         const word = match[0];
@@ -107,9 +123,9 @@ function try_token(regex: RegExp, make_token: undefined | Function, state: Token
         if (make_token !== undefined) {
             state.tokens.push(make_token(state.index, word)); // TODO: it might be possible to construct a raw AST by appending into a data field here, instead of into a flat list of tokens
         }
-        return state;
+        return { ok: true, value: state };
     }
     else {
-        return undefined;
+        return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `could not match token ${regex}`} };
     }
 }
