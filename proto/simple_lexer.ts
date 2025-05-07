@@ -26,7 +26,12 @@ interface State extends Item {
 export function lex(line: string): Result<Token[]> {
     let result: Result<State> = { ok: true, value: { kind: "State", index: 0, line: line, tokens: []}};
     while(is_ok(result)) {
-        result = next_token(result.value);
+        if (result.value.line.length > 0) {
+            result = next_token(result.value);
+        }
+        else {
+            return { ok: true, value: result.value.tokens };
+        }
     }
     return result;
 }
@@ -35,6 +40,12 @@ function next_token(state: State): Result<State> {
     let result: Result<State> = { ok: true, value: state };
 
     result = try_token(rule.whitespace, make_token.whitespace, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.open, make_token.open, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.close, make_token.close, state);
     if (is_ok(result)) return result;
 
     result = try_token(rule.bool, make_token.boolean, state);
