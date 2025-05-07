@@ -7,36 +7,40 @@ import { Item } from "./item";
 export interface Leaf extends Item {
     kind: string,
     subkind: string,
-    id: number,
+    token_id: number,
+    node_id: number,
     value: boolean | number | string,
 }
 
 export interface Node extends Item {
     kind: string,
     subkind: string,
-    id: number,
+    token_id: number,
+    node_id: number,
     data: Item[]
 };
 
 // specific types for the AST
 
-export interface LeafBoolean    extends Leaf { kind: "Leaf", subkind: "Boolean",    id: number, value: boolean };
-export interface LeafNumber     extends Leaf { kind: "Leaf", subkind: "Number",     id: number, value: number };
-export interface LeafString     extends Leaf { kind: "Leaf", subkind: "String",     id: number, value: string };
-export interface LeafIdentifier extends Leaf { kind: "Leaf", subkind: "Identifier", id: number, value: string };
-export interface LeafReference  extends Leaf { kind: "Leaf", subkind: "Reference",  id: number, value: string }; // I could switch to an ID number later
+export interface LeafBoolean    extends Leaf { kind: "Leaf", subkind: "Boolean",    token_id: number, node_id: number, value: boolean };
+export interface LeafNumber     extends Leaf { kind: "Leaf", subkind: "Number",     token_id: number, node_id: number, value: number };
+export interface LeafString     extends Leaf { kind: "Leaf", subkind: "String",     token_id: number, node_id: number, value: string };
+export interface LeafIdentifier extends Leaf { kind: "Leaf", subkind: "Identifier", token_id: number, node_id: number, value: string };
+export interface LeafReference  extends Leaf { kind: "Leaf", subkind: "Reference",  token_id: number, node_id: number, value: string }; // I could switch to an ID number later
 
 export interface NodeCall extends Node {
     kind: "Node",
     subkind: "Call",
-    id: number,
+    token_id: number,
+    node_id: number,
     data: Item[]
 }
 
 export interface NodeLet extends Node {
     kind: "Node",
     subkind: "Let",
-    id: number,
+    token_id: number,
+    node_id: number,
     data: [Item, Item, Item, Item]
 }
 

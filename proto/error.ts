@@ -10,6 +10,7 @@ export interface Ok extends Item {
 export interface Error extends Item {
     kind: "Error",
     subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation",
+    token_id: number,
     message: string,
 }
 
