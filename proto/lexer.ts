@@ -120,7 +120,7 @@ function try_token(rule: { description: string, regex: RegExp }, make_token: und
         state.index += word.length;
         state.line = state.line.slice(word.length);
         if (make_token !== undefined) {
-            state.tokens.push(make_token(state.index, word)); // TODO: it might be possible to construct a raw AST by appending into a data field here, instead of into a flat list of tokens
+            state.tokens.push(make_token(state.tokens.length, word)); // TODO: it might be possible to construct a raw AST by appending into a data field here, instead of into a flat list of tokens
         }
         return { ok: true, value: state };
     }
