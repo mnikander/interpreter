@@ -18,7 +18,6 @@ const rule = {
 
 interface State extends Item {
     kind: "State",
-    success: boolean,
     index: number,
     line: string,
     tokens: Token[]
@@ -27,7 +26,7 @@ interface State extends Item {
 // handles errors and implements the production rule:
 //      line ::= expr *space
 export function lex(line: string): Result<Token[]> {
-    let state: State = { kind: "State", success: true, index: 0, line: line, tokens: []};
+    let state: State = { kind: "State", index: 0, line: line, tokens: []};
     let result: Result<State> = try_expression(state);
     if (is_error(result)) {
         return result;
@@ -116,7 +115,6 @@ function try_token(rule: { description: string, regex: RegExp }, make_token: und
     const match = rule.regex.exec(state.line);
     if (match && match.index === 0) { // verify the match starts at the beginning
         const word = match[0];
-        state.success = true;
         state.index += word.length;
         state.line = state.line.slice(word.length);
         if (make_token !== undefined) {
