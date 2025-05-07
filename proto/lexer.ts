@@ -16,8 +16,8 @@ const rule = {
     id_special:  { description: "a operation identifier",     regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
 }
 
-interface TokenizerState extends Item {
-    kind: "TokenizerState",
+interface State extends Item {
+    kind: "State",
     success: boolean,
     index: number,
     line: string,
@@ -27,8 +27,8 @@ interface TokenizerState extends Item {
 // handles errors and implements the production rule:
 //      line ::= expr *space
 export function lex(line: string): Result<Token[]> {
-    let state: TokenizerState = { kind: "TokenizerState", success: true, index: 0, line: line, tokens: []};
-    let result: Result<TokenizerState> = lex_expression(state);
+    let state: State = { kind: "State", success: true, index: 0, line: line, tokens: []};
+    let result: Result<State> = lex_expression(state);
     if (is_error(result)) {
         return result;
     }
@@ -43,7 +43,7 @@ export function lex(line: string): Result<Token[]> {
     }
 }
 
-export function lex_expression(state: TokenizerState): Result<TokenizerState> {
+export function lex_expression(state: State): Result<State> {
     // currently this function implements the production rule:
     //      expr ::= *space (atom | (open *(*space expr)))
     //
@@ -52,7 +52,7 @@ export function lex_expression(state: TokenizerState): Result<TokenizerState> {
     //                                           ^      ^
     state = remove_whitespace(state);
 
-    const atom: Result<TokenizerState> = try_atom(state);
+    const atom: Result<State> = try_atom(state);
     if (is_ok(atom)) {
         return atom;
     }
@@ -75,8 +75,8 @@ export function lex_expression(state: TokenizerState): Result<TokenizerState> {
     }
 }
 
-function remove_whitespace(state: TokenizerState): TokenizerState {
-    let result: Result<TokenizerState> = { ok: true, value: state };
+function remove_whitespace(state: State): State {
+    let result: Result<State> = { ok: true, value: state };
     while (is_ok(result)) {
         state  = result.value; // update state only if the previous result was ok
         result = try_token(rule.space, undefined, result.value);
@@ -84,12 +84,12 @@ function remove_whitespace(state: TokenizerState): TokenizerState {
     return state; // return the last successful state
 }
 
-function try_space(state: TokenizerState): Result<TokenizerState> {
+function try_space(state: State): Result<State> {
     return try_token(rule.space, undefined, state);
 }
 
-function try_atom(state: TokenizerState): Result<TokenizerState> {
-    let result: Result<TokenizerState> = { ok: true, value: state };
+function try_atom(state: State): Result<State> {
+    let result: Result<State> = { ok: true, value: state };
 
     result = try_token(rule.bool, make_token.boolean, state);
     if (is_ok(result)) return result;
@@ -112,7 +112,7 @@ function try_atom(state: TokenizerState): Result<TokenizerState> {
     return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `invalid token, expected an atom`} };
 }
 
-function try_token(rule: { description: string, regex: RegExp }, make_token: undefined | Function, state: TokenizerState): Result<TokenizerState> {
+function try_token(rule: { description: string, regex: RegExp }, make_token: undefined | Function, state: State): Result<State> {
     const match = rule.regex.exec(state.line);
     if (match && match.index === 0) { // verify the match starts at the beginning
         const word = match[0];
