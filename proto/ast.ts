@@ -4,6 +4,8 @@ import { Item } from "./item";
 
 // general types for the AST
 
+export type AST = Leaf | Node;
+
 export interface Leaf extends Item {
     kind: string,
     subkind: string,
@@ -46,22 +48,22 @@ export interface NodeLet extends Node {
 
 // type predicates
 
-function is_leaf(item: Item): item is Leaf { return item.kind === "Leaf"; }
-function is_leaf_boolean(item: Item): item is LeafBoolean { return is_leaf(item) && item.subkind === "Boolean"; }
-function is_leaf_number(item: Item): item is LeafNumber { return is_leaf(item) && item.subkind === "Number"; }
-function is_leaf_string(item: Item): item is LeafString { return is_leaf(item) && item.subkind === "String"; }
-function is_leaf_identifier(item: Item): item is LeafIdentifier { return is_leaf(item) && item.subkind === "Identifier"; }
-function is_leaf_reference(item: Item): item is LeafReference { return is_leaf(item) && item.subkind === "Reference"; }
+export function is_leaf(item: Item): item is Leaf { return item.kind === "Leaf"; }
+export function is_leaf_boolean(item: Item): item is LeafBoolean { return is_leaf(item) && item.subkind === "Boolean"; }
+export function is_leaf_number(item: Item): item is LeafNumber { return is_leaf(item) && item.subkind === "Number"; }
+export function is_leaf_string(item: Item): item is LeafString { return is_leaf(item) && item.subkind === "String"; }
+export function is_leaf_identifier(item: Item): item is LeafIdentifier { return is_leaf(item) && item.subkind === "Identifier"; }
+export function is_leaf_reference(item: Item): item is LeafReference { return is_leaf(item) && item.subkind === "Reference"; }
 
-function is_node(item: Item): item is Node { return item.kind === "Node"; }
+export function is_node(item: Item): item is Node { return item.kind === "Node"; }
 
-function is_node_call(item: Item): item is NodeCall {
+export function is_node_call(item: Item): item is NodeCall {
     return (is_node(item))
     && (item.subkind === "Call")
     && (item.data.length >= 1);
 }
 
-function is_node_let(item: Item): item is NodeLet {
+export function is_node_let(item: Item): item is NodeLet {
     return (is_node(item))
     && (item.subkind === "Let")
     && (item.data.length === 4)
