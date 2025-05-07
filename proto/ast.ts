@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "./item";
+import { Token } from "./token";
 
 // general types for the AST
 
@@ -72,4 +73,8 @@ export function is_node_let(item: Item): item is NodeLet {
     && is_leaf_identifier(item.data[0])
     && item.data[0].value === 'let'
     && is_leaf_identifier(item.data[1]);
+}
+
+export function make_leaf(token: Token) {
+    return {kind: "Leaf", subkind: token.subkind, token_id: token.id, value: token.value}
 }
