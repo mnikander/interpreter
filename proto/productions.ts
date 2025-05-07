@@ -6,38 +6,39 @@ import { AST } from "./ast";
 
 // Meta-rules to assemble a grammar more easily
 
-export type Production = (tokens: Token[]) => (Result<AST>);
+export type ParseState = { index: number, result: Result<AST> };
+export type Production = ( index: number, tokens: readonly Token[]) => ParseState;
 
 export function asterisk(production: Production): Production {
-    return (function(tokens: Token[]): Result<AST> { 
-        let result: Result<AST> = { ok: true, value: { kind: "Node", }};
-        let attempt: Result<AST> = result;
-        while(is_ok(attempt)) {
-            result = attempt; // only update the result if the previous attempt was error-free
-            attempt = production(tokens);
+    return (function(index: number, tokens: readonly Token[]): ParseState {
+        let state: ParseState = { index: index, result: { ok: true, value: { kind: "Node", }}};
+        let attempt: ParseState = state;
+        while(is_ok(attempt.result)) {
+            state = attempt; // only update the state if the previous attempt was error-free
+            attempt = production(index, tokens);
         }
-        return result;
+        return state;
     });
 }
 
 export function tuple(productions: Production[]): Production {
-    return (function(tokens: Token[]): Result<AST> {
-        let result: Result<AST> = { ok: true, value: { kind: "Node", }};
+    return (function(index: number, tokens: readonly Token[]): ParseState {
+        let state: ParseState = { index: index, result: { ok: true, value: { kind: "Node", }}};
         for (let prod of productions) {
-            result = prod(tokens);
-            if (is_error(result)) return result;
+            state = prod(index, tokens);
+            if (is_error(state.result)) return state;
         }
-        return result;
+        return state;
     });
 }
 
 export function variant(productions: Production[]): Production {
-    return (function(tokens: Token[]): Result<AST> {
-        let result: Result<AST> = { ok: true, value: { kind: "Node", }};
+    return (function(index: number, tokens: readonly Token[]): ParseState {
+        let state: ParseState = { index: index, result: { ok: true, value: { kind: "Node", }}};
         for (let prod of productions) {
-            result = prod(tokens);
-            if (is_ok(result)) return result;
+            state = prod(index, tokens);
+            if (is_ok(state.result)) return state;
         }
-        return result;
+        return state;
     });
 }
