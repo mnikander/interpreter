@@ -30,6 +30,12 @@ describe('tokenize boolean', () => {
 describe('tokenize expressions', () => {
     it('must report an error for empty expressions', () => {
         // TODO: this could be delayed to the semantic analysis
+        const result = lex('');
+        expect(is_error(result)).toBe(true);
+    });
+
+    it('must report an error for empty function calls', () => {
+        // TODO: this could be delayed to the semantic analysis
         const result = lex('()');
         expect(is_error(result)).toBe(true);
     });
