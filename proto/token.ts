@@ -52,35 +52,31 @@ export interface TokenIdentifier extends Token {
     value: string,
 }
 
-export function make_token_open(id: number, word: string): TokenOpen {
-    return { kind: "Token", subkind: "Open", id: id, value: "(" };
+export const make_token = {
+    open: function (id: number, word: string): TokenOpen {
+       return { kind: "Token", subkind: "Open", id: id, value: "(" };
+    },
+    close: function (id: number, word: string): TokenClose {
+        return { kind: "Token", subkind: "Close", id: id, value: ")" };
+    },
+    boolean: function (id: number, word: "true" | "True" | "false" | "False"): TokenBoolean {
+        if (word === "false" || word === "False") {
+            return { kind: "Token", subkind: "Boolean", id: id, value: false };
+        }
+        else {
+            return { kind: "Token", subkind: "Boolean", id: id, value: true };
+        }
+    },
+    number: function (id: number, word: string): TokenNumber {
+        return { kind: "Token", subkind: "Number", id: id, value: Number(word) };
+    },
+    string: function (id: number, word: string): TokenString {
+        return { kind: "Token", subkind: "String", id: id, value: word };
+    },
+    identifier: function (id: number, word: string): TokenIdentifier {
+        return { kind: "Token", subkind: "Identifier", id: id, value: word };
+    },
 }
-
-export function make_token_close(id: number, word: string): TokenClose {
-    return { kind: "Token", subkind: "Close", id: id, value: ")" };
-}
-
-export function make_token_boolean(id: number, word: "true" | "True" | "false" | "False"): TokenBoolean {
-    if (word === "false" || word === "False") {
-        return { kind: "Token", subkind: "Boolean", id: id, value: false };
-    }
-    else {
-        return { kind: "Token", subkind: "Boolean", id: id, value: true };
-    }
-}
-
-export function make_token_number(id: number, word: string): TokenNumber {
-    return { kind: "Token", subkind: "Number", id: id, value: Number(word) };
-}
-
-export function make_token_string(id: number, word: string): TokenString {
-    return { kind: "Token", subkind: "String", id: id, value: word };
-}
-
-export function make_token_identifier(id: number, word: string): TokenIdentifier {
-    return { kind: "Token", subkind: "Identifier", id: id, value: word };
-}
-
 
 // type predicates
 
