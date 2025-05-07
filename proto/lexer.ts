@@ -28,7 +28,7 @@ interface State extends Item {
 //      line ::= expr *space
 export function lex(line: string): Result<Token[]> {
     let state: State = { kind: "State", success: true, index: 0, line: line, tokens: []};
-    let result: Result<State> = lex_expression(state);
+    let result: Result<State> = try_expression(state);
     if (is_error(result)) {
         return result;
     }
@@ -43,7 +43,7 @@ export function lex(line: string): Result<Token[]> {
     }
 }
 
-export function lex_expression(state: State): Result<State> {
+export function try_expression(state: State): Result<State> {
     // currently this function implements the production rule:
     //      expr ::= *space (atom | (open *(*space expr)))
     //
@@ -68,7 +68,7 @@ export function lex_expression(state: State): Result<State> {
             }
             else {
                 // TODO: I need to ensure that when there are spaces between atoms
-                function_call = lex_expression(function_call.value);
+                function_call = try_expression(function_call.value);
             }
         }
         return function_call;
