@@ -1,56 +1,58 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "./item";
-import { Error } from "./error";
 
-export interface Token extends Item {
-    kind: "Token",
-    subkind: string,
-    id: number,
-    value: boolean | number | string | "(" | ")",
-}
+export type Token =
+    | TokenOpen
+    | TokenClose
+    | TokenBoolean
+    | TokenNumber
+    | TokenString
+    | TokenIdentifier;
 
-export interface TokenOpen extends Token {
+export interface TokenOpen {
     kind: "Token",
     subkind: "Open",
     id: number,
     value: "(",
 }
 
-export interface TokenClose extends Token {
+export interface TokenClose {
     kind: "Token",
     subkind: "Close",
     id: number,
     value: ")",
 }
 
-export interface TokenBoolean extends Token {
+export interface TokenBoolean {
     kind: "Token",
     subkind: "Boolean",
     id: number,
     value: boolean,
 }
 
-export interface TokenNumber extends Token {
+export interface TokenNumber {
     kind: "Token",
     subkind: "Number",
     id: number,
     value: number,
 }
 
-export interface TokenString extends Token {
+export interface TokenString {
     kind: "Token",
     subkind: "String",
     id: number,
     value: string,
 }
 
-export interface TokenIdentifier extends Token {
+export interface TokenIdentifier {
     kind: "Token",
     subkind: "Identifier",
     id: number,
     value: string,
 }
+
+// token construction
 
 export const make_token = {
     open: function (id: number, word: string): TokenOpen {
@@ -80,30 +82,28 @@ export const make_token = {
 
 // type predicates
 
-export function is_token(item: Item): item is Token {
-    return item.kind === "Token";
-}
+export const is_token = {
+    open: function(item: Item): item is TokenOpen {
+        return item.kind === "Token" && item.subkind === "Open";
+    },
 
-export function is_token_open(item: Item): item is TokenOpen {
-    return is_token(item) && item.subkind === "Open";
-}
+    close: function(item: Item): item is TokenClose {
+        return item.kind === "Token" && item.subkind === "Close";
+    },
 
-export function is_token_close(item: Item): item is TokenClose {
-    return is_token(item) && item.subkind === "Close";
-}
+    boolean: function(item: Item): item is TokenBoolean {
+        return item.kind === "Token" && item.subkind === "Boolean";
+    },
 
-export function is_token_boolean(item: Item): item is TokenBoolean {
-    return is_token(item) && item.subkind === "Boolean";
-}
+    number: function(item: Item): item is TokenNumber {
+        return item.kind === "Token" && item.subkind === "Number";
+    },
 
-export function is_token_number(item: Item): item is TokenNumber {
-    return is_token(item) && item.subkind === "Number";
-}
+    string: function(item: Item): item is TokenString {
+        return item.kind === "Token" && item.subkind === "String";
+    },
 
-export function is_token_string(item: Item): item is TokenString {
-    return is_token(item) && item.subkind === "String";
-}
-
-export function is_token_identifier(item: Item): item is TokenIdentifier {
-    return is_token(item) && item.subkind === "Identifier";
-}
+    identifier: function(item: Item): item is TokenIdentifier {
+        return item.kind === "Token" && item.subkind === "Identifier";
+    },
+};
