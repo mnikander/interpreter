@@ -25,9 +25,11 @@ interface TokenizerState extends Item {
     tokens: Token[]
 };
 
+// handles errors and implements the production rule:
+//      line ::= expr *space
 export function lex(line: string): Error | Token[] {
     let state: TokenizerState = { kind: "TokenizerState", subkind: "None", success: true, index: 0, line: line, tokens: []};
-    let result: Error | TokenizerState = tokenize(state);
+    let result: Error | TokenizerState = lex_expression(state);
     if (is_error(result)) {
         return result;
     }
@@ -42,12 +44,12 @@ export function lex(line: string): Error | Token[] {
     }
 }
 
-export function tokenize(state: TokenizerState): Error | TokenizerState {
+export function lex_expression(state: TokenizerState): Error | TokenizerState {
     // currently this function implements the production rule:
-    //      expr ::= *space (atom | (open *(*space atom)))
+    //      expr ::= *space (atom | (open *(*space expr)))
     //
-    // which is not quite correct, there MUST be at least one atom and there must be at least one space between atoms inside a function call:
-    //      expr ::= *space (atom | (open *space atom *(space *space atom)))
+    // which is not quite correct, inside a function call there MUST be at least one expression, and if there are several then those must be separated by at least one space
+    //      expr ::= *space (atom | (open *space expr *(space *space expr)))
     //                                           ^      ^
     state = remove_whitespace(state);
 
@@ -68,7 +70,7 @@ export function tokenize(state: TokenizerState): Error | TokenizerState {
             }
             else {
                 // TODO: I need to ensure that when there are spaces between atoms
-                result = tokenize(result);
+                result = lex_expression(result);
             }
         }
         return result;
@@ -103,7 +105,7 @@ function try_token(regex: RegExp, make_token: undefined | Function, state: Token
         state.index += word.length;
         state.line = state.line.slice(word.length);
         if (make_token !== undefined) {
-            state.tokens.push(make_token(state.index, word));
+            state.tokens.push(make_token(state.index, word)); // TODO: it might be possible to construct a raw AST by appending into a data field here, instead of into a flat list of tokens
         }
         return state;
     }
