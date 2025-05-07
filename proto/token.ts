@@ -3,12 +3,21 @@
 import { Item } from "./item";
 
 export type Token =
+    | TokenWhitespace
     | TokenOpen
     | TokenClose
     | TokenBoolean
     | TokenNumber
     | TokenString
     | TokenIdentifier;
+
+export interface TokenWhitespace {
+    kind: "Token",
+    subkind: "Whitespace",
+    id: number,
+    offset: number,
+    value: string,
+}
 
 export interface TokenOpen {
     kind: "Token",
@@ -61,6 +70,10 @@ export interface TokenIdentifier {
 // token construction
 
 export const make_token = {
+    whitespace: function (id: number, offset: number, word: string): TokenWhitespace {
+        return { kind: "Token", subkind: "Whitespace", id: id, offset: offset, value: word };
+    },
+
     open: function (id: number, offset: number, word: string): TokenOpen {
        return { kind: "Token", subkind: "Open", id: id, offset: offset, value: "(" };
     },
@@ -94,6 +107,10 @@ export const make_token = {
 // type predicates
 
 export const is_token = {
+    whitespace: function(item: Item): item is TokenWhitespace {
+        return item.kind === "Token" && item.subkind === "Whitespace";
+    },
+
     open: function(item: Item): item is TokenOpen {
         return item.kind === "Token" && item.subkind === "Open";
     },
