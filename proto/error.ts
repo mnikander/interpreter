@@ -4,9 +4,13 @@ import { Item } from "./item";
 
 export interface Error extends Item {
     kind: "Error",
-    subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation",
+    subkind: "Lexing" | "Parsing" | "Analyzing" | "Evaluating",
     token_id: number,
     message: string,
+}
+
+export function error(subkind: "Lexing" | "Parsing" | "Analyzing" | "Evaluating", message: string, token_number: number): Error {
+    return { kind: "Error", subkind: subkind, token_id: token_number, message: message };
 }
 
 export type Result<T> = { ok: true, value: T } | { ok: false, error: Error };
