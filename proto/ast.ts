@@ -9,18 +9,18 @@ export type AST = Leaf | Node;
 
 export interface Leaf extends Item {
     kind: string,
-    subkind?: string,
-    token_id?: number,
-    node_id?: number,
-    value?: boolean | number | string,
+    subkind: string,
+    token_id: number,
+    node_id: number,
+    value: boolean | number | string,
 }
 
 export interface Node extends Item {
     kind: string,
-    subkind?: string,
-    token_id?: number,
-    node_id?: number,
-    data?: Item[]
+    subkind: string,
+    token_id: number,
+    node_id: number,
+    data: Item[]
 };
 
 // specific types for the AST
@@ -75,6 +75,6 @@ export function is_node_let(item: Item): item is NodeLet {
     && is_leaf_identifier(item.data[1]);
 }
 
-export function make_leaf(token: Token) {
-    return {kind: "Leaf", subkind: token.subkind, token_id: token.id, value: token.value}
+export function make_leaf(index: number, node_counter: number, token: Token): Leaf {
+    return {kind: "Leaf", subkind: token.subkind, token_id: token.id, node_id: node_counter, value: token.value}
 }

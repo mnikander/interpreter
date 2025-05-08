@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../proto/simple_lexer'
 import { is_error, is_ok } from '../proto/error';
-import { line } from '../proto/parser';
+import { line } from '../proto/simple_parser';
 import { is_leaf_boolean } from '../proto/ast';
 
 describe('parse atoms', () => {
@@ -10,7 +10,7 @@ describe('parse atoms', () => {
         const lexed = lex('true');
         expect(is_ok(lexed)).toBe(true);
         if (is_ok(lexed)) {
-            const parsed = line(0, lexed.value);
+            const parsed = line(lexed.value);
             expect(is_ok(parsed.result)).toBe(true);
             if (is_ok(parsed.result)) {
                 let ast = parsed.result.value;
@@ -35,7 +35,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex("(");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(0, lexed.value);
+            let parsed = line(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -44,7 +44,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex(")");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(0, lexed.value);
+            let parsed = line(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -53,7 +53,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(0, lexed.value);
+            let parsed = line(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -63,18 +63,18 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(0, lexed.value);
+            let parsed = line(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
 });
 
 describe('expressions', () => {
-    it('must produce a valid for arithemetic expressions', () => {
+    it('must produce a valid AST for arithemetic expressions', () => {
         const lexed = lex("(+ 1 2)");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(0, lexed.value);
+            let parsed = line(lexed.value);
             expect(is_ok(parsed.result)).toBe(true);
         }
     });
