@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { make_token, Token } from './token'
-import { Error, Result, is_error, is_ok } from './error'
+import { Result, is_ok } from './error'
 import { Item } from './item'
 
 const rule = {

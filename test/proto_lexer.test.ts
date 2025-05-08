@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../proto/lexer'
 import { is_error, is_ok } from '../proto/error';
-import { Token, is_token } from '../proto/token';
+import { is_token } from '../proto/token';
 
 describe('tokenize boolean', () => {
 
