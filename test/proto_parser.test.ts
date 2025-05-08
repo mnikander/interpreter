@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { lex } from '../proto/simple_lexer'
+import { lex } from '../proto/lexer'
 import { is_error, is_ok } from '../proto/error';
-import { line } from '../proto/simple_parser';
+import { line } from '../proto/parser';
 import { is_leaf_boolean } from '../proto/ast';
 
 describe('parse atoms', () => {
