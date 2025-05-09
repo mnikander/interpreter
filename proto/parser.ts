@@ -4,10 +4,11 @@ import { AST, Leaf, Node, make_leaf } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
-export function parse(tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+export function parse(tokens: readonly Token[]): Result<AST> {
     let index: number        = 0;
     let node_counter: number = 0;
-    return line(index, node_counter, tokens);
+    let parsed: { index: number, node_counter: number, result: Result<AST> } = line(index, node_counter, tokens);
+    return parsed.result;
 }
 
 // line = expr *space

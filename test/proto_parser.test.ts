@@ -11,9 +11,9 @@ describe('parse atoms', () => {
         expect(is_ok(lexed)).toBe(true);
         if (is_ok(lexed)) {
             const parsed = parse(lexed.value);
-            expect(is_ok(parsed.result)).toBe(true);
-            if (is_ok(parsed.result)) {
-                let ast = parsed.result.value;
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                let ast = parsed.value;
                 expect(ast).toBeDefined();
                 if(ast !== undefined) {
                     expect(is_leaf_boolean(ast)).toBe(true);
@@ -36,7 +36,7 @@ describe('valid and invalid parentheses', () => {
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -45,7 +45,7 @@ describe('valid and invalid parentheses', () => {
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -54,7 +54,7 @@ describe('valid and invalid parentheses', () => {
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -64,7 +64,7 @@ describe('valid and invalid parentheses', () => {
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 });
@@ -78,7 +78,7 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -90,7 +90,7 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -101,7 +101,7 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -112,7 +112,7 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.result)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -121,7 +121,7 @@ describe('expressions', () => {
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
             let parsed = parse(lexed.value);
-            expect(is_ok(parsed.result)).toBe(true);
+            expect(is_ok(parsed)).toBe(true);
         }
     });
 });
