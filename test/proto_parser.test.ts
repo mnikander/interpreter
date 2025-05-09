@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../proto/lexer'
 import { is_error, is_ok } from '../proto/error';
-import { line } from '../proto/parser';
+import { parse } from '../proto/parser';
 import { is_leaf_boolean } from '../proto/ast';
 
 describe('parse atoms', () => {
@@ -10,7 +10,7 @@ describe('parse atoms', () => {
         const lexed = lex('true');
         expect(is_ok(lexed)).toBe(true);
         if (is_ok(lexed)) {
-            const parsed = line(lexed.value);
+            const parsed = parse(lexed.value);
             expect(is_ok(parsed.result)).toBe(true);
             if (is_ok(parsed.result)) {
                 let ast = parsed.result.value;
@@ -35,7 +35,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex("(");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -44,7 +44,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex(")");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -53,7 +53,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -63,7 +63,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -77,7 +77,7 @@ describe('expressions', () => {
             expect(is_error(lexed)).toBe(true);
         }
         else {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -89,7 +89,7 @@ describe('expressions', () => {
             expect(is_error(lexed)).toBe(true);
         }
         else {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -100,7 +100,7 @@ describe('expressions', () => {
             expect(is_error(lexed)).toBe(true);
         }
         else {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -111,7 +111,7 @@ describe('expressions', () => {
             expect(is_error(lexed)).toBe(true);
         }
         else {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_error(parsed.result)).toBe(true);
         }
     });
@@ -120,7 +120,7 @@ describe('expressions', () => {
         const lexed = lex("(+ 1 2)");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
-            let parsed = line(lexed.value);
+            let parsed = parse(lexed.value);
             expect(is_ok(parsed.result)).toBe(true);
         }
     });

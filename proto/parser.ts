@@ -4,10 +4,14 @@ import { AST, Leaf, Node, make_leaf } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
-// line = expr *space
-export function line(tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+export function parse(tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
     let index: number        = 0;
     let node_counter: number = 0;
+    return line(index, node_counter, tokens);
+}
+
+// line = expr *space
+function line(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
     let attempt_expr = expr(index, node_counter, tokens);
     index = attempt_expr.index;
     node_counter = attempt_expr.node_counter;
@@ -21,7 +25,7 @@ export function line(tokens: readonly Token[]): { index: number, node_counter: n
 }
 
 // expr = *space (atom / call)
-export function expr(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+function expr(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
     index = consume_whitespace(index, tokens);
 
     const attempt_atom = atom(index, node_counter, tokens);
@@ -34,7 +38,7 @@ export function expr(index: number, node_counter: number, tokens: readonly Token
 }
 
 // call = (open *space expr *(space *space expr) *space close)
-export function call(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+function call(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
     
     if (index == tokens.length || !is_token.open(tokens[index])) {
         return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
@@ -69,7 +73,7 @@ export function call(index: number, node_counter: number, tokens: readonly Token
 }
 
 // atom = boolean / number / string / identifier
-export function atom(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+function atom(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
     
     const token: Token = tokens[index];
     if(index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
