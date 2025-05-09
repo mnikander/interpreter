@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, Leaf, Node, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node } from "./ast";
-import { Result, error, is_error, is_ok } from "./error";
+import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node } from "./ast";
+import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
 export type Value            = Primitive | ((args: Primitive[]) => Primitive)

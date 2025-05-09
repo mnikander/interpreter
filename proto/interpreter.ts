@@ -3,7 +3,7 @@
 import { lex } from "./lexer";
 import { parse } from "./parser";
 import { Value, evaluate, value_env } from "./evaluator";
-import { Result, is_ok, is_error, error_to_string } from "./error";
+import { Result, is_error, error_to_string } from "./error";
 import { Token } from "./token";
 import { AST } from "./ast";
 
