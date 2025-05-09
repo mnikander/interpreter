@@ -87,7 +87,7 @@ describe('arithmetic and logical expressions', () => {
     });
 });
 
-describe.skip('if-expression', () => {
+describe('if-expression', () => {
     it('when the 1st expression is true, "if" must return the 2nd expression', () => {
         const result = interpret("(if true 4 8)");
         expect(result).toBe(4);

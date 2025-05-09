@@ -2,7 +2,7 @@
 
 import { lex } from "./lexer";
 import { parse } from "./parser";
-import { evaluate } from "./evaluator";
+import { Value, evaluate, value_env } from "./evaluator";
 import { Result, is_ok, is_error, error_to_string } from "./error";
 import { Token } from "./token";
 import { AST } from "./ast";
@@ -16,7 +16,7 @@ export function interpret(prompt: string) {
     if(is_error(parsed)) return error_to_string(parsed.error, tokens);
 
     const ast = parsed.value;
-    const evaluated: Result<boolean | number | string> = evaluate(ast, undefined);
+    const evaluated: Result<Value> = evaluate(ast, value_env);
     if(is_error(evaluated)) return error_to_string(evaluated.error, tokens);
 
     return evaluated.value;

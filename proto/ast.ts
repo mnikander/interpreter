@@ -20,7 +20,7 @@ export interface Node extends Item {
     subkind: string,
     token_id: number,
     node_id: number,
-    data: Item[]
+    data: (Leaf | Node)[]
 };
 
 // specific types for the AST
