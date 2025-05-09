@@ -15,7 +15,7 @@ export function error(subkind: "Lexing" | "Parsing" | "Analyzing" | "Evaluating"
 }
 
 export function error_to_string(error: Error, tokens: Token[]): string {
-    return `${error.kind} ${error.subkind} at '${tokens[error.token_id].value}': ${error.message}.`;
+    return `${error.kind} ${error.subkind} ${error.message} at '${tokens[error.token_id].value}'`;
 }
 
 export type Result<T> = { ok: true, value: T } | { ok: false, error: Error };
