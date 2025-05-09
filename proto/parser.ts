@@ -40,7 +40,6 @@ function expr(index: number, node_counter: number, tokens: readonly Token[]): { 
 
 // call = (open *space expr *(space *space expr) *space close)
 function call(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    
     if (index == tokens.length || !is_token.open(tokens[index])) {
         return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
     }
@@ -75,7 +74,6 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
 
 // atom = boolean / number / string / identifier
 function atom(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    
     const token: Token = tokens[index];
     if(index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
         index++;

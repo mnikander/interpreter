@@ -3,7 +3,6 @@
 import { Item } from "./item";
 import { Token } from "./token";
 
-
 export type AST = Leaf | Node;
 
 // node types for the AST
@@ -19,9 +18,9 @@ export interface Node extends Item {
 export interface NodeCall extends Node { kind: "Node", subkind: "Call", token_id: number, node_id: number, data: AST[] }
 export interface NodeLet  extends Node { kind: "Node", subkind: "Let", token_id: number, node_id: number, data: [AST, AST, AST, AST] }
 
-export function is_node(item: Item): item is Node { return item.kind === "Node"; }
-
 // type predicates for nodes
+
+export function is_node(item: Item): item is Node { return item.kind === "Node"; }
 
 export function is_node_call(item: Item): item is NodeCall {
     return is_node(item)
