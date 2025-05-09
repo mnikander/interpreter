@@ -20,7 +20,7 @@ export interface Node extends Item {
     subkind: string,
     token_id: number,
     node_id: number,
-    data: (Leaf | Node)[]
+    data: AST[]
 };
 
 // specific types for the AST
@@ -36,7 +36,7 @@ export interface NodeCall extends Node {
     subkind: "Call",
     token_id: number,
     node_id: number,
-    data: Item[]
+    data: AST[]
 }
 
 export interface NodeLet extends Node {
@@ -44,7 +44,7 @@ export interface NodeLet extends Node {
     subkind: "Let",
     token_id: number,
     node_id: number,
-    data: [Item, Item, Item, Item]
+    data: [AST, AST, AST, AST]
 }
 
 // type predicates
