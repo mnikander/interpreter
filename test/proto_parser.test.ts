@@ -70,6 +70,52 @@ describe('valid and invalid parentheses', () => {
 });
 
 describe('expressions', () => {
+
+    it('must report an error for empty expressions', () => {
+        const lexed = lex('');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = line(lexed.value);
+            expect(is_error(parsed.result)).toBe(true);
+        }
+    });
+
+    it('must report an error for empty function calls', () => {
+        // TODO: this could be delayed to the semantic analysis
+        const lexed = lex('()');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = line(lexed.value);
+            expect(is_error(parsed.result)).toBe(true);
+        }
+    });
+
+    it('must report an error if the input consists of more than one expression', () => {
+        const lexed = lex('true false');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = line(lexed.value);
+            expect(is_error(parsed.result)).toBe(true);
+        }
+    });
+
+    it('must report an error when spaces beween identifiers are missing', () => {
+        const lexed = lex('(+a b)');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = line(lexed.value);
+            expect(is_error(parsed.result)).toBe(true);
+        }
+    });
+
     it('must produce a valid AST for arithemetic expressions', () => {
         const lexed = lex("(+ 1 2)");
         expect(is_ok(lexed)).toBe(true);

@@ -24,29 +24,9 @@ describe('tokenize boolean', () => {
             expect(result.value[0].value).toBe(false);
         }
     });
-
-    it('must report an error if the input consists of more than one expression', () => {
-        const result = lex('true false');
-        expect(is_error(result)).toBe(true);
-    });
 });
 
 describe('tokenize expressions', () => {
-    it('must report an error for empty expressions', () => {
-        const result = lex('');
-        expect(is_error(result)).toBe(true);
-    });
-
-    it('must report an error for empty function calls', () => {
-        // TODO: this could be delayed to the semantic analysis
-        const result = lex('()');
-        expect(is_error(result)).toBe(true);
-    });
-
-    it('must report an error when spaces beween identifiers are missing', () => {
-        const result = lex('(+a b)');
-        expect(is_error(result)).toBe(true);
-    });
 
     it('must tokenize integer expressions', () => {
         const result = lex('(+ 1 2)');
