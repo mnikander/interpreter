@@ -61,14 +61,12 @@ export function is_node(item: Item): item is Node { return item.kind === "Node";
 export function is_node_call(item: Item): item is NodeCall {
     return is_node(item)
     && item.subkind === "Call"
-    && item.data !== undefined
     && item.data.length >= 1;
 }
 
 export function is_node_let(item: Item): item is NodeLet {
     return is_node(item)
     && item.subkind === "Let"
-    && item.data !== undefined
     && item.data.length === 4
     && is_leaf_identifier(item.data[0])
     && item.data[0].value === 'let'
