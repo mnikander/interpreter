@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "./item";
+import { Token } from "./token";
 
 export interface Error extends Item {
     kind: "Error",
@@ -11,6 +12,10 @@ export interface Error extends Item {
 
 export function error(subkind: "Lexing" | "Parsing" | "Analyzing" | "Evaluating", message: string, token_number: number): Error {
     return { kind: "Error", subkind: subkind, token_id: token_number, message: message };
+}
+
+export function error_to_string(error: Error, tokens: Token[]): string {
+    return `${error.kind} ${error.subkind} at '${tokens[error.token_id].value}': ${error.message}.`;
 }
 
 export type Result<T> = { ok: true, value: T } | { ok: false, error: Error };
