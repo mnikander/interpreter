@@ -61,7 +61,7 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
             if (is_error(attempt_another_expr.result)) break;
             index        = attempt_another_expr.index;
             node_counter = attempt_another_expr.node_counter;
-            node.data.push(attempt_expr.result.value);
+            node.data.push(attempt_another_expr.result.value);
         }
         index = consume_whitespace(index, tokens);
         
