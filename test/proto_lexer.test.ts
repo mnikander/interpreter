@@ -52,29 +52,35 @@ describe('tokenize expressions', () => {
         const result = lex('(+ 1 2)');
         expect(is_ok(result)).toBe(true);
         if (is_ok(result)) {
-            expect(result.value.length).toBe(5);
-            expect(is_token.open(result.value[0])).toBe(true);
+            expect(result.value.length).toBe(7);
+            expect(is_token.open      (result.value[0])).toBe(true);
             expect(is_token.identifier(result.value[1])).toBe(true);
-            expect(is_token.number(result.value[2])).toBe(true);
-            expect(is_token.number(result.value[3])).toBe(true);
-            expect(is_token.close(result.value[4])).toBe(true);
+            expect(is_token.whitespace(result.value[2])).toBe(true);
+            expect(is_token.number    (result.value[3])).toBe(true);
+            expect(is_token.whitespace(result.value[4])).toBe(true);
+            expect(is_token.number    (result.value[5])).toBe(true);
+            expect(is_token.close     (result.value[6])).toBe(true);
         }
     });
 
     it('must tokenize left-nested integer expressions', () => {
-        const result = lex('(+ (* 1 2) 3)');
+        let result = lex('(+ (* 1 2) 3)');
         expect(is_ok(result)).toBe(true);
         if (is_ok(result)) {
-            expect(result.value.length).toBe(9);
-            expect(is_token.open(result.value[0])).toBe(true);
+            expect(result.value.length).toBe(13);
+            expect(is_token.open      (result.value[0])).toBe(true);
             expect(is_token.identifier(result.value[1])).toBe(true);
-            expect(is_token.open(result.value[2])).toBe(true);
-            expect(is_token.identifier(result.value[3])).toBe(true);
-            expect(is_token.number(result.value[4])).toBe(true);
-            expect(is_token.number(result.value[5])).toBe(true);
-            expect(is_token.close(result.value[6])).toBe(true);
-            expect(is_token.number(result.value[7])).toBe(true);
-            expect(is_token.close(result.value[8])).toBe(true);
+            expect(is_token.whitespace(result.value[2])).toBe(true);
+            expect(is_token.open      (result.value[3])).toBe(true);
+            expect(is_token.identifier(result.value[4])).toBe(true);
+            expect(is_token.whitespace(result.value[5])).toBe(true);
+            expect(is_token.number    (result.value[6])).toBe(true);
+            expect(is_token.whitespace(result.value[7])).toBe(true);
+            expect(is_token.number    (result.value[8])).toBe(true);
+            expect(is_token.close     (result.value[9])).toBe(true);
+            expect(is_token.whitespace(result.value[10])).toBe(true);
+            expect(is_token.number    (result.value[11])).toBe(true);
+            expect(is_token.close     (result.value[12])).toBe(true);
         }
     });
 
@@ -82,16 +88,20 @@ describe('tokenize expressions', () => {
         const result = lex('(+ 1 (* 2 3))');
         expect(is_ok(result)).toBe(true);
         if (is_ok(result)) {
-            expect(result.value.length).toBe(9);
-            expect(is_token.open(result.value[0])).toBe(true);
+            expect(result.value.length).toBe(13);
+            expect(is_token.open      (result.value[0])).toBe(true);
             expect(is_token.identifier(result.value[1])).toBe(true);
-            expect(is_token.number(result.value[2])).toBe(true);
-            expect(is_token.open(result.value[3])).toBe(true);
-            expect(is_token.identifier(result.value[4])).toBe(true);
-            expect(is_token.number(result.value[5])).toBe(true);
-            expect(is_token.number(result.value[6])).toBe(true);
-            expect(is_token.close(result.value[7])).toBe(true);
-            expect(is_token.close(result.value[8])).toBe(true);
+            expect(is_token.whitespace(result.value[2])).toBe(true);
+            expect(is_token.number    (result.value[3])).toBe(true);
+            expect(is_token.whitespace(result.value[4])).toBe(true);
+            expect(is_token.open      (result.value[5])).toBe(true);
+            expect(is_token.identifier(result.value[6])).toBe(true);
+            expect(is_token.whitespace(result.value[7])).toBe(true);
+            expect(is_token.number    (result.value[8])).toBe(true);
+            expect(is_token.whitespace(result.value[9])).toBe(true);
+            expect(is_token.number    (result.value[10])).toBe(true);
+            expect(is_token.close     (result.value[11])).toBe(true);
+            expect(is_token.close     (result.value[12])).toBe(true);
         }
     });
 });
