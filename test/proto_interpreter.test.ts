@@ -27,7 +27,13 @@ describe('valid input and output', () => {
         expect(result).toContain("Error");
     });
 
-    it('must report an error when calling a function with an incorrect number of arguments', () => {
+    it('must report an error when calling a function with not enough arguments', () => {
+        const result = interpret("(+ 1)");
+        expect(result).toContain("Error");
+        expect(result).toContain("argument");
+    });
+
+    it('must report an error when calling a function with too many arguments', () => {
         const result = interpret("(+ 1 2 3)");
         expect(result).toContain("Error");
         expect(result).toContain("argument");
