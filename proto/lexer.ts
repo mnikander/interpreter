@@ -13,7 +13,7 @@ const rule = {
     float:       { description: "a float",                    regex: /^[-+]?((\d+\.\d*)|(\d*\.\d+))/},
     string:      { description: "a string",                   regex: /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/},
     id_alphanum: { description: "an alphanumeric identifier", regex: /^[_a-zA-Z][_a-zA-Z0-9]*/},
-    id_special:  { description: "a operation identifier",     regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
+    id_special:  { description: "an operation identifier",    regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
 };
 
 interface State extends Item {
