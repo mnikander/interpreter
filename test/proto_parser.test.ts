@@ -27,6 +27,28 @@ describe('parse atoms', () => {
             }
         }
     });
+
+    it('must parse "-0.1" to a number'), () => {
+        const lexed = lex('-0.1');
+        expect(is_ok(lexed)).toBe(true);
+        if (is_ok(lexed)) {
+            const parsed = parse(lexed.value);
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                let ast = parsed.value;
+                expect(ast).toBeDefined();
+                if(ast !== undefined) {
+                    expect(is_leaf_number(ast)).toBe(true);
+                    if (is_leaf_number(ast)) {
+                        expect(ast.kind).toBe("Leaf");
+                        expect(ast.subkind).toBe("Number");
+                        expect(ast.token_id).toBe(0);
+                        expect(ast.value).toBe(-0.1);
+                    }
+                }
+            }
+        }
+    }
 });
 
 describe('valid and invalid parentheses', () => {
