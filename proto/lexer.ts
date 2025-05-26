@@ -51,10 +51,10 @@ function next_token(state: State): Result<State> {
     result = try_token(rule.bool, make_token.boolean, state);
     if (is_ok(result)) return result;
 
-    result = try_token(rule.int, make_token.number, state);
+    result = try_token(rule.float, make_token.number, state);
     if (is_ok(result)) return result;
 
-    result = try_token(rule.float, make_token.number, state);
+    result = try_token(rule.int, make_token.number, state);
     if (is_ok(result)) return result;
 
     result = try_token(rule.string, make_token.string, state);

@@ -73,7 +73,7 @@ describe('individual tokens', () => {
         }
     });
 
-    it.skip('must tokenize "-0.1" to a number', () => {
+    it('must tokenize "-0.1" to a number', () => {
         const result = lex('-0.1');
         expect(is_ok(result)).toBe(true);
         if (is_ok(result)) {
