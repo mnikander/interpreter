@@ -2,7 +2,10 @@ import { describe, it, expect } from 'vitest'
 import { lex } from '../proto/lexer'
 import { is_error, is_ok } from '../proto/error';
 import { parse } from '../proto/parser';
+import { Token } from '../proto/token';
 import { is_leaf_boolean, is_leaf_number, is_leaf_identifier, is_node } from '../proto/ast';
+
+type OkLex = { ok: true, value: readonly Token[] };
 
 describe('parse atoms', () => {
 
@@ -154,6 +157,16 @@ describe('expressions', () => {
             let parsed = parse(lexed.value);
             expect(is_error(parsed)).toBe(true);
         }
+    });
+
+    it('must report an error for invalid identifiers, either during lexing or parsing', () => {
+        expect(is_error(lex('$a')) || is_error(parse((lex('$a') as OkLex).value))).toBe(true);
+        expect(is_error(lex('a$')) || is_error(parse((lex('a$') as OkLex).value))).toBe(true);
+        expect(is_error(lex('$1')) || is_error(parse((lex('$1') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1$')) || is_error(parse((lex('1$') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1a')) || is_error(parse((lex('1a') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1_')) || is_error(parse((lex('1_') as OkLex).value))).toBe(true);
+        expect(is_error(lex('_+')) || is_error(parse((lex('_+') as OkLex).value))).toBe(true);
     });
 
     it('must produce a valid AST for arithemetic expressions', () => {

@@ -122,16 +122,6 @@ describe('individual tokens', () => {
             expect(result.value[0].value).toBe('???');
         }
     });
-
-    it.skip('must report an error for invalid identifiers', () => {
-        expect(lex('$a').ok).toBe(false);
-        expect(lex('a$').ok).toBe(false);
-        expect(lex('$1').ok).toBe(false);
-        expect(lex('1$').ok).toBe(false);
-        expect(lex('1a').ok).toBe(false);
-        expect(lex('1_').ok).toBe(false);
-        expect(lex('_+').ok).toBe(false);
-    });
 });
 
 describe('tokenize expressions', () => {
