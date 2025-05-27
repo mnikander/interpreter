@@ -52,7 +52,40 @@ export const value_env: ValueEnvironment = new Map<string, Value>([
     ['|',    function ( args: Primitive[] ): Primitive { return (args[0] as boolean) || (args[1] as boolean); }],
     ['!',    function ( args: Primitive[] ): Primitive { return !(args[0] as boolean); }],
     ['if',   function ( args: Primitive[] ): Primitive { return (args[0] as boolean) ? args[1] : args[2]; }],
-    // ['help', function ( args: any[] )     { return help(); }],
-    // ['Help', function ( args: any[] )     { return help(); }],
+    ['help', function ( args: Primitive[] )            { return help(); }],
+    ['Help', function ( args: Primitive[] )            { return help(); }],
 ]);
-    
+
+type Description = { op: string, example: string, about: string };
+const help_text: Description[] = [
+    {op: 'help', example: "(help)",            about: "\t\tprints this dialog" },
+    {op: 'Help', example: "(Help)",            about: "\t\tprints this dialog" },
+    {op: '+',    example: "(+ 5 2)",           about: "\t\taddition" },
+    {op: '-',    example: "(- 5 2)",           about: "\t\tsubtraction" },
+    {op: '*',    example: "(* 5 2)",           about: "\t\tmultiplication" },
+    {op: '/',    example: "(/ 5 2)",           about: "\t\tdivision" },
+    {op: '%',    example: "(% 5 2)",           about: "\t\tremainder after division" },
+    {op: '<',    example: "(< 5 2)",           about: "\t\tless than" },
+    {op: '>',    example: "(> 5 2)",           about: "\t\tgreater than" },
+    {op: '<=',   example: "(<= 5 2)",          about: "\tless than or equal to" },
+    {op: '>=',   example: "(>= 5 2)",          about: "\tgreater than or equal to" },
+    {op: '==',   example: "(== 5 2)",          about: "\tequal to" },
+    {op: '!=',   example: "(!= 5 2)",          about: "\tunequal to" },
+    {op: '&',    example: "(& True False)",    about: "\tlogical and" },
+    {op: '|',    example: "(| True False)",    about: "\tlogical or" },
+    {op: '!',    example: "(! True)",          about: "\tlogical negation" },
+    {op: 'if',   example: "(if True 4 8)",     about: "\tif-expression" },
+    {op: 'let',  example: "(let x 5 (* 2 x))", about: "variables in expressions"},
+];
+
+function help(): string {
+    const line: string = "--------------------------------------------------------\n";
+    let message: string = "\nSymbol\tUsage\t\t\tName\n" + line;
+    for (const description of help_text) {
+        message += `${description.op}\t${description.example}\t${description.about}\n`;
+    }
+    message += line;
+    message += "You can write nested expressions, such as:\n\n(+ 1 (* 2 4))\n"
+    message += line;
+    return message;
+}

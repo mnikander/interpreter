@@ -1,9 +1,14 @@
 import { describe, it, expect } from 'vitest'
 import { interpret } from '../proto/interpreter'
 
-describe.skip('help dialog', () => {
+describe('help dialog', () => {
     it('must print help', () => {
-        expect(interpret("(help)")).toContain("help");
+        const result = interpret("(help)");
+        expect(result).toContain("help");
+        expect(result).toContain("+");
+        expect(result).toContain("-");
+        expect(result).toContain("*");
+        expect(result).toContain("/");
     });
 });
 
