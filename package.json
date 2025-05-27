@@ -18,8 +18,8 @@
     "url": "git+https://github.com/mnikander/interpreter.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Marco Nikander",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/mnikander/interpreter/issues"
   },
