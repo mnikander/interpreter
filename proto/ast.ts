@@ -3,9 +3,18 @@
 import { Item } from "./item";
 import { Token } from "./token";
 
-export type AST = Leaf | Node;
+export type RawAST       = RawNode | Leaf ;
+export type AST = Node | Leaf | Reference ;
 
 // node types for the AST
+
+export interface RawNode extends Item {
+    kind: string,
+    subkind: string,
+    token_id: number,
+    node_id: number,
+    data: RawAST[]
+};
 
 export interface Node extends Item {
     kind: string,
@@ -17,7 +26,7 @@ export interface Node extends Item {
 
 // type predicates for nodes
 
-export function is_node(item: Item): item is Node { return item.kind === "Node"; }
+export function is_node_raw(item: Item): item is RawNode { return item.kind === "RawNode"; }
 
 // leaf types for the AST
 

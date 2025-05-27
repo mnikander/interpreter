@@ -1,18 +1,18 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, Leaf, Node, make_leaf } from "./ast";
+import { RawAST, Leaf, RawNode, make_leaf } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
-export function parse(tokens: readonly Token[]): Result<AST> {
+export function parse(tokens: readonly Token[]): Result<RawAST> {
     let index: number        = 0;
     let node_counter: number = 0;
-    let parsed: { index: number, node_counter: number, result: Result<AST> } = line(index, node_counter, tokens);
+    let parsed: { index: number, node_counter: number, result: Result<RawAST> } = line(index, node_counter, tokens);
     return parsed.result;
 }
 
 // line = expr *space
-function line(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+function line(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<RawAST> } {
     let attempt_expr = expr(index, node_counter, tokens);
     index = attempt_expr.index;
     node_counter = attempt_expr.node_counter;
@@ -26,7 +26,7 @@ function line(index: number, node_counter: number, tokens: readonly Token[]): { 
 }
 
 // expr = *space (atom / call)
-function expr(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+function expr(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<RawAST> } {
     index = consume_whitespace(index, tokens);
 
     const attempt_atom = atom(index, node_counter, tokens);
@@ -39,12 +39,12 @@ function expr(index: number, node_counter: number, tokens: readonly Token[]): { 
 }
 
 // call = (open *space expr *(space *space expr) *space close)
-function call(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+function call(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<RawAST> } {
     if (index == tokens.length || !is_token.open(tokens[index])) {
         return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
     }
     else {
-        let node: Node     = { kind: "Node", subkind: "Call", token_id: index, node_id: node_counter, data: [] };
+        let node: RawNode     = { kind: "RawNode", subkind: "Call", token_id: index, node_id: node_counter, data: [] };
         index++; // consume '('
         node_counter++;
         index              = consume_whitespace(index, tokens);
@@ -73,7 +73,7 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
 }
 
 // atom = boolean / number / string / identifier
-function atom(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+function atom(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<RawAST> } {
     const token: Token = tokens[index];
     if(index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
         index++;

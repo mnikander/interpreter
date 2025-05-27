@@ -5,14 +5,14 @@ import { parse } from "./parser";
 import { Value, evaluate, value_env } from "./evaluator";
 import { Result, is_error, error_to_string } from "./error";
 import { Token } from "./token";
-import { AST } from "./ast";
+import { RawAST } from "./ast";
 
 export function interpret(prompt: string) {
     const lexed: Result<Token[]> = lex(prompt);
     if(is_error(lexed)) return error_to_string(lexed.error, []);
 
     const tokens: Token[] = lexed.value;
-    const parsed: Result<AST> = parse(tokens);
+    const parsed: Result<RawAST> = parse(tokens);
     if(is_error(parsed)) return error_to_string(parsed.error, tokens);
 
     const ast = parsed.value;

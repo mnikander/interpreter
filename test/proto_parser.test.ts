@@ -3,7 +3,7 @@ import { lex } from '../proto/lexer'
 import { is_error, is_ok } from '../proto/error';
 import { parse } from '../proto/parser';
 import { Token } from '../proto/token';
-import { is_leaf_boolean, is_leaf_number, is_leaf_identifier, is_node } from '../proto/ast';
+import { is_leaf_boolean, is_leaf_number, is_leaf_identifier, is_node_raw } from '../proto/ast';
 
 type OkLex = { ok: true, value: readonly Token[] };
 
@@ -176,9 +176,9 @@ describe('expressions', () => {
             let parsed = parse(lexed.value);
             expect(is_ok(parsed)).toBe(true);
             if (is_ok(parsed)) {
-                if(is_node(parsed.value)) {
+                if(is_node_raw(parsed.value)) {
                     const ast = parsed.value;
-                    expect(ast.kind).toBe("Node");
+                    expect(ast.kind).toBe("RawNode");
                     expect(ast.subkind).toBe("Call");
                     expect(ast.data.length).toBe(3);
                     expect(is_leaf_identifier(ast.data[0])).toBe(true);

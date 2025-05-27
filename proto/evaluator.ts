@@ -1,13 +1,13 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node } from "./ast";
+import { RawAST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node_raw } from "./ast";
 import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
 export type Value            = Primitive | ((args: Primitive[]) => Primitive)
 export type ValueEnvironment = Map<string, Value>;
 
-export function evaluate(ast: AST, env: ValueEnvironment): Result<Value> {
+export function evaluate(ast: RawAST, env: ValueEnvironment): Result<Value> {
     if (is_leaf_boolean(ast) || is_leaf_number(ast) || is_leaf_string(ast)) {
         return { ok: true, value: ast.value };
     }
@@ -20,9 +20,9 @@ export function evaluate(ast: AST, env: ValueEnvironment): Result<Value> {
             return { ok: false, error: error("Evaluating", "identifier", ast.token_id)};
         }
     }
-    else if (is_node(ast)) {
+    else if (is_node_raw(ast)) {
 
-        let evaluated_terms: Result<Value>[] = ast.data.map((ast: AST) => (evaluate(ast, env)));
+        let evaluated_terms: Result<Value>[] = ast.data.map((ast: RawAST) => (evaluate(ast, env)));
         for (let term of evaluated_terms) {
             if (is_error(term)) return term;
         }
@@ -32,7 +32,7 @@ export function evaluate(ast: AST, env: ValueEnvironment): Result<Value> {
         return { ok: true, value: (fn as Function)(args) };
     }
     else {
-        return { ok: false, error: error("Evaluating", "unknown AST node", ast.token_id)};
+        return { ok: false, error: error("Evaluating", "unknown RawAST node", ast.token_id)};
     }
 }
 
