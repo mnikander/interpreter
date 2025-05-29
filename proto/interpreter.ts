@@ -6,7 +6,7 @@ import { Value, evaluate, value_env } from "./evaluator";
 import { Result, is_error, error_to_string } from "./error";
 import { Token } from "./token";
 import { AST } from "./ast";
-import { check_identifiers } from "./check_identifiers";
+import { check_identifiers, Identifiers } from "./check_identifiers";
 
 export function interpret(prompt: string) {
     const lexed: Result<Token[]> = lex(prompt);
@@ -16,8 +16,9 @@ export function interpret(prompt: string) {
     const parsed: Result<AST> = parse(tokens);
     if(is_error(parsed)) return error_to_string(parsed.error, tokens);
 
-    const analyzed_identifiers: Result<undefined> = check_identifiers(parsed.value, value_env);
-    if(is_error(analyzed_identifiers)) return error_to_string(analyzed_identifiers.error, tokens);
+    const builtin_identifiers: Identifiers = { parent: undefined, symbols: new Set(Array.from(value_env.symbols.keys())) };
+    const check: Result<undefined> = check_identifiers(parsed.value, builtin_identifiers);
+    if(is_error(check)) return error_to_string(check.error, tokens);
 
     const ast = parsed.value;
     const evaluated: Result<Value> = evaluate(ast, value_env);

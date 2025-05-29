@@ -5,14 +5,19 @@ import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
 export type Value            = Primitive | ((args: Primitive[]) => Primitive)
-export type ValueEnvironment = Map<string, Value>;
+export type Variables        = Map<string, Value>;
 
-export function evaluate(ast: AST, env: ValueEnvironment): Result<Value> {
+export type Environment = {
+    parent: undefined | Environment,
+    symbols: Variables,
+};
+
+export function evaluate(ast: AST, env: Environment): Result<Value> {
     if (is_leaf_boolean(ast) || is_leaf_number(ast) || is_leaf_string(ast)) {
         return { ok: true, value: ast.value };
     }
     else if (is_leaf_identifier(ast)) {
-        const identifier = env.get(ast.value);
+        const identifier = lookup(ast.value, env);
         if (identifier !== undefined) {
             return { ok: true, value: identifier };
         }
@@ -36,7 +41,9 @@ export function evaluate(ast: AST, env: ValueEnvironment): Result<Value> {
     }
 }
 
-export const value_env: ValueEnvironment = new Map<string, Value>([
+export const value_env = {
+    parent: undefined,
+    symbols: new Map<string, Value>([
     ['+',    function ( args: Primitive[] ): Primitive { return (args[0] as number) + (args[1] as number); }],
     ['-',    function ( args: Primitive[] ): Primitive { return (args[0] as number) - (args[1] as number); }],
     ['*',    function ( args: Primitive[] ): Primitive { return (args[0] as number) * (args[1] as number); }],
@@ -54,7 +61,24 @@ export const value_env: ValueEnvironment = new Map<string, Value>([
     ['if',   function ( args: Primitive[] ): Primitive { return (args[0] as boolean) ? args[1] : args[2]; }],
     ['help', function ( args: Primitive[] )            { return help(); }],
     ['Help', function ( args: Primitive[] )            { return help(); }],
-]);
+])};
+
+export function lookup(identifier: string, env: Environment): undefined | Value {
+    const entry: undefined | Value = env.symbols.get(String(identifier));
+    if (entry !== undefined) {
+        return entry;
+    }
+    else {
+        if (env.parent !== undefined) {
+            return lookup(identifier, env.parent);
+        }
+        else {
+            // we are already in the global context (the root node), and have nowhere left to search for the symbol
+            return undefined;
+        }
+    }
+}
+
 
 type Description = { op: string, example: string, about: string };
 const help_text: Description[] = [
