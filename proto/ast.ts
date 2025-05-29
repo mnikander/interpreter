@@ -9,7 +9,6 @@ export type AST = Leaf | Node;
 
 export interface Node extends Item {
     kind: string,
-    subkind: string,
     token_id: number,
     node_id: number,
     data: AST[]

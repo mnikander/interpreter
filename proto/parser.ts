@@ -44,7 +44,7 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
         return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
     }
     else {
-        let node: Node     = { kind: "Node", subkind: "Call", token_id: index, node_id: node_counter, data: [] };
+        let node: Node     = { kind: "Node", token_id: index, node_id: node_counter, data: [] };
         index++; // consume '('
         node_counter++;
         index              = consume_whitespace(index, tokens);
