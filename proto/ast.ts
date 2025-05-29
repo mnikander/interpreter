@@ -14,9 +14,24 @@ export interface Node extends Item {
     data: AST[]
 };
 
+export interface NodeLet extends Node {
+    kind: "Node",
+    token_id: number,
+    node_id: number,
+    data: [AST, AST, AST, AST]
+};
+
 // type predicates for nodes
 
 export function is_node(item: Item): item is Node { return item.kind === "Node"; }
+
+export function is_node_let(item: Item): item is NodeLet {
+    return is_node(item)
+    && item.data.length === 4
+    && is_leaf_identifier(item.data[0])
+    && item.data[0].value === 'let'
+    && is_leaf_identifier(item.data[1]);
+}
 
 // leaf types for the AST
 
