@@ -5,7 +5,7 @@ import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
 export type Value            = Primitive | ((args: Primitive[]) => Primitive)
-export type ValueEnvironment = Map<string, Value>;
+export type ValueEnvironment = Map<string, Value>; // TODO: switch this to use the unique binding id instead of a string identifier
 
 export function evaluate(ast: RawAST, env: ValueEnvironment): Result<Value> {
     if (is_leaf_boolean(ast) || is_leaf_number(ast) || is_leaf_string(ast)) {
