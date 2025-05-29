@@ -33,7 +33,6 @@ export interface LeafBoolean    extends Leaf { kind: "Leaf", subkind: "Boolean",
 export interface LeafNumber     extends Leaf { kind: "Leaf", subkind: "Number",     token_id: number, node_id: number, value: number };
 export interface LeafString     extends Leaf { kind: "Leaf", subkind: "String",     token_id: number, node_id: number, value: string };
 export interface LeafIdentifier extends Leaf { kind: "Leaf", subkind: "Identifier", token_id: number, node_id: number, value: string };
-export interface LeafReference  extends Leaf { kind: "Leaf", subkind: "Reference",  token_id: number, node_id: number, value: string }; // I could switch to an ID number later
 
 // type predicates for leaves
 
@@ -42,7 +41,6 @@ export function is_leaf_boolean(item: Item): item is LeafBoolean { return is_lea
 export function is_leaf_number(item: Item): item is LeafNumber { return is_leaf(item) && item.subkind === "Number"; }
 export function is_leaf_string(item: Item): item is LeafString { return is_leaf(item) && item.subkind === "String"; }
 export function is_leaf_identifier(item: Item): item is LeafIdentifier { return is_leaf(item) && item.subkind === "Identifier"; }
-export function is_leaf_reference(item: Item): item is LeafReference { return is_leaf(item) && item.subkind === "Reference"; }
 
 // constructors for leaves
 
