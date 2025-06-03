@@ -10,6 +10,11 @@ describe('help dialog', () => {
         expect(result).toContain("*");
         expect(result).toContain("/");
     });
+
+    it.skip('should report an error when forgetting parenthesis for the "help" command', () => {
+        const result = interpret("help");
+        expect(result).toContain("Error");
+    });
 });
 
 describe('basic values', () => {
@@ -55,6 +60,11 @@ describe('valid input and output', () => {
         const result = interpret('(+++ 2 3)');
         expect(result).toContain("Error");
         expect(result).toContain("+++");
+    });
+
+    it.skip('should report an error when returning a function', () => {
+        const result = interpret("+");
+        expect(result).toContain("Error");
     });
 });
 
