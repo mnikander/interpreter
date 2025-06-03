@@ -1,45 +1,131 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { EvaluationEnvironment, EvaluationSymbol, evaluation_define, evaluation_extend, evaluation_lookup } from "./evaluator_environment";
-import { is_nd_boolean, is_nd_number, is_nd_identifier, is_nd_call, ASTNode, ASTAtom, is_nd_let} from "./parser";
-import { Error, OK, is_error } from "./error";
+import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node, is_node_let, LeafIdentifier } from "./ast";
+import { Result, error, is_error } from "./error";
 
-export function evaluate(ast: ASTNode, env: EvaluationEnvironment): Error | EvaluationSymbol {
-    if (is_nd_boolean(ast)) {
-        return {kind: 'EVALUATOR_VALUE', value: ast.value};
-    }
-    else if (is_nd_number(ast)) {
-        return {kind: 'EVALUATOR_VALUE', value: ast.value};
-    }
-    else if (is_nd_identifier(ast)) {
-        return evaluation_lookup(ast, env) as EvaluationSymbol;
-    }
-    else if (is_nd_let(ast)) {
-        let sub_env = evaluation_extend(env);
+export type Primitive        = boolean | number | string;
+export type Value            = Primitive | ((args: Primitive[]) => Primitive)
+export type Variables        = Map<string, Value>;
 
-        const value = evaluate(ast.expr, env);
-        if (is_error(value)) return value;
+export type Environment = {
+    parent: undefined | Environment,
+    symbols: Variables,
+};
 
-        let defined: Error | OK = evaluation_define( ast, value, sub_env);
-        if (is_error(defined)) {
-            return defined;
+export function evaluate(ast: AST, env: Environment): Result<Value> {
+    if (is_leaf_boolean(ast) || is_leaf_number(ast) || is_leaf_string(ast)) {
+        return { ok: true, value: ast.value };
+    }
+    else if (is_leaf_identifier(ast)) {
+        const identifier = lookup(ast.value, env);
+        if (identifier !== undefined) {
+            return { ok: true, value: identifier };
         }
         else {
-            return evaluate(ast.body, sub_env);
+            return { ok: false, error: error("Evaluating", "identifier", ast.token_id)};
         }
     }
-    else if (is_nd_call(ast)) {
-        const entry: Error | EvaluationSymbol       = evaluate(ast.func, env);
-        const ev_args: (Error | EvaluationSymbol)[] = ast.params.map((ast: ASTNode) => evaluate(ast, env));
-        const err: undefined | Error                = ev_args.find(is_error);
-        if(err === undefined) {
-            const fn   = (entry as EvaluationSymbol).value as Function;
-            const args = (ev_args as EvaluationSymbol[]).map((s: EvaluationSymbol) => { return s.value; });
-            return {kind: "EVALUATOR_VALUE", value: fn(args)};
+    else if (is_node_let(ast)) {
+        // let extended_env: Identifiers = { parent: env, symbols: new Set<string>() };
+        // extended_env.symbols.add(name.value);
+        // const body_check = check_identifiers(body, extended_env);
+        const name  = (ast.data[1] as LeafIdentifier);
+        const value = evaluate(ast.data[2], env);
+        if (!value.ok) return value;
+
+        const body = ast.data[3];
+        let extended_env: Environment = { parent: env, symbols: new Map<string, Value>() };
+        extended_env.symbols.set(name.value, value.value);
+        return evaluate (body, extended_env);
+    }
+    else if (is_node(ast)) {
+
+        let evaluated_terms: Result<Value>[] = ast.data.map((ast: AST) => (evaluate(ast, env)));
+        for (let term of evaluated_terms) {
+            if (is_error(term)) return term;
+        }
+        const terms: Value[] = evaluated_terms.map((result: Result<Value>) => ((result as { ok: true, value: Value}).value));
+        const fn: Value = terms[0];
+        const args: Value[] = terms.slice(1);
+        return { ok: true, value: (fn as Function)(args) };
+    }
+    else {
+        return { ok: false, error: error("Evaluating", "unknown AST node", ast.token_id)};
+    }
+}
+
+export const builtin_functions: Environment = {
+    parent: undefined,
+    symbols: new Map<string, Value>([
+    ['+',    function ( args: Primitive[] ): Primitive { return (args[0] as number) + (args[1] as number); }],
+    ['-',    function ( args: Primitive[] ): Primitive { return (args[0] as number) - (args[1] as number); }],
+    ['*',    function ( args: Primitive[] ): Primitive { return (args[0] as number) * (args[1] as number); }],
+    ['/',    function ( args: Primitive[] ): Primitive { return (args[0] as number) / (args[1] as number); }],
+    ['%',    function ( args: Primitive[] ): Primitive { return (args[0] as number) % (args[1] as number); }],
+    ['<',    function ( args: Primitive[] ): Primitive { return (args[0] as number) < (args[1] as number); }],
+    ['>',    function ( args: Primitive[] ): Primitive { return (args[0] as number) > (args[1] as number); }],
+    ['<=',   function ( args: Primitive[] ): Primitive { return (args[0] as number) <= (args[1] as number); }],
+    ['>=',   function ( args: Primitive[] ): Primitive { return (args[0] as number) >= (args[1] as number); }],
+    ['==',   function ( args: Primitive[] ): Primitive { return args[0] == args[1]; }],
+    ['!=',   function ( args: Primitive[] ): Primitive { return args[0] != args[1]; }],
+    ['&',    function ( args: Primitive[] ): Primitive { return (args[0] as boolean) && (args[1] as boolean); }],
+    ['|',    function ( args: Primitive[] ): Primitive { return (args[0] as boolean) || (args[1] as boolean); }],
+    ['!',    function ( args: Primitive[] ): Primitive { return !(args[0] as boolean); }],
+    ['if',   function ( args: Primitive[] ): Primitive { return (args[0] as boolean) ? args[1] : args[2]; }],
+    ['help', function ( args: Primitive[] )            { return help(); }],
+    ['Help', function ( args: Primitive[] )            { return help(); }],
+])};
+
+export function lookup(identifier: string, env: Environment): undefined | Value {
+    const entry: undefined | Value = env.symbols.get(String(identifier));
+    if (entry !== undefined) {
+        return entry;
+    }
+    else {
+        if (env.parent !== undefined) {
+            return lookup(identifier, env.parent);
         }
         else {
-            return err;
+            // we are already in the global context (the root node), and have nowhere left to search for the symbol
+            return undefined;
         }
     }
-    return {kind: "Evaluation error", token_id: ast.token_id, message: `invalid expression`};
+}
+
+function extend(env: Environment): Environment {
+    return { parent: env, symbols: new Map<string, Value>()};
+}
+
+type Description = { op: string, example: string, about: string };
+const help_text: Description[] = [
+    {op: 'help', example: "(help)\t\t",        about: "prints this dialog" },
+    {op: 'Help', example: "(Help)\t\t",        about: "prints this dialog" },
+    {op: '+',    example: "(+ 5 2)\t\t",       about: "addition" },
+    {op: '-',    example: "(- 5 2)\t\t",       about: "subtraction" },
+    {op: '*',    example: "(* 5 2)\t\t",       about: "multiplication" },
+    {op: '/',    example: "(/ 5 2)\t\t",       about: "division" },
+    {op: '%',    example: "(% 5 2)\t\t",       about: "remainder after division" },
+    {op: '<',    example: "(< 5 2)\t\t",       about: "less than" },
+    {op: '>',    example: "(> 5 2)\t\t",       about: "greater than" },
+    {op: '<=',   example: "(<= 5 2)\t",        about: "less than or equal to" },
+    {op: '>=',   example: "(>= 5 2)\t",        about: "greater than or equal to" },
+    {op: '==',   example: "(== 5 2)\t",        about: "equal to" },
+    {op: '!=',   example: "(!= 5 2)\t",        about: "unequal to" },
+    {op: '&',    example: "(& True False)\t",  about: "logical and" },
+    {op: '|',    example: "(| True False)\t",  about: "logical or" },
+    {op: '!',    example: "(! True)\t",        about: "logical negation" },
+    {op: 'if',   example: "(if True 4 8)\t",   about: "if-expression" },
+    {op: 'let',  example: "(let x 5 (* 2 x))", about: "variables in expressions"},
+];
+
+function help(): string {
+    const line: string = "--------------------------------------------------------\n";
+    let message: string = "\nSymbol\tUsage\t\t\tName\n" + line;
+    for (const description of help_text) {
+        message += `${description.op}\t${description.example}\t${description.about}\n`;
+    }
+    message += line;
+    message += "You can write nested expressions, such as:\n\n(+ 1 (* 2 4))\n"
+    message += line;
+    return message;
 }

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from '../src/evaluator_environment'
-import { global_evaluation_environment } from '../src/global_environments';
+import { EvaluationEnvironment, EvaluationSymbol, evaluation_lookup } from '../deprecated/evaluator_environment'
+import { global_evaluation_environment } from '../deprecated/global_environments';
 
 describe('global functions', () => {
     it('must return the definition when an identifier is defined globally', () => {

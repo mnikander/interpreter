@@ -1,120 +1,86 @@
 // Copyright (c) 2025 Marco Nikander
-import { check_parentheses, add_whitespace_to_parentheses } from "./parentheses";
-import { Error, is_error } from "./error";
 
-export type Token = 
-    | TokenBoolean
-    | TokenNumber
-    | TokenIdentifier
-    | TokenOpenParen
-    | TokenCloseParen
+import { make_token, Token } from './token'
+import { Result, is_ok } from './error'
+import { Item } from './item'
 
-export interface TokenBoolean    { kind: "TokenBoolean",    value: boolean };
-export interface TokenNumber     { kind: "TokenNumber",     value: number };
-export interface TokenIdentifier { kind: "TokenIdentifier", value: string };
-export interface TokenOpenParen  { kind: "TokenOpenParen",  value: "(" };
-export interface TokenCloseParen { kind: "TokenCloseParen", value: ")" };
+const rule = {
+    whitespace:  { description: "a whitespace character",     regex: /^\s/},
+    open:        { description: "(",                          regex: /\(/},
+    close:       { description: ")",                          regex: /\)/},
+    bool:        { description: "a boolean",                  regex: /^(true|false)/},
+    int:         { description: "an integer",                 regex: /^[-+]?[0-9]+/},
+    float:       { description: "a float",                    regex: /^[-+]?((\d+\.\d*)|(\d*\.\d+))/},
+    string:      { description: "a string",                   regex: /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/},
+    id_alphanum: { description: "an alphanumeric identifier", regex: /^[_a-zA-Z][_a-zA-Z0-9]*/},
+    id_special:  { description: "an operation identifier",    regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
+};
 
-export function is_tk_boolean(token: Token): token is TokenBoolean {
-    return token.kind == "TokenBoolean";
-}
+interface State extends Item {
+    kind: "State",
+    index: number,
+    line: string,
+    tokens: Token[]
+};
 
-export function is_tk_number(token: Token): token is TokenNumber {
-    return token.kind == "TokenNumber";
-}
-
-export function is_tk_identifier(token: Token): token is TokenIdentifier {
-    return token.kind == "TokenIdentifier";
-}
-
-export function is_tk_left(token: Token): token is TokenOpenParen {
-    return token.kind == "TokenOpenParen";
-}
-
-export function is_tk_right(token: Token): token is TokenCloseParen {
-    return token.kind === "TokenCloseParen";
-}
-
-export function tokenize(line: string): Error | Token[] {
-    if (!check_parentheses(line)) {
-        return { kind: "Lexing error", message: "invalid parentheses"};
-    }
-    let spaced   = add_whitespace_to_parentheses(line);
-    let words    = spaced.split(" ");
-    words        = remove_empty_words(words);
-    const tokens_or_errors = words.map(to_token);
-
-    for (const item of tokens_or_errors) {
-        if (is_error(item)) {
-            return item;
+export function lex(line: string): Result<Token[]> {
+    let result: Result<State> = { ok: true, value: { kind: "State", index: 0, line: line, tokens: []}};
+    while(is_ok(result)) {
+        if (result.value.line.length > 0) {
+            result = next_token(result.value);
         }
-    }
-
-    const tokens = tokens_or_errors as Token[];
-    return tokens;
-}
-
-export function remove_empty_words(words: string[]): string[] {
-    let result = [];
-    for (let word of words) {
-        if (word != "") {
-            result.push(word);
+        else {
+            return { ok: true, value: result.value.tokens };
         }
     }
     return result;
 }
 
-export function to_token(word: string): Error | Token {
-    let result = maybe_parenthesis_token(word) ??
-                maybe_boolean_token(word) ??
-                maybe_number_token(word) ??
-                maybe_identifier_token(word);
-    if (result === undefined) {
-        return {kind: "Lexing error", message: `invalid sequence of characters '${word}'`};
+function next_token(state: State): Result<State> {
+    let result: Result<State> = { ok: true, value: state };
+
+    result = try_token(rule.whitespace, make_token.whitespace, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.open, make_token.open, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.close, make_token.close, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.bool, make_token.boolean, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.float, make_token.number, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.int, make_token.number, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.string, make_token.string, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.id_alphanum, make_token.identifier, state);
+    if (is_ok(result)) return result;
+
+    result = try_token(rule.id_special, make_token.identifier, state);
+    if (is_ok(result)) return result;
+
+    return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `invalid token, expected an atom`} };
+}
+
+function try_token(rule: { description: string, regex: RegExp }, make_token: undefined | Function, state: State): Result<State> {
+    const match = rule.regex.exec(state.line);
+    if (match && match.index === 0) { // verify the match starts at the beginning
+        const word = match[0];
+        state.index += word.length;
+        state.line = state.line.slice(word.length);
+        if (make_token !== undefined) {
+            state.tokens.push(make_token(state.tokens.length, state.index, word)); // TODO: it might be possible to construct a raw AST by appending into a data field here, instead of into a flat list of tokens
+        }
+        return { ok: true, value: state };
     }
     else {
-        return result;
+        return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `invalid token, expected ${rule.description}`} };
     }
-}
-
-export function maybe_parenthesis_token(word: string): undefined | Token {
-    if (word == "(") {
-        return {kind: "TokenOpenParen", value: "("};
-    }
-    else if (word == ")") {
-        return {kind: "TokenCloseParen", value: ")"};
-    }
-    return undefined;
-}
-
-export function maybe_boolean_token(word: string): undefined | Token {
-    if (word === 'True') {
-        return {kind: "TokenBoolean", value: true};
-    }
-    else if (word === 'False') {
-        return {kind: "TokenBoolean", value: false};
-    }
-    else {
-        return undefined;
-    }
-}
-
-export function maybe_number_token(word: string): undefined | Token {
-    let number = Number(word);
-    if (isNaN(number)) {
-        return undefined;
-    }
-    else {
-        return {kind: "TokenNumber", value: number};
-    }
-}
-
-export function maybe_identifier_token(word: string): undefined | Token {
-    if (/^[_a-zA-Z][_a-zA-Z0-9]*$/.test(word)) {
-        return {kind: "TokenIdentifier", value: word};
-    }
-    else if (/^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+$/.test(word)) {
-        return {kind: "TokenIdentifier", value: word};
-    }
-    return undefined;
 }

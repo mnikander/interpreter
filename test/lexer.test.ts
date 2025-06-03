@@ -1,85 +1,187 @@
 import { describe, it, expect } from 'vitest'
-import { to_token, tokenize, Token} from '../src/lexer'
-import { is_error } from '../src/error';
+import { lex } from '../src/lexer'
+import { is_error, is_ok } from '../src/error';
+import { is_token, Token } from '../src/token';
 
-describe('to_token', () => {
+type OkLex = { ok: true, value: readonly Token[] };
 
-    it('must convert an integer into a number token', () => {
-        expect(to_token('-1')).toStrictEqual({kind: "TokenNumber", value: -1});
-        expect(to_token('0')).toStrictEqual({kind: "TokenNumber", value: 0});
-        expect(to_token('1')).toStrictEqual({kind: "TokenNumber", value: 1});
-        expect(to_token('+1')).toStrictEqual({kind: "TokenNumber", value: 1});
+describe('individual tokens', () => {
+
+    it('must tokenize "(" to open parenthesis', () => {
+        const attempt = lex('(');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.open(result.value[0])).toBe(true);
     });
 
-    it('must convert a boolean into a boolean token', () => {
-        expect(to_token('True')).toStrictEqual({kind: "TokenBoolean", value: true});
-        expect(to_token('False')).toStrictEqual({kind: "TokenBoolean", value: false})
+    it('must tokenize ")" to close parenthesis', () => {
+        const attempt = lex(')');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.close(result.value[0])).toBe(true);
     });
 
-    it('convert an opening parenthesis into an opening parenthesis token', () => {
-        expect(to_token('(')).toStrictEqual({kind: "TokenOpenParen", value: "("});
+    it('must tokenize "true" to a boolean', () => {
+        const attempt = lex('true');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1);
+        expect(is_token.boolean(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe(true);
     });
 
-    it('convert a closing parenthesis into a closing parenthesis token', () => {
-        const expected: Token = {kind: "TokenCloseParen", value: ")"};
-        expect(to_token(')')).toStrictEqual(expected);
+    it('must tokenize "false" to a boolean', () => {
+        const attempt = lex('false');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.boolean(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe(false);
     });
 
-    it("must convert '+' into an identifier token", () => {
-        const expected: Token = {kind: "TokenIdentifier", value: "+"};
-        expect(to_token('+')).toStrictEqual(expected);
+    it('must tokenize "1" to a number', () => {
+        const attempt = lex('1');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.number(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe(1);
     });
 
-    it('must convert a variable name, which starts with a letter or underscore and does not contain other special characters, into an identifier token', () => {
-        expect(to_token('x').kind).toStrictEqual("TokenIdentifier");
+    it('must tokenize "+1" to a number', () => {
+        const attempt = lex('+1');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.number(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe(1);
     });
 
-    it('must convert a sequence of special charaters into an identifier token', () => {
-        expect(to_token('???').kind).toStrictEqual("TokenIdentifier");
+    it('must tokenize "-1" to a number', () => {
+        const attempt = lex('-1');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.number(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe(-1);
     });
 
-    it('invalid identifiers', () => {
-        expect(to_token('$a').kind).toStrictEqual("Lexing error");
-        expect(to_token('a$').kind).toStrictEqual("Lexing error");
-        expect(to_token('$1').kind).toStrictEqual("Lexing error");
-        expect(to_token('1$').kind).toStrictEqual("Lexing error");
-        expect(to_token('1a').kind).toStrictEqual("Lexing error");
-        expect(to_token('1_').kind).toStrictEqual("Lexing error");
-        expect(to_token('_+').kind).toStrictEqual("Lexing error");
+    it('must tokenize "-0.1" to a number', () => {
+        const attempt = lex('-0.1');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.number(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe(-0.1);
+    });
+
+    it('must tokenize single letter names to an identifier', () => {
+        const attempt = lex('x');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.identifier(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe('x');
+    });
+
+    it('must tokenize multi-letter names to an identifier', () => {
+        const attempt = lex('foo');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.identifier(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe('foo');
+    });
+
+    it('must tokenize "+" to an identifier', () => {
+        const attempt = lex('+');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.identifier(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe('+');
+    });
+
+    it('must convert a sequence of special characters into an identifier token', () => {
+        const attempt = lex('???');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(1); // expect just one token
+        expect(is_token.identifier(result.value[0])).toBe(true);
+        expect(result.value[0].value).toBe('???');
     });
 });
 
-describe('tokenize', () => {
+describe('tokenize expressions', () => {
 
-    it('must tokenize zero', () => {
-        const expected: Token[] = [{kind: "TokenNumber", value: 0}];
-        expect(tokenize('0')).toStrictEqual(expected);
+    it('must tokenize integer arithmetic expressions', () => {
+        const attempt = lex('(+ 1 2)');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(7);
+        expect(is_token.open      (result.value[0])).toBe(true);
+        expect(is_token.identifier(result.value[1])).toBe(true);
+        expect(is_token.whitespace(result.value[2])).toBe(true);
+        expect(is_token.number    (result.value[3])).toBe(true);
+        expect(is_token.whitespace(result.value[4])).toBe(true);
+        expect(is_token.number    (result.value[5])).toBe(true);
+        expect(is_token.close     (result.value[6])).toBe(true);
     });
 
-    it('must tokenize positive one', () => {
-        const expected: Token[] = [{kind: "TokenNumber", value: +1}];
-        expect(tokenize('+1')).toStrictEqual(expected);
+    it('must tokenize left-nested integer arithmetic expressions', () => {
+        const attempt = lex('(+ (* 1 2) 3)');
+        expect(is_ok(attempt)).toBe(true);
+
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(13);
+        expect(is_token.open      (result.value[0])).toBe(true);
+        expect(is_token.identifier(result.value[1])).toBe(true);
+        expect(is_token.whitespace(result.value[2])).toBe(true);
+        expect(is_token.open      (result.value[3])).toBe(true);
+        expect(is_token.identifier(result.value[4])).toBe(true);
+        expect(is_token.whitespace(result.value[5])).toBe(true);
+        expect(is_token.number    (result.value[6])).toBe(true);
+        expect(is_token.whitespace(result.value[7])).toBe(true);
+        expect(is_token.number    (result.value[8])).toBe(true);
+        expect(is_token.close     (result.value[9])).toBe(true);
+        expect(is_token.whitespace(result.value[10])).toBe(true);
+        expect(is_token.number    (result.value[11])).toBe(true);
+        expect(is_token.close     (result.value[12])).toBe(true);
     });
 
-    it('must tokenize negative one', () => {
-      const expected: Token[] = [{kind: "TokenNumber", value: -1}];
-      expect(tokenize('-1')).toStrictEqual(expected);
-  });
+    it('must tokenize right-nested integer arithmetic expressions', () => {
+        const attempt = lex('(+ 1 (* 2 3))');
+        expect(is_ok(attempt)).toBe(true);
 
-    it('must tokenize one plus two', () => {
-        const expected: Token[] = [{kind: "TokenOpenParen", value: "("},
-                                   {kind: "TokenIdentifier", value: "+"},
-                                   {kind: "TokenNumber", value: 1},
-                                   {kind: "TokenNumber", value: 2},
-                                   {kind: "TokenCloseParen", value: ")"},
-                                  ];
-        expect(tokenize('(+ 1 2)')).toStrictEqual(expected);
+        const result = attempt as OkLex;
+        expect(result.value.length).toBe(13);
+        expect(is_token.open      (result.value[0])).toBe(true);
+        expect(is_token.identifier(result.value[1])).toBe(true);
+        expect(is_token.whitespace(result.value[2])).toBe(true);
+        expect(is_token.number    (result.value[3])).toBe(true);
+        expect(is_token.whitespace(result.value[4])).toBe(true);
+        expect(is_token.open      (result.value[5])).toBe(true);
+        expect(is_token.identifier(result.value[6])).toBe(true);
+        expect(is_token.whitespace(result.value[7])).toBe(true);
+        expect(is_token.number    (result.value[8])).toBe(true);
+        expect(is_token.whitespace(result.value[9])).toBe(true);
+        expect(is_token.number    (result.value[10])).toBe(true);
+        expect(is_token.close     (result.value[11])).toBe(true);
+        expect(is_token.close     (result.value[12])).toBe(true);
     });
-
-    it('must report an error on invalid parentheses', () => {
-        const result = tokenize('(');
-        expect(Array.isArray(result)).toBe(false);
-        expect(is_error(result)).toStrictEqual(true);
-    });
-
 });

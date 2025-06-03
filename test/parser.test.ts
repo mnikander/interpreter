@@ -1,102 +1,190 @@
 import { describe, it, expect } from 'vitest'
-import { ASTNode, is_nd_call, is_nd_identifier, is_nd_let, NodeBoolean, NodeNumber, parse } from '../src/parser'
-import { Token, tokenize } from '../src/lexer'
-import { Error, is_error } from '../src/error';
+import { lex } from '../src/lexer'
+import { is_error, is_ok } from '../src/error';
+import { parse } from '../src/parser';
+import { Token } from '../src/token';
+import { is_leaf_boolean, is_leaf_number, is_leaf_identifier, is_node } from '../src/ast';
 
-describe('parse', () => {
-    it('must report an error for a lone opening parenthesis', () => {
-        const tokens: Token[] = [{kind: "TokenOpenParen", value: "("}]
-        const result: Error | [ASTNode, number] = parse(tokens);
-        expect(Array.isArray(result)).toBe(false);
-        expect(is_error(result)).toBe(true);
-        expect((result as Error).kind).toBe("Parsing error");
-    });
+type OkLex = { ok: true, value: readonly Token[] };
 
-    it('must report an error for a lone closing parenthesis', () => {
-        const tokens: Token[] = [{kind: "TokenCloseParen", value: ")"}]
-        const result: Error | [ASTNode, number] = parse(tokens);
-        expect(Array.isArray(result)).toBe(false);
-        expect(is_error(result)).toBe(true);
-        expect((result as Error).kind).toBe("Parsing error");
-    });
+describe('parse atoms', () => {
 
-    it('must parse an integer token', () => {
-        const tokens: Token[] = [{kind: "TokenNumber", value: 5}];
-        const result: Error | [ASTNode, number] = parse(tokens);
-        expect(Array.isArray(result)).toBe(true);
-        expect(is_error(result)).toBe(false);
-        const [ast, index] = result as [ASTNode, number];
-        expect(index).toBe(1);
-        expect(ast.kind).toBe("ND_NUMBER");
-        expect((ast as NodeNumber).value).toBe(5);
-    });
-
-    it('must parse a boolean token', () => {
-        const tokens: Token[] = [{kind: "TokenBoolean", value: true}];
-        const result: Error | [ASTNode, number] = parse(tokens);
-        expect(Array.isArray(result)).toBe(true);
-        expect(is_error(result)).toBe(false);
-        const [ast, index] = result as [ASTNode, number];
-        expect(index).toBe(1);
-        expect(ast.kind).toBe("ND_BOOLEAN");
-        expect((ast as NodeBoolean).value).toBe(true);
-    });
-
-    it('must parse a simple let-binding', () => {
-        const tokens: Error | Token[] = tokenize('(let x 42 x)');
-        expect(is_error(tokens)).toBe(false);
-        const result: Error | [ASTNode, number] = parse(tokens as Token[]);
-        expect(is_error(result)).toBe(false);
-        if (!is_error(result)) {
-            const [ast, index] = result;
-            expect(is_nd_let(ast)).toBe(true);
-            if (is_nd_let(ast)) {
-                expect(is_nd_identifier(ast.name)).toBe(true);
-                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 2, value: "x" });
-                expect(ast.expr).toStrictEqual({ kind: "ND_NUMBER", token_id: 3, value: 42} );
-                expect(ast.body).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 4, value: "x" });
-            }
-        }
-    });
-
-    it('must parse a nested let-binding', () => {
-        const tokens: Error | Token[] = tokenize('(let x (* 4 10) (+ x 2))');
-        expect(is_error(tokens)).toBe(false);
-        const result: Error | [ASTNode, number] = parse(tokens as Token[]);
-        expect(is_error(result)).toBe(false);
-        if (!is_error(result)) {
-            const [ast, index] = result;
-            expect(is_nd_let(ast)).toBe(true);
-            if (is_nd_let(ast)) {
-                expect(is_nd_identifier(ast.name)).toBe(true);
-                expect(ast.name).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 2, value: "x" });
-                expect(is_nd_call(ast.expr)).toBe(true);
-                if(is_nd_call(ast.expr)) {
-                    expect(ast.expr.func).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 4, value: '*'} );
-                    expect(ast.expr.params[0]).toStrictEqual({ kind: "ND_NUMBER", token_id: 5, value: 4} );
-                    expect(ast.expr.params[1]).toStrictEqual({ kind: "ND_NUMBER", token_id: 6, value: 10} );
-                }
-                expect(is_nd_call(ast.body)).toBe(true);
-                if (is_nd_call(ast.body)) {
-                    expect(ast.body.func).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 9, value: "+"} );
-                    expect(ast.body.params.length).toBe(2);
-                    expect(ast.body.params[0]).toStrictEqual({ kind: "ND_IDENTIFIER", token_id: 10, value: "x"} );
-                    expect(ast.body.params[1]).toStrictEqual({ kind: "ND_NUMBER", token_id: 11, value: 2} );
+    it('must parse "true" to a boolean', () => {
+        const lexed = lex('true');
+        expect(is_ok(lexed)).toBe(true);
+        if (is_ok(lexed)) {
+            const parsed = parse(lexed.value);
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                let ast = parsed.value;
+                expect(ast).toBeDefined();
+                if(ast !== undefined) {
+                    expect(is_leaf_boolean(ast)).toBe(true);
+                    if (is_leaf_boolean(ast)) {
+                        expect(ast.kind).toBe("Leaf");
+                        expect(ast.subkind).toBe("Boolean");
+                        expect(ast.token_id).toBe(0);
+                        expect(ast.value).toBe(true);
+                    }
                 }
             }
         }
     });
 
-    it('must report an error when tokens for multiple unrelated expressions are parsed', () => {
-        // invalid input should fail, the '2' is unreachable, i.e. not part of the expression
-        const tokens: Token[] = [
-            {kind: "TokenNumber", value: 1},
-            {kind: "TokenNumber", value: 2},
-        ]
+    it('must parse "-0.1" to a number'), () => {
+        const lexed = lex('-0.1');
+        expect(is_ok(lexed)).toBe(true);
+        if (is_ok(lexed)) {
+            const parsed = parse(lexed.value);
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                let ast = parsed.value;
+                expect(ast).toBeDefined();
+                if(ast !== undefined) {
+                    expect(is_leaf_number(ast)).toBe(true);
+                    if (is_leaf_number(ast)) {
+                        expect(ast.kind).toBe("Leaf");
+                        expect(ast.subkind).toBe("Number");
+                        expect(ast.token_id).toBe(0);
+                        expect(ast.value).toBe(-0.1);
+                    }
+                }
+            }
+        }
+    }
+});
 
-        const result: Error | [ASTNode, number] = parse(tokens);
-        expect(Array.isArray(result)).toBe(false);
-        expect(is_error(result)).toBe(true);
-        expect((result as Error).kind).toBe("Parsing error");
+describe('valid and invalid parentheses', () => {
+
+    it('must report an error for "("', () => {
+        const lexed = lex("(");
+        expect(is_ok(lexed)).toBe(true);
+        if(is_ok(lexed)) {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error for ")"', () => {
+        const lexed = lex(")");
+        expect(is_ok(lexed)).toBe(true);
+        if(is_ok(lexed)) {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error for ")("', () => {
+        const lexed = lex(")(");
+        expect(is_ok(lexed)).toBe(true);
+        if(is_ok(lexed)) {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error for "(("', () => {
+        const lexed = lex("((");
+        expect(is_ok(lexed)).toBe(true);
+        if(is_ok(lexed)) {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error for "))"', () => {
+        const lexed = lex("))");
+        expect(is_ok(lexed)).toBe(true);
+        if(is_ok(lexed)) {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error for "()"', () => {
+        // this check could also be done during semantic analysis, but failing fast is probably good
+        const lexed = lex(")(");
+        expect(is_ok(lexed)).toBe(true);
+        if(is_ok(lexed)) {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+});
+
+describe('expressions', () => {
+
+    it('must report an error for empty expressions', () => {
+        const lexed = lex('');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error for empty function calls', () => {
+        // TODO: this could be delayed to the semantic analysis
+        const lexed = lex('()');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error if the input consists of more than one expression', () => {
+        const lexed = lex('true false');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error when spaces beween identifiers are missing', () => {
+        const lexed = lex('(+a b)');
+        if (is_error(lexed)) {
+            expect(is_error(lexed)).toBe(true);
+        }
+        else {
+            let parsed = parse(lexed.value);
+            expect(is_error(parsed)).toBe(true);
+        }
+    });
+
+    it('must report an error for invalid identifiers, either during lexing or parsing', () => {
+        expect(is_error(lex('$a')) || is_error(parse((lex('$a') as OkLex).value))).toBe(true);
+        expect(is_error(lex('a$')) || is_error(parse((lex('a$') as OkLex).value))).toBe(true);
+        expect(is_error(lex('$1')) || is_error(parse((lex('$1') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1$')) || is_error(parse((lex('1$') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1a')) || is_error(parse((lex('1a') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1_')) || is_error(parse((lex('1_') as OkLex).value))).toBe(true);
+        expect(is_error(lex('_+')) || is_error(parse((lex('_+') as OkLex).value))).toBe(true);
+    });
+
+    it('must produce a valid AST for arithemetic expressions', () => {
+        const lexed = lex("(+ 1 2)");
+        expect(is_ok(lexed)).toBe(true);
+        if(is_ok(lexed)) {
+            let parsed = parse(lexed.value);
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                if(is_node(parsed.value)) {
+                    const ast = parsed.value;
+                    expect(ast.kind).toBe("Node");
+                    expect(ast.data.length).toBe(3);
+                    expect(is_leaf_identifier(ast.data[0])).toBe(true);
+                    expect(is_leaf_number(ast.data[1])).toBe(true);
+                    expect(is_leaf_number(ast.data[2])).toBe(true);
+                }
+            }
+        }
     });
 });

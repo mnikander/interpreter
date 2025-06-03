@@ -1,155 +1,93 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_tk_boolean, is_tk_number, is_tk_identifier, is_tk_left, is_tk_right, Token } from "./lexer";
-import { Error, number_of_arguments_error, is_error } from "./error";
+import { AST, Leaf, Node, make_leaf } from "./ast";
+import { error, is_error, is_ok, Result } from "./error";
+import { is_token, Token } from "./token";
 
-export type ParseResult = Error | [ASTNode, number];
-
-export type ASTAtom =
-    | NodeBoolean
-    | NodeNumber
-    | NodeIdentifier;
-
-export type ASTNode =
-    | ASTAtom
-    | NodeCall
-    | NodeLet;
-
-export interface NodeBoolean    { kind: "ND_BOOLEAN",    token_id: number, value: boolean };
-export interface NodeNumber     { kind: "ND_NUMBER",     token_id: number, value: number };
-export interface NodeIdentifier { kind: "ND_IDENTIFIER", token_id: number, value: string };
-export interface NodeCall       { kind: "ND_CALL",       token_id: number, func: ASTNode, params: ASTNode[] };
-export interface NodeLet        { kind: "ND_LET",        token_id: number, name: NodeIdentifier, expr: ASTNode, body: ASTNode };
-
-export function is_nd_boolean(node: ASTNode): node is NodeBoolean {
-    return node.kind == "ND_BOOLEAN";
+export function parse(tokens: readonly Token[]): Result<AST> {
+    let index: number        = 0;
+    let node_counter: number = 0;
+    let parsed: { index: number, node_counter: number, result: Result<AST> } = line(index, node_counter, tokens);
+    return parsed.result;
 }
 
-export function is_nd_number(node: ASTNode): node is NodeNumber {
-    return node.kind == "ND_NUMBER";
-}
-
-export function is_nd_identifier(node: ASTNode): node is NodeIdentifier {
-    return node.kind == "ND_IDENTIFIER";
-}
-
-export function is_nd_call(node: ASTNode): node is NodeCall {
-    return node.kind == "ND_CALL";
-}
-
-export function is_nd_let(node: ASTNode): node is NodeLet {
-    return node.kind == "ND_LET";
-}
-
-export function parse(tokens: Token[]): Error | [ASTNode, number] {
-    let result = parse_expression(tokens, 0);
-    if(is_error(result)) {
-        return result;
+// line = expr *space
+function line(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    let attempt_expr = expr(index, node_counter, tokens);
+    index = attempt_expr.index;
+    node_counter = attempt_expr.node_counter;
+    index = consume_whitespace(index, tokens);
+    if (index !== tokens.length) {
+        return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a line, expected a single expression", index)}};
     }
     else {
-        let [expression, index] = result;
-        if (result[1] == tokens.length) {
-            return [expression, result[1]];
-        }
-        else if (result[1] < tokens.length) {
-            return { kind: "Parsing error", token_id: result[1], message: "expected a single expression"};
-        }
-        else {
-            return { kind: "Parsing error", token_id: result[1], message: "not all tokens could be evaluated"};
-        }
+        return { index: index, node_counter: node_counter, result: attempt_expr.result };
     }
 }
 
-export function parse_expression(tokens: readonly Token[], index: number = 0): Error | [ASTNode, number] {
-    if (index < tokens.length) {
-        let token: Token = tokens[index];
-        index++; // consume the token
+// expr = *space (atom / call)
+function expr(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    index = consume_whitespace(index, tokens);
 
-        if (is_tk_boolean(token)) {
-            return [{kind: "ND_BOOLEAN", token_id: index-1, value: token.value}, index];
-        }
-        else if (is_tk_number(token)) {
-            return [{kind: "ND_NUMBER", token_id: index-1, value: token.value}, index];
-        }
-        else if (is_tk_identifier(token)) {
-            return [{kind: "ND_IDENTIFIER", token_id: index-1, value: token.value}, index];
-        }
-        else if (is_tk_left(token) && index < tokens.length) {
-            if (is_let(tokens[index])) {
-                return parse_let(tokens, index);
-            }
-            else {
-                return parse_call(tokens, index);
-            }
-        }
-        else if (is_tk_right(token)) {
-            // closing parentheses are handled by the parsers specific to function calls, let-bindings, etc
-            // a closing parenthesis should never occur in the control flow of this general parsing function
-            return {kind: "Parsing error", token_id: index-1, message: `unexpected ')'`};
-        }
-        else {
-            return {kind: "Parsing error", token_id: index-1, message: 'unknown token type'};
-        }
+    const attempt_atom = atom(index, node_counter, tokens);
+    if (is_ok(attempt_atom.result)) return attempt_atom;
+    
+    const attempt_call = call(index, node_counter, tokens);
+    if (is_ok(attempt_call.result)) return attempt_call;
+    
+    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an expression", index)}};
+}
+
+// call = (open *space expr *(space *space expr) *space close)
+function call(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    if (index == tokens.length || !is_token.open(tokens[index])) {
+        return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
     }
     else {
-        return {kind: "Parsing error", token_id: index-1, message: "expected more tokens"};
+        let node: Node     = { kind: "Node", token_id: index, node_id: node_counter, data: [] };
+        index++; // consume '('
+        node_counter++;
+        index              = consume_whitespace(index, tokens);
+        const attempt_expr = expr(index, node_counter, tokens);
+        if (is_error(attempt_expr.result)) return attempt_expr;
+        index          = attempt_expr.index;
+        node_counter   = attempt_expr.node_counter;
+        node.data.push(attempt_expr.result.value);
+
+        while (index < tokens.length && is_token.whitespace(tokens[index])) { // at least one whitespace character exists before another expr
+            index                      = consume_whitespace(index, tokens); // consume that one whitespace character along with all further whitespaces
+            const attempt_another_expr = expr(index, node_counter, tokens);
+            if (is_error(attempt_another_expr.result)) break;
+            index        = attempt_another_expr.index;
+            node_counter = attempt_another_expr.node_counter;
+            node.data.push(attempt_another_expr.result.value);
+        }
+        index = consume_whitespace(index, tokens);
+        
+        if (index == tokens.length || !is_token.close(tokens[index])) {
+            return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected ')'", index)}};
+        }
+        index++; // consume ')'
+        return { index: index, node_counter: node_counter, result: { ok: true, value: node } };
     }
 }
 
-function parse_call(tokens: readonly Token[], index: number = 0): Error | [NodeCall, number] {
-    let params: ASTNode[] = [];
-    const start_num = index;
-    let result: ParseResult = parse_expression(tokens, index);
-    if(is_error(result)) return result;
-
-    const func: ASTNode = result[0];
-    while (result[1] < tokens.length) {
-        if (is_tk_right(tokens[result[1]])) {
-            result = consumeToken(result); // consume the TK_RIGHT
-            return [{kind: "ND_CALL", token_id: start_num, func: func, params: params}, result[1]];
-        }
-        else {
-            result = parse_expression(tokens, result[1]);
-            if (is_error(result)) return result;
-            params.push(result[0]);
-        }
+// atom = boolean / number / string / identifier
+function atom(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    const token: Token = tokens[index];
+    if(index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
+        index++;
+        let atom: Leaf = make_leaf(index, node_counter, token);
+        node_counter++;
+        return { index: index, node_counter: node_counter, result: { ok: true, value: atom }};
     }
-    return {kind: "Parsing error", token_id: result[1]-1, message: "expected closing parentheses"};
+        
+    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, a number, a string, or an identifier", index)}};
 }
 
-function is_let(token: Token): boolean {
-    return is_tk_identifier(token) && token.value === "let";
-}
-
-function parse_let(tokens: readonly Token[], index: number = 0): Error | [NodeLet, number] {
-    const start_num = index;
-    index++; // consume the TK_IDENTIFIER which is equal to "let"
-
-    if (is_tk_right(tokens[index])) return number_of_arguments_error("Parsing error", 0, 3, index);
-    let result: ParseResult = parse_expression(tokens, index);
-    if (is_error(result)) return result;
-    const name: ASTNode = result[0];
-    if (!is_nd_identifier(name))
-        return { kind: "Parsing error", token_id: result[1]-1, message: "expected an identifier" };
-
-    if (is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", 1, 3, result[1]);
-    result = parse_expression(tokens, result[1]);
-    if (is_error(result)) return result;
-    const expr = result[0];
-
-    if (is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", 2, 3, result[1]);
-    result = parse_expression(tokens, result[1]);
-    if (is_error(result)) return result;
-    const body = result[0];
-
-    if (!is_tk_right(tokens[result[1]])) return number_of_arguments_error("Parsing error", "too many", 3, result[1]);
-
-    result = consumeToken(result); // consume the TokenCloseParen
-    return [{ kind: "ND_LET", token_id: start_num, name: name, expr: expr, body: body }, result[1]];
-}
-
-function consumeToken(result: [ASTNode, number]): [ASTNode, number] {
-    let [ast, index] = result;
-    index++;
-    return [ast, index];
+function consume_whitespace(index: number, tokens: readonly Token[]): number {
+    while(index < tokens.length && is_token.whitespace(tokens[index])) {
+        index++;
+    }
+    return index;
 }
