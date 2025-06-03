@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node } from "./ast";
+import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node, is_node_let, LeafIdentifier } from "./ast";
 import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
@@ -24,6 +24,19 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         else {
             return { ok: false, error: error("Evaluating", "identifier", ast.token_id)};
         }
+    }
+    else if (is_node_let(ast)) {
+        // let extended_env: Identifiers = { parent: env, symbols: new Set<string>() };
+        // extended_env.symbols.add(name.value);
+        // const body_check = check_identifiers(body, extended_env);
+        const name  = (ast.data[1] as LeafIdentifier);
+        const value = evaluate(ast.data[2], env);
+        if (!value.ok) return value;
+
+        const body = ast.data[3];
+        let extended_env: Environment = { parent: env, symbols: new Map<string, Value>() };
+        extended_env.symbols.set(name.value, value.value);
+        return evaluate (body, extended_env);
     }
     else if (is_node(ast)) {
 
@@ -79,6 +92,9 @@ export function lookup(identifier: string, env: Environment): undefined | Value 
     }
 }
 
+function extend(env: Environment): Environment {
+    return { parent: env, symbols: new Map<string, Value>()};
+}
 
 type Description = { op: string, example: string, about: string };
 const help_text: Description[] = [
