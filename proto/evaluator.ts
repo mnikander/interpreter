@@ -41,7 +41,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
     }
 }
 
-export const value_env: Environment = {
+export const builtin_functions: Environment = {
     parent: undefined,
     symbols: new Map<string, Value>([
     ['+',    function ( args: Primitive[] ): Primitive { return (args[0] as number) + (args[1] as number); }],
