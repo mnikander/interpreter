@@ -59,56 +59,44 @@ describe('valid and invalid parentheses', () => {
     it('must report an error for "("', () => {
         const lexed = lex("(");
         expect(is_ok(lexed)).toBe(true);
-        if(is_ok(lexed)) {
-            let parsed = parse(lexed.value);
-            expect(is_error(parsed)).toBe(true);
-        }
+        let parsed = parse((lexed as OkLex).value);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for ")"', () => {
         const lexed = lex(")");
         expect(is_ok(lexed)).toBe(true);
-        if(is_ok(lexed)) {
-            let parsed = parse(lexed.value);
-            expect(is_error(parsed)).toBe(true);
-        }
+        let parsed = parse((lexed as OkLex).value);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for ")("', () => {
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
-        if(is_ok(lexed)) {
-            let parsed = parse(lexed.value);
-            expect(is_error(parsed)).toBe(true);
-        }
+        let parsed = parse((lexed as OkLex).value);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for "(("', () => {
         const lexed = lex("((");
         expect(is_ok(lexed)).toBe(true);
-        if(is_ok(lexed)) {
-            let parsed = parse(lexed.value);
-            expect(is_error(parsed)).toBe(true);
-        }
+        let parsed = parse((lexed as OkLex).value);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for "))"', () => {
         const lexed = lex("))");
         expect(is_ok(lexed)).toBe(true);
-        if(is_ok(lexed)) {
-            let parsed = parse(lexed.value);
-            expect(is_error(parsed)).toBe(true);
-        }
+        let parsed = parse((lexed as OkLex).value);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for "()"', () => {
         // this check could also be done during semantic analysis, but failing fast is probably good
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
-        if(is_ok(lexed)) {
-            let parsed = parse(lexed.value);
-            expect(is_error(parsed)).toBe(true);
-        }
+        let parsed = parse((lexed as OkLex).value);
+        expect(is_error(parsed)).toBe(true);
     });
 });
 
