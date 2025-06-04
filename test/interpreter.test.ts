@@ -150,6 +150,10 @@ describe('let-bindings', () => {
         expect(interpret('(let x true x)')).toBe(true);
     });
 
+    it('must support nested variable bindings', () => {
+        expect(interpret('(let x 1 (let y 2 (+ x y)))')).toBe(3);
+    });
+
     it('must support variable binding inside of nested expressions', () => {
         expect(interpret('(let x 41 (+ x 1))')).toBe(42);
         expect(interpret('(let x 1 (+ x (* x 2)))')).toBe(3);
