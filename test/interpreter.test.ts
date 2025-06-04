@@ -163,6 +163,10 @@ describe('let-bindings', () => {
         expect(interpret('(let add + (add 1 2))')).toBe(3);
     });
 
+    it('must resolve shadowed variables correctly', () => {
+        expect(interpret('(let x 1 (+ x (let x 2 (+ 1 x))))')).toBe(4);
+    });
+
     it('must report an error if the 1st argument the let-binding is not an identifier', () => {
         const result = interpret('(let 4 2 x)');
         expect(result).toContain("error");
