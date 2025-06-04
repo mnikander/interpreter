@@ -5,17 +5,17 @@ import { Token } from "./token";
 
 export interface Error extends Item {
     kind: "Error",
-    subkind: "Lexing" | "Parsing" | "Analyzing" | "Evaluating",
+    subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation",
     token_id: number,
     message: string,
 }
 
-export function error(subkind: "Lexing" | "Parsing" | "Analyzing" | "Evaluating", message: string, token_number: number): Error {
+export function error(subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Error {
     return { kind: "Error", subkind: subkind, token_id: token_number, message: message };
 }
 
 export function error_to_string(error: Error, tokens: Token[]): string {
-    return `${error.kind} ${error.subkind} ${error.message} '${tokens[error.token_id].value}'`;
+    return `${error.subkind} error: ${error.message} '${tokens[error.token_id].value}'`;
 }
 
 export type Result<T> = { ok: true, value: T } | { ok: false, error: Error };

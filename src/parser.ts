@@ -18,7 +18,7 @@ function line(index: number, node_counter: number, tokens: readonly Token[]): { 
     node_counter = attempt_expr.node_counter;
     index = consume_whitespace(index, tokens);
     if (index !== tokens.length) {
-        return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a line, expected a single expression", index)}};
+        return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "expected a single expression at", index)}};
     }
     else {
         return { index: index, node_counter: node_counter, result: attempt_expr.result };
@@ -35,7 +35,7 @@ function expr(index: number, node_counter: number, tokens: readonly Token[]): { 
     const attempt_call = call(index, node_counter, tokens);
     if (is_ok(attempt_call.result)) return attempt_call;
     
-    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an expression", index)}};
+    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an expression at", index)}};
 }
 
 // call = (open *space expr *(space *space expr) *space close)
@@ -82,7 +82,7 @@ function atom(index: number, node_counter: number, tokens: readonly Token[]): { 
         return { index: index, node_counter: node_counter, result: { ok: true, value: atom }};
     }
         
-    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, a number, a string, or an identifier", index)}};
+    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", index)}};
 }
 
 function consume_whitespace(index: number, tokens: readonly Token[]): number {

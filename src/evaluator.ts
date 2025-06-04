@@ -22,7 +22,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
             return { ok: true, value: identifier };
         }
         else {
-            return { ok: false, error: error("Evaluating", "identifier", ast.token_id)};
+            return { ok: false, error: error("Evaluation", "identifier", ast.token_id)};
         }
     }
     else if (is_node_let(ast)) {
@@ -50,7 +50,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         return { ok: true, value: (fn as Function)(args) };
     }
     else {
-        return { ok: false, error: error("Evaluating", "unknown AST node", ast.token_id)};
+        return { ok: false, error: error("Evaluation", "unknown AST node", ast.token_id)};
     }
 }
 
