@@ -26,7 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
         output.textContent = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome! Try typing:\n\n(+ 1 2)\n\nand press Enter. For more info run:\n\n(help)\n\n";
     }
 
-    const inputField = document.getElementById("input");
+    const inputField = document.getElementById("input") as HTMLInputElement;
+
+    // set the focus to the end of the input field, so the cursor is at end of the default text '(help)'
+    inputField?.focus();
+    inputField?.setSelectionRange(inputField.value.length, inputField.value.length);
+
     inputField?.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') {
             event.preventDefault(); // Prevent form submission or newline
