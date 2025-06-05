@@ -198,6 +198,24 @@ describe('let-bindings', () => {
     });
 });
 
+describe.skip('lambdas', () => {
+    it('must evaluate lambda expressions with one argument', () => {
+        expect(interpret("((lambda a (+ 1 a) 2)")).toBe(3);
+    });
+
+    it('must evaluate nested lambda expressions of one argument', () => {
+        expect(interpret("(((lambda a (lambda b a)) 1) 2)")).toBe(1);
+    });
+
+    it('must evaluate lambdas which are bound to a name', () => {
+        expect(interpret("(let successor (lambda x (+ x 1)) (successor 1))")).toBe(2);
+    });
+
+    it.skip('may evaluate lambda expressions with multiple arguments', () => {
+        expect(interpret("((lambda [a b] a) 1 2)")).toBe(1);
+    });
+});
+
 describe.skip('references', () => {
     it('must support creation of explicit references', () => {
         expect(interpret("(let x 40 (let y (ref x) (+ y 2)))")).toBe(42);
