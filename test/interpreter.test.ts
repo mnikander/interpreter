@@ -198,6 +198,17 @@ describe('let-bindings', () => {
     });
 });
 
+describe.skip('references', () => {
+    it('must support creation of explicit references', () => {
+        expect(interpret("(let x 40 (let y (ref x) (+ y 2)))")).toBe(42);
+    });
+
+    it('must report an an error when a reference is created implicitly', () => {
+        expect(interpret("(let x 40 (let y x (+ y 2)))")).toContain("error");
+    });
+});
+
+
 describe.skip('type system', () => {
     it('must report an error when implicitly converting to a boolean', () => {
         expect(interpret("(! 0)")).toContain("error");
