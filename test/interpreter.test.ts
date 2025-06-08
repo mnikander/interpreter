@@ -200,7 +200,7 @@ describe('let-bindings', () => {
 
 describe.skip('lambdas', () => {
     it('must evaluate lambda expressions with one argument', () => {
-        expect(interpret("((lambda a (+ 1 a) 2)")).toBe(3);
+        expect(interpret("((lambda a (+ 1 a)) 2)")).toBe(3);
     });
 
     it('must evaluate nested lambda expressions of one argument', () => {
