@@ -1,7 +1,12 @@
 // Copyright (c) 2025 Marco Nikander
 
 export function debruijn(expr: any[], level: number = 0): any[] {
-    if (expr[0] === 'lambda') {
+    if (Array.isArray(expr[0])) {
+        const func  = expr[0];
+        const value = expr[1];
+        return [debruijn(func), value];
+    }
+    else if (expr[0] === 'lambda') {
         const parameter = expr[1];
         const body      = expr[2];
         const tail = replace_symbol_with_level(body, parameter, level);
