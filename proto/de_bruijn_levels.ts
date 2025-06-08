@@ -39,3 +39,37 @@ function replace_symbol_with_level(expr: any | any[], symbol: string, level: num
         }
     }
 }
+
+export function evaluate(lambda_expression: any[], params: number[] = []): number {
+    const expr = debruijn(lambda_expression, 0);
+    return evaluate_debruijn(expr, []);
+}
+
+function evaluate_debruijn(expr: any | any[], params: number[] = []): number {
+    if (is_application(expr)) {
+        params.push(expr[1]);
+        return evaluate_debruijn(expr[0], params);
+    }
+    else if (is_abstraction(expr)) {
+        return evaluate_debruijn(expr[1], params);
+    }
+    else if (!Array.isArray(expr)) {
+        if (typeof expr === 'object' && 'level' in expr) {
+            return params[expr.level];
+        }
+        else {
+            return expr;
+        }
+    }
+    else {
+        throw new Error('Invalid expression');
+    }
+}
+
+function is_abstraction(expr: any[]): boolean {
+    return (Array.isArray(expr) && expr[0] === 'lambda');
+}
+
+function is_application(expr: any[]): boolean {
+    return (Array.isArray(expr) && expr[0] !== 'lambda');
+}
