@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { AST, debruijn, evaluate } from '../proto/de_bruijn_levels'
 
-const i_combinator: AST = ['lambda', 'x', 'x'];
-const k_combinator: AST = ['lambda', 'x', ['lambda', 'y', 'x']];
+const i_combinator: AST = ['lambda', 'x', 'x']; // identity function
+const k_combinator: AST = ['lambda', 'x', ['lambda', 'y', 'x']]; // also known as 'first'
 const s_combinator: AST = ['lambda', 'x', ['lambda', 'y', ['lambda', 'z', [['x', 'z'], ['y', 'z']]]]];
 
 describe('when none of the arguments are provided, bound variable names must be substituted with de Bruijn levels', () => {
