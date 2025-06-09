@@ -46,23 +46,26 @@ describe('when all of the arguments are provided, bound variable names must be s
     });
 });
 
-describe('integer-valued lambda expressions', () => {
-    it('must evaluate a constant expression', () => {
+describe('when all arguments are provided, integer-valued lambda expressions must be evaluated', () => {
+    it('constant function', () => {
         expect(evaluate( [['lambda', 'a', 42], -1] )).toBe(42);
         expect(evaluate( [['lambda', 'a', 42],  0] )).toBe(42);
         expect(evaluate( [['lambda', 'a', 42],  1] )).toBe(42);
         expect(evaluate( [['lambda', 'a', 42], +1] )).toBe(42);
     });
 
-    it('must evaluate the identity expression', () => {
+    it('I combinator', () => {
         expect(evaluate( [['lambda', 'a', 'a'], -1] )).toBe(-1);
         expect(evaluate( [['lambda', 'a', 'a'],  0] )).toBe(0);
         expect(evaluate( [['lambda', 'a', 'a'],  1] )).toBe(1);
         expect(evaluate( [['lambda', 'a', 'a'], +1] )).toBe(1);
     });
 
-    it('must evaluate a nested lambda expressions', () => {
+    it('K combinator', () => {
         expect(evaluate( [[['lambda', 'a', ['lambda', 'b', 'a']], 2], 1] )).toBe(1);
+    });
+
+    it('second', () => {
         expect(evaluate( [[['lambda', 'a', ['lambda', 'b', 'b']], 2], 1] )).toBe(2);
     });
 });
