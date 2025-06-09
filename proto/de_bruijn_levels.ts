@@ -8,7 +8,9 @@ export type Application         = [AST, AST];
 
 export function debruijn(expr: AST, level: number = 0): AST {
     if (is_application(expr)) {
-        return [debruijn(expr[0]), expr[1]];
+        const arg = debruijn(expr[1]);
+        const fn  = debruijn(expr[0]);
+        return [fn, arg];
     }
     else if (is_abstraction(expr)) {
         const tail = replace_symbol_with_level(expr[2], expr[1], level);

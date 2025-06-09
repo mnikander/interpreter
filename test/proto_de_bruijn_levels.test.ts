@@ -25,6 +25,10 @@ describe('when none of the arguments are provided, bound variable names must be 
     it('shadowing of parameter names', () => {
         expect(debruijn( ['lambda', 'x', ['lambda', 'x', 'x']] )).toStrictEqual(['lambda', ['lambda', { level: 1 }]]);
     });
+
+    it('nested identity function', () => {
+        expect(debruijn( [['lambda', 'x', 'x'], ['lambda', 'x', 'x']] )).toStrictEqual([['lambda', { level: 0 }], ['lambda', { level: 0 }]]);
+    });
 });
 
 describe('when all of the arguments are provided, bound variable names must be substituted with de Bruijn levels', () => {
@@ -46,7 +50,7 @@ describe('when all of the arguments are provided, bound variable names must be s
         const y: AST = i_combinator;
         const z: AST = k_combinator;
         expect(debruijn( [[[s_combinator, z], y], x] )).
-            toStrictEqual([[[['lambda', ['lambda', ['lambda', [[{ level: 0 }, { level: 2 }], [{ level: 1 }, { level: 2 }]]]]], z], y], x]);
+            toStrictEqual([[[['lambda', ['lambda', ['lambda', [[{ level: 0 }, { level: 2 }], [{ level: 1 }, { level: 2 }]]]]], ['lambda', ['lambda', { level: 0 }]]], ['lambda', { level: 0 }]], ['lambda', { level: 0 }]]);
     });
 });
 
@@ -78,7 +82,7 @@ describe('when all arguments are provided, integer-valued lambda expressions mus
     });
 });
 
-describe.skip('when all arguments are provided, higher-order lambda expressions must be evaluated', () => {
+describe('when all arguments are provided, higher-order lambda expressions must be evaluated', () => {
     it('nested identity function', () => {
         expect(evaluate( [[i_combinator, i_combinator], 42] )).toBe(42);
     });
@@ -88,4 +92,5 @@ describe.skip('when all arguments are provided, higher-order lambda expressions 
         const second: AST = ['lambda', 'a', ['lambda', 'b', 'b']];
         expect(evaluate( [[[[first, first], second], 2], 1] )).toBe(1);
     });
+
 });
