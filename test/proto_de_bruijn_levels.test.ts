@@ -93,4 +93,11 @@ describe('when all arguments are provided, higher-order lambda expressions must 
         expect(evaluate( [[[[first, first], second], 2], 1] )).toBe(1);
     });
 
+    // TODO: expand these tests with further examples for higher order functions
+});
+
+describe.skip('when some of the arguments are provided, a closure must be created', () => {
+    it('partial application of first', () => {
+        expect(evaluate( [['lambda', 'a', ['lambda', 'b', 'a']], 2] )).toBe('a closure');
+    });
 });
