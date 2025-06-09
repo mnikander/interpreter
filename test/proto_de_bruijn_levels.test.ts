@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { debruijn, evaluate } from '../proto/de_bruijn_levels'
+import { AST, debruijn, evaluate } from '../proto/de_bruijn_levels'
+
+const i_combinator: AST = ['lambda', 'x', 'x'];
+const k_combinator: AST = ['lambda', 'x', ['lambda', 'y', 'x']];
+const s_combinator: AST = ['lambda', 'x', ['lambda', 'y', ['lambda', 'z', [['x', 'z'], ['y', 'z']]]]];
 
 describe('when none of the arguments are provided, bound variable names must be substituted with de Bruijn levels', () => {
     it('constant function', () => {
@@ -7,11 +11,15 @@ describe('when none of the arguments are provided, bound variable names must be 
     });
 
     it('I combinator', () => {
-        expect(debruijn( ['lambda', 'a', 'a'] )).toStrictEqual(['lambda', { level: 0 }]);
+        expect(debruijn( i_combinator )).toStrictEqual(['lambda', { level: 0 }]);
     });
 
     it('K combinator', () => {
-        expect(debruijn( ['lambda', 'a', ['lambda', 'b', 'a']])).toStrictEqual(['lambda', ['lambda', { level: 0 }]]);
+        expect(debruijn( k_combinator )).toStrictEqual(['lambda', ['lambda', { level: 0 }]]);
+    });
+
+    it('S combinator', () => {
+        expect(debruijn( s_combinator )).toStrictEqual(['lambda', ['lambda', ['lambda', [[{ level: 0 }, { level: 2 }], [{ level: 1 }, { level: 2 }]]]]]);
     });
 });
 
@@ -21,11 +29,12 @@ describe('when all of the arguments are provided, bound variable names must be s
     });
 
     it('I combinator', () => {
-        expect(debruijn(  [['lambda', 'a', 'a'], 1] )).toStrictEqual( [['lambda', { level: 0 }], 1]);
+        expect(debruijn(  [i_combinator, 1] )).toStrictEqual( [['lambda', { level: 0 }], 1]);
     });
 
     it('K combinator', () => {
-        expect(debruijn( [[['lambda', 'a', ['lambda', 'b', 'a']], 1], 2])).toStrictEqual([[['lambda', ['lambda', { level: 0 }]], 1], 2]);
+        expect(debruijn( [[k_combinator, 1], 2])).toStrictEqual([[['lambda', ['lambda', { level: 0 }]], 1], 2]);
+    });
     });
 });
 
