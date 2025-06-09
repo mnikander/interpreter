@@ -6,37 +6,37 @@ const k_combinator: AST = ['lambda', 'x', ['lambda', 'y', 'x']]; // selection fu
 const s_combinator: AST = ['lambda', 'x', ['lambda', 'y', ['lambda', 'z', [['x', 'z'], ['y', 'z']]]]]; // substitution function
 
 describe('when none of the arguments are provided, bound variable names must be substituted with de Bruijn levels', () => {
-    it('constant', () => {
+    it('constant function', () => {
         expect(debruijn( ['lambda', 'x', 42] )).toStrictEqual(['lambda', 42]);
     });
 
-    it('identity', () => {
+    it('identity function', () => {
         expect(debruijn( ['lambda', 'x', 'x'] )).toStrictEqual(['lambda', { level: 0 }]);
     });
 
-    it('selection', () => {
+    it('selection function', () => {
         expect(debruijn( ['lambda', 'x', ['lambda', 'y', 'x']] )).toStrictEqual(['lambda', ['lambda', { level: 0 }]]);
     });
 
-    it('substitution', () => {
+    it('substitution function', () => {
         expect(debruijn( s_combinator )).toStrictEqual(['lambda', ['lambda', ['lambda', [[{ level: 0 }, { level: 2 }], [{ level: 1 }, { level: 2 }]]]]]);
     });
 });
 
 describe('when all of the arguments are provided, bound variable names must be substituted with de Bruijn levels', () => {
-    it('constant', () => {
+    it('constant function', () => {
         expect(debruijn(  [['lambda', 'a', 42], 1] )).toStrictEqual( [['lambda', 42], 1]);
     });
 
-    it('identity', () => {
+    it('identity function', () => {
         expect(debruijn(  [i_combinator, 1] )).toStrictEqual( [['lambda', { level: 0 }], 1]);
     });
 
-    it('selection', () => {
+    it('selection function', () => {
         expect(debruijn( [[k_combinator, 1], 2])).toStrictEqual([[['lambda', ['lambda', { level: 0 }]], 1], 2]);
     });
 
-    it('substitution', () => {
+    it('substitution function', () => {
         // Sxyz = xz(yz)
         const x: AST = i_combinator;
         const y: AST = i_combinator;
@@ -47,14 +47,14 @@ describe('when all of the arguments are provided, bound variable names must be s
 });
 
 describe('when all arguments are provided, integer-valued lambda expressions must be evaluated', () => {
-    it('constant', () => {
+    it('constant function', () => {
         expect(evaluate( [['lambda', 'a', 42], -1] )).toBe(42);
         expect(evaluate( [['lambda', 'a', 42],  0] )).toBe(42);
         expect(evaluate( [['lambda', 'a', 42],  1] )).toBe(42);
         expect(evaluate( [['lambda', 'a', 42], +1] )).toBe(42);
     });
 
-    it('identity', () => {
+    it('identity function', () => {
         expect(evaluate( [['lambda', 'a', 'a'], -1] )).toBe(-1);
         expect(evaluate( [['lambda', 'a', 'a'],  0] )).toBe(0);
         expect(evaluate( [['lambda', 'a', 'a'],  1] )).toBe(1);
