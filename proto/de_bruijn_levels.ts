@@ -59,7 +59,9 @@ function evaluate_debruijn(expr: AST, params: number[] = []): number {
             return evaluate_debruijn(expr[0], params);
         }
         else {
-            throw new Error('Argument is of non-integer type');
+            const arg = evaluate_debruijn(expr[1], params);
+            params.push(arg);
+            return evaluate_debruijn(expr[0], params);
         }
     }
     else if (is_debruijn_abstraction(expr)) {
