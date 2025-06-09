@@ -69,3 +69,15 @@ describe('when all arguments are provided, integer-valued lambda expressions mus
         expect(evaluate( [[['lambda', 'a', ['lambda', 'b', 'b']], 2], 1] )).toBe(2);
     });
 });
+
+describe.skip('when all arguments are provided, higher-order lambda expressions must be evaluated', () => {
+    it('nested identity function', () => {
+        expect(evaluate( [[i_combinator, i_combinator], 42] )).toBe(42);
+    });
+
+    it('nested first and second functions', () => {
+        const first : AST = ['lambda', 'a', ['lambda', 'b', 'a']];
+        const second: AST = ['lambda', 'a', ['lambda', 'b', 'b']];
+        expect(evaluate( [[[[first, first], second], 2], 1] )).toBe(1);
+    });
+});
