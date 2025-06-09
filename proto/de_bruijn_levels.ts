@@ -1,15 +1,17 @@
 // Copyright (c) 2025 Marco Nikander
 
-export function debruijn(expr: any[], level: number = 0): any[] {
-    if (Array.isArray(expr[0])) {
-        const func  = expr[0];
-        const value = expr[1];
-        return [debruijn(func), value];
+export type AST                 = Leaf | Abstraction | DeBruijnAbstraction | Application;
+export type Leaf                = number | string | { level: number }
+export type Abstraction         = ['lambda', string, AST];
+export type DeBruijnAbstraction = ['lambda', AST];
+export type Application         = [AST, AST];
+
+export function debruijn(expr: AST, level: number = 0): AST {
+    if (is_application(expr)) {
+        return [debruijn(expr[0]), expr[1]];
     }
-    else if (expr[0] === 'lambda') {
-        const parameter = expr[1];
-        const body      = expr[2];
-        const tail = replace_symbol_with_level(body, parameter, level);
+    else if (is_abstraction(expr)) {
+        const tail = replace_symbol_with_level(expr[2], expr[1], level);
         return ['lambda', debruijn(tail, level+1)];
     }
     else {
@@ -17,8 +19,8 @@ export function debruijn(expr: any[], level: number = 0): any[] {
     }
 }
 
-function replace_symbol_with_level(expr: any | any[], symbol: string, level: number) {
-    if (expr[0] === 'lambda') { // nested lambda
+function replace_symbol_with_level(expr: AST, symbol: string, level: number) {
+    if (is_abstraction(expr)) { // nested lambda
         const parameter = expr[1];
         const body      = expr[2];
         if (parameter === symbol) {
@@ -30,6 +32,11 @@ function replace_symbol_with_level(expr: any | any[], symbol: string, level: num
             return ['lambda', parameter, replace_symbol_with_level(body, symbol, level)];
         }
     }
+    else if (is_application(expr)) {
+        const arg: AST = replace_symbol_with_level(expr[1], symbol, level);
+        const fn:  AST = replace_symbol_with_level(expr[0], symbol, level);
+        return [fn, arg];
+    }
     else {
         if (expr === symbol) {
             return { level: level };
@@ -40,36 +47,52 @@ function replace_symbol_with_level(expr: any | any[], symbol: string, level: num
     }
 }
 
-export function evaluate(lambda_expression: any[], params: number[] = []): number {
+export function evaluate(lambda_expression: AST, params: number[] = []): number {
     const expr = debruijn(lambda_expression, 0);
     return evaluate_debruijn(expr, []);
 }
 
-function evaluate_debruijn(expr: any | any[], params: number[] = []): number {
+function evaluate_debruijn(expr: AST, params: number[] = []): number {
     if (is_application(expr)) {
-        params.push(expr[1]);
-        return evaluate_debruijn(expr[0], params);
+        if (is_number(expr[1])) {
+            params.push(expr[1]);
+            return evaluate_debruijn(expr[0], params);
+        }
+        else {
+            throw new Error('Argument is of non-integer type');
+        }
     }
-    else if (is_abstraction(expr)) {
+    else if (is_debruijn_abstraction(expr)) {
         return evaluate_debruijn(expr[1], params);
     }
     else if (!Array.isArray(expr)) {
         if (typeof expr === 'object' && 'level' in expr) {
             return params[expr.level];
         }
-        else {
+        else if (typeof expr === 'number') {
             return expr;
+        }
+        else {
+            throw new Error('Invalid expression type');
         }
     }
     else {
-        throw new Error('Invalid expression');
+        throw new Error('Invalid array expression');
     }
 }
 
-function is_abstraction(expr: any[]): boolean {
-    return (Array.isArray(expr) && expr[0] === 'lambda');
+function is_abstraction(expr: AST): expr is Abstraction {
+    return Array.isArray(expr) && expr.length === 3 && expr[0] === 'lambda';
 }
 
-function is_application(expr: any[]): boolean {
-    return (Array.isArray(expr) && expr[0] !== 'lambda');
+function is_debruijn_abstraction(expr: AST): expr is Abstraction {
+    return Array.isArray(expr) && expr.length === 2 && expr[0] === 'lambda';
+}
+
+function is_application(expr: AST): expr is Application {
+    return Array.isArray(expr) && expr.length === 2 && expr[0] !== 'lambda';
+}
+
+function is_number(expr: AST): expr is number {
+    return typeof expr === 'number';
 }
