@@ -35,6 +35,14 @@ describe('when all of the arguments are provided, bound variable names must be s
     it('K combinator', () => {
         expect(debruijn( [[k_combinator, 1], 2])).toStrictEqual([[['lambda', ['lambda', { level: 0 }]], 1], 2]);
     });
+
+    it('S combinator', () => {
+        // Sxyz = xz(yz)
+        const x: AST = i_combinator;
+        const y: AST = i_combinator;
+        const z: AST = k_combinator;
+        expect(debruijn( [[[s_combinator, z], y], x] )).
+            toStrictEqual([[[['lambda', ['lambda', ['lambda', [[{ level: 0 }, { level: 2 }], [{ level: 1 }, { level: 2 }]]]]], z], y], x]);
     });
 });
 
