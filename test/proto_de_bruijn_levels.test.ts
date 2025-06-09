@@ -21,6 +21,10 @@ describe('when none of the arguments are provided, bound variable names must be 
     it('substitution function', () => {
         expect(debruijn( s_combinator )).toStrictEqual(['lambda', ['lambda', ['lambda', [[{ level: 0 }, { level: 2 }], [{ level: 1 }, { level: 2 }]]]]]);
     });
+
+    it('shadowing of parameter names', () => {
+        expect(debruijn( ['lambda', 'x', ['lambda', 'x', 'x']] )).toStrictEqual(['lambda', ['lambda', { level: 1 }]]);
+    });
 });
 
 describe('when all of the arguments are provided, bound variable names must be substituted with de Bruijn levels', () => {
@@ -67,6 +71,10 @@ describe('when all arguments are provided, integer-valued lambda expressions mus
 
     it('second', () => {
         expect(evaluate( [[['lambda', 'a', ['lambda', 'b', 'b']], 2], 1] )).toBe(2);
+    });
+
+    it('shadowing', () => {
+        expect(evaluate( [[['lambda', 'x', ['lambda', 'x', 'x']], 2], 1])).toStrictEqual(2);
     });
 });
 
