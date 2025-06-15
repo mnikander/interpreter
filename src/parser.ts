@@ -77,7 +77,7 @@ function atom(index: number, node_counter: number, tokens: readonly Token[]): { 
     const token: Token = tokens[index];
     if(index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
         index++;
-        let atom: Leaf = make_leaf(index, node_counter, token);
+        let atom: Leaf = make_leaf(node_counter, token);
         node_counter++;
         return { index: index, node_counter: node_counter, result: { ok: true, value: atom }};
     }

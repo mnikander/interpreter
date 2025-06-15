@@ -58,6 +58,6 @@ export function is_leaf_identifier(item: Item): item is LeafIdentifier { return 
 
 // constructors for leaves
 
-export function make_leaf(index: number, node_counter: number, token: Token): Leaf {
+export function make_leaf(node_counter: number, token: Token): Leaf {
     return {kind: "Leaf", subkind: token.subkind, token_id: token.id, node_id: node_counter, value: token.value}
 }
