@@ -33,6 +33,10 @@ export function is_node_let(item: Item): item is NodeLet {
     && is_leaf_identifier(item.data[1]);
 }
 
+export function make_node(node_counter: number, token: Token, data: AST[]): Node {
+    return { kind: "Node", token_id: token.id, node_id: node_counter, data: data };
+}
+
 // leaf types for the AST
 
 export interface Leaf extends Item {

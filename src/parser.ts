@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, Leaf, Node, make_leaf } from "./ast";
+import { AST, Leaf, Node, make_leaf, make_node } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
@@ -44,9 +44,9 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
         return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
     }
     else {
-        let node: Node     = { kind: "Node", token_id: index, node_id: node_counter, data: [] };
-        index++; // consume '('
+        let node: Node     = make_node(node_counter, tokens[index], []);
         node_counter++;
+        index++; // consume '('
         index              = consume_whitespace(index, tokens);
         const attempt_expr = expr(index, node_counter, tokens);
         if (is_error(attempt_expr.result)) return attempt_expr;
