@@ -21,8 +21,7 @@ describe('parse atoms', () => {
                 if(ast !== undefined) {
                     expect(is_leaf_boolean(ast)).toBe(true);
                     if (is_leaf_boolean(ast)) {
-                        expect(ast.kind).toBe("Leaf");
-                        expect(ast.subkind).toBe("Boolean");
+                        expect(ast.kind).toBe("Boolean");
                         expect(ast.token_id).toBe(0);
                         expect(ast.value).toBe(true);
                     }
@@ -43,8 +42,7 @@ describe('parse atoms', () => {
                 if(ast !== undefined) {
                     expect(is_leaf_number(ast)).toBe(true);
                     if (is_leaf_number(ast)) {
-                        expect(ast.kind).toBe("Leaf");
-                        expect(ast.subkind).toBe("Number");
+                        expect(ast.kind).toBe("Number");
                         expect(ast.token_id).toBe(0);
                         expect(ast.value).toBe(-0.1);
                     }
