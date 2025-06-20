@@ -1,12 +1,12 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, Atom, Call, NodeToTokenId, make_atom, make_call } from "./ast";
+import { AST, Atom, Call, NodeIdToTokenId, make_atom, make_call } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
-type ParserState = { token_index: number, node_counter: number, node_to_token_dictionary: NodeToTokenId, tokens: readonly Token[]};
+type ParserState = { token_index: number, node_counter: number, node_to_token_dictionary: NodeIdToTokenId, tokens: readonly Token[]};
 
-export function parse(tokens: readonly Token[]): { ast: Result<AST>, token_lookup_table: NodeToTokenId } {
+export function parse(tokens: readonly Token[]): { ast: Result<AST>, token_lookup_table: NodeIdToTokenId } {
     let state: ParserState = { token_index: 0, node_counter: 0, node_to_token_dictionary: new Map<number, number>(), tokens: tokens};
     let parsed: { state: ParserState, result: Result<AST> } = line(state);
     return { ast: parsed.result, token_lookup_table: state.node_to_token_dictionary };

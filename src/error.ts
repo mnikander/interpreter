@@ -2,7 +2,7 @@
 
 import { Item } from "./item";
 import { Token } from "./token";
-import { NodeToTokenId } from "./ast";
+import { NodeIdToTokenId } from "./ast";
 
 export interface Error extends Item {
     kind: "Error",
@@ -15,7 +15,7 @@ export function error(subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation",
     return { kind: "Error", subkind: subkind, token_or_node_id: token_number, message: message };
 }
 
-export function error_to_string(error: Error, tokens: Token[], node_to_token_dictionary: undefined | NodeToTokenId): string {
+export function error_to_string(error: Error, tokens: Token[], node_to_token_dictionary: undefined | NodeIdToTokenId): string {
     if (error.subkind === 'Lexing') {
         return `${error.subkind} error: ${error.message} '${tokens[error.token_or_node_id].value}'`;
     }

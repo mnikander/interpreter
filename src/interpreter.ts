@@ -5,7 +5,7 @@ import { parse } from "./parser";
 import { Value, evaluate, builtin_functions } from "./evaluator";
 import { Result, is_error, error_to_string } from "./error";
 import { Token } from "./token";
-import { AST, NodeToTokenId } from "./ast";
+import { AST, NodeIdToTokenId } from "./ast";
 import { check_identifiers, Identifiers } from "./check_identifiers";
 import { Environment } from "./evaluator";
 
@@ -14,7 +14,7 @@ export function interpret(prompt: string) {
     if(is_error(lexed)) return error_to_string(lexed.error, [], undefined);
 
     const tokens: Token[] = lexed.value;
-    const parsed: { ast: Result<AST>, token_lookup_table: NodeToTokenId } = parse(tokens);
+    const parsed: { ast: Result<AST>, token_lookup_table: NodeIdToTokenId } = parse(tokens);
     if(is_error(parsed.ast)) return error_to_string(parsed.ast.error, tokens, parsed.token_lookup_table);
 
     const check: Result<undefined> = check_identifiers(parsed.ast.value, create_set_of_names(builtin_functions));
