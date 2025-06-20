@@ -4,16 +4,16 @@ import { AST, Atom, Call, make_atom, make_call } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
-type State = { token_index: number, node_counter: number, tokens: readonly Token[]};
+type ParserState = { token_index: number, node_counter: number, tokens: readonly Token[]};
 
 export function parse(tokens: readonly Token[]): Result<AST> {
-    let state: State = { token_index: 0, node_counter: 0, tokens: tokens};
-    let parsed: { state: State, result: Result<AST> } = line(state);
+    let state: ParserState = { token_index: 0, node_counter: 0, tokens: tokens};
+    let parsed: { state: ParserState, result: Result<AST> } = line(state);
     return parsed.result;
 }
 
 // line = expr *space
-function line(state: State): { state: State, result: Result<AST> } {
+function line(state: ParserState): { state: ParserState, result: Result<AST> } {
     let attempt_expr = expr(state);
     state = attempt_expr.state;
     state = consume_whitespace(state);
@@ -26,7 +26,7 @@ function line(state: State): { state: State, result: Result<AST> } {
 }
 
 // expr = *space (atom / call)
-function expr(state: State): { state: State, result: Result<AST> } {
+function expr(state: ParserState): { state: ParserState, result: Result<AST> } {
     state = consume_whitespace(state);
 
     const attempt_atom = atom(state);
@@ -39,7 +39,7 @@ function expr(state: State): { state: State, result: Result<AST> } {
 }
 
 // call = (open *space expr *(space *space expr) *space close)
-function call(state: State): { state: State, result: Result<AST> } {
+function call(state: ParserState): { state: ParserState, result: Result<AST> } {
     if (state.token_index == state.tokens.length || !is_token.open(state.tokens[state.token_index])) {
         return { state: state, result: { ok: false, error: error("Parsing", "a function call, expected '('", state.token_index)}};
     }
@@ -70,7 +70,7 @@ function call(state: State): { state: State, result: Result<AST> } {
 }
 
 // atom = boolean / number / string / identifier
-function atom(state: State): { state: State, result: Result<AST> } {
+function atom(state: ParserState): { state: ParserState, result: Result<AST> } {
     const token: Token = state.tokens[state.token_index];
     if(state.token_index < state.tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
         let atom: Atom = make_atom(state.node_counter, token);
@@ -80,7 +80,7 @@ function atom(state: State): { state: State, result: Result<AST> } {
     return { state: state, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", state.token_index)}};
 }
 
-function consume_whitespace(state: State): State {
+function consume_whitespace(state: ParserState): ParserState {
     let token_index: number = state.token_index;
     while(token_index < state.tokens.length && is_token.whitespace(state.tokens[token_index])) {
         token_index++;
@@ -88,6 +88,6 @@ function consume_whitespace(state: State): State {
     return { token_index: token_index, node_counter: state.node_counter, tokens: state.tokens };
 }
 
-function update(state: State): State {
+function update(state: ParserState): ParserState {
     return { token_index: state.token_index + 1, node_counter: state.node_counter + 1, tokens: state.tokens };
 }
