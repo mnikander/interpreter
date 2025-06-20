@@ -5,7 +5,7 @@ import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "
 
 export type AST = Leaf | Call;
 
-// types for function calls and special forms
+// types for function calls, special forms, and atoms
 
 export interface Call extends Item {
     kind: string,
@@ -21,26 +21,6 @@ export interface Let extends Call {
     data: [AST, AST, AST, AST]
 };
 
-// type predicates
-
-export function is_call(item: Item): item is Call { return item.kind === "Call"; }
-
-export function is_call_let(item: Item): item is Let {
-    return is_call(item)
-    && item.data.length === 4
-    && is_leaf_identifier(item.data[0])
-    && item.data[0].value === 'let'
-    && is_leaf_identifier(item.data[1]);
-}
-
-// constructor
-
-export function make_call(node_counter: number, token: Token, data: AST[]): Call {
-    return { kind: "Call", token_id: token.id, node_id: node_counter, data: data };
-}
-
-// leaf types for the AST
-
 export interface Leaf extends Item {
     kind: string,
     token_id: number,
@@ -53,14 +33,28 @@ export interface LeafNumber     extends Leaf { kind: "Number",     token_id: num
 export interface LeafString     extends Leaf { kind: "String",     token_id: number, node_id: number, value: string };
 export interface LeafIdentifier extends Leaf { kind: "Identifier", token_id: number, node_id: number, value: string };
 
-// type predicates for leaves
+// type predicates
+
+export function is_call(item: Item): item is Call { return item.kind === "Call"; }
+
+export function is_call_let(item: Item): item is Let {
+    return is_call(item)
+    && item.data.length === 4
+    && is_leaf_identifier(item.data[0])
+    && item.data[0].value === 'let'
+    && is_leaf_identifier(item.data[1]);
+}
 
 export function is_leaf_boolean(item: Item): item is LeafBoolean { return item.kind === "Boolean"; }
 export function is_leaf_number(item: Item): item is LeafNumber { return item.kind === "Number"; }
 export function is_leaf_string(item: Item): item is LeafString { return item.kind === "String"; }
 export function is_leaf_identifier(item: Item): item is LeafIdentifier { return item.kind === "Identifier"; }
 
-// constructors for leaves
+// constructors
+
+export function make_call(node_counter: number, token: Token, data: AST[]): Call {
+    return { kind: "Call", token_id: token.id, node_id: node_counter, data: data };
+}
 
 export function make_leaf(node_counter: number, token: TokenBoolean | TokenNumber | TokenString | TokenIdentifier): Leaf {
     return {kind: token.subkind, token_id: token.id, node_id: node_counter, value: token.value}
