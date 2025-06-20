@@ -44,22 +44,22 @@ function call(token_index: number, node_counter: number, tokens: readonly Token[
         return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", token_index)}};
     }
     else {
-        let call: Call     = make_call(node_counter, tokens[token_index], []);
+        let call: Call       = make_call(node_counter, tokens[token_index], []);
         node_counter++;
         token_index++; // consume '('
-        token_index              = consume_whitespace(token_index, tokens);
-        const attempt_expr = expr(token_index, node_counter, tokens);
+        token_index          = consume_whitespace(token_index, tokens);
+        const attempt_expr   = expr(token_index, node_counter, tokens);
         if (is_error(attempt_expr.result)) return attempt_expr;
         token_index          = attempt_expr.index;
-        node_counter   = attempt_expr.node_counter;
+        node_counter         = attempt_expr.node_counter;
         call.data.push(attempt_expr.result.value);
 
         while (token_index < tokens.length && is_token.whitespace(tokens[token_index])) { // at least one whitespace character exists before another expr
-            token_index                      = consume_whitespace(token_index, tokens); // consume that one whitespace character along with all further whitespaces
+            token_index                = consume_whitespace(token_index, tokens); // consume that one whitespace character along with all further whitespaces
             const attempt_another_expr = expr(token_index, node_counter, tokens);
             if (is_error(attempt_another_expr.result)) break;
-            token_index        = attempt_another_expr.index;
-            node_counter = attempt_another_expr.node_counter;
+            token_index                = attempt_another_expr.index;
+            node_counter               = attempt_another_expr.node_counter;
             call.data.push(attempt_another_expr.result.value);
         }
         token_index = consume_whitespace(token_index, tokens);
