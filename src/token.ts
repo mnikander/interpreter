@@ -21,7 +21,7 @@ export interface TokenWhitespace {
 
 export interface TokenOpen {
     kind: "Token",
-    subkind: "Open",
+    subkind: "Open      ",
     id: number,
     offset: number,
     value: "(",
@@ -29,7 +29,7 @@ export interface TokenOpen {
 
 export interface TokenClose {
     kind: "Token",
-    subkind: "Close",
+    subkind: "Close     ",
     id: number,
     offset: number,
     value: ")",
@@ -37,7 +37,7 @@ export interface TokenClose {
 
 export interface TokenBoolean {
     kind: "Token",
-    subkind: "Boolean",
+    subkind: "Boolean   ",
     id: number,
     offset: number,
     value: boolean,
@@ -45,7 +45,7 @@ export interface TokenBoolean {
 
 export interface TokenNumber {
     kind: "Token",
-    subkind: "Number",
+    subkind: "Number    ",
     id: number,
     offset: number,
     value: number,
@@ -53,7 +53,7 @@ export interface TokenNumber {
 
 export interface TokenString {
     kind: "Token",
-    subkind: "String",
+    subkind: "String    ",
     id: number,
     offset: number,
     value: string,
@@ -75,28 +75,28 @@ export const make_token = {
     },
 
     open: function (id: number, offset: number, word: string): TokenOpen {
-       return { kind: "Token", subkind: "Open", id: id, offset: offset, value: "(" };
+       return { kind: "Token", subkind: "Open      ", id: id, offset: offset, value: "(" };
     },
 
     close: function (id: number, offset: number, word: string): TokenClose {
-        return { kind: "Token", subkind: "Close", id: id, offset: offset, value: ")" };
+        return { kind: "Token", subkind: "Close     ", id: id, offset: offset, value: ")" };
     },
 
     boolean: function (id: number, offset: number, word: "true" | "True" | "false" | "False"): TokenBoolean {
         if (word === "false" || word === "False") {
-            return { kind: "Token", subkind: "Boolean", id: id, offset: offset, value: false };
+            return { kind: "Token", subkind: "Boolean   ", id: id, offset: offset, value: false };
         }
         else {
-            return { kind: "Token", subkind: "Boolean", id: id, offset: offset, value: true };
+            return { kind: "Token", subkind: "Boolean   ", id: id, offset: offset, value: true };
         }
     },
 
     number: function (id: number, offset: number, word: string): TokenNumber {
-        return { kind: "Token", subkind: "Number", id: id, offset: offset, value: Number(word) };
+        return { kind: "Token", subkind: "Number    ", id: id, offset: offset, value: Number(word) };
     },
 
     string: function (id: number, offset: number, word: string): TokenString {
-        return { kind: "Token", subkind: "String", id: id, offset: offset, value: word };
+        return { kind: "Token", subkind: "String    ", id: id, offset: offset, value: word };
     },
 
     identifier: function (id: number, offset: number, word: string): TokenIdentifier {
@@ -112,23 +112,23 @@ export const is_token = {
     },
 
     open: function(item: Item): item is TokenOpen {
-        return item.kind === "Token" && item.subkind === "Open";
+        return item.kind === "Token" && item.subkind === "Open      ";
     },
 
     close: function(item: Item): item is TokenClose {
-        return item.kind === "Token" && item.subkind === "Close";
+        return item.kind === "Token" && item.subkind === "Close     ";
     },
 
     boolean: function(item: Item): item is TokenBoolean {
-        return item.kind === "Token" && item.subkind === "Boolean";
+        return item.kind === "Token" && item.subkind === "Boolean   ";
     },
 
     number: function(item: Item): item is TokenNumber {
-        return item.kind === "Token" && item.subkind === "Number";
+        return item.kind === "Token" && item.subkind === "Number    ";
     },
 
     string: function(item: Item): item is TokenString {
-        return item.kind === "Token" && item.subkind === "String";
+        return item.kind === "Token" && item.subkind === "String    ";
     },
 
     identifier: function(item: Item): item is TokenIdentifier {

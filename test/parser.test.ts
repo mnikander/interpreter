@@ -21,7 +21,7 @@ describe('parse atoms', () => {
                 if(ast !== undefined) {
                     expect(is_boolean(ast)).toBe(true);
                     if (is_boolean(ast)) {
-                        expect(ast.kind).toBe("Boolean");
+                        expect(ast.kind).toBe("Boolean   ");
                         expect(ast.token).toBe(0);
                         expect(ast.value).toBe(true);
                     }
@@ -42,7 +42,7 @@ describe('parse atoms', () => {
                 if(ast !== undefined) {
                     expect(is_number(ast)).toBe(true);
                     if (is_number(ast)) {
-                        expect(ast.kind).toBe("Number");
+                        expect(ast.kind).toBe("Number    ");
                         expect(ast.token).toBe(0);
                         expect(ast.value).toBe(-0.1);
                     }
