@@ -3,7 +3,7 @@
 import { Item } from "./item";
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "./token";
 
-export type NodeIdToTokenId = Map<number, number>;
+export type NodeToTokenId = Map<number, number>;
 export type AST = Atom | Call;
 
 // types for function calls, special forms, and atoms
