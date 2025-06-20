@@ -35,6 +35,7 @@ describe('valid input and output', () => {
     it('must report an error if the input consists of more than one expression', () => {
         const result = interpret("1 2");
         expect(result).toContain("error");
+        expect(result).toContain("expression");
     });
 
     it.skip('must report an error when calling a function with not enough arguments', () => {
