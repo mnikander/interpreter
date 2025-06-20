@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node, is_node_let, LeafIdentifier } from "./ast";
+import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_call, is_call_let, LeafIdentifier } from "./ast";
 import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
@@ -25,7 +25,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
             return { ok: false, error: error("Evaluation", "identifier", ast.token_id)};
         }
     }
-    else if (is_node_let(ast)) {
+    else if (is_call_let(ast)) {
         // let extended_env: Identifiers = { parent: env, symbols: new Set<string>() };
         // extended_env.symbols.add(name.value);
         // const body_check = check_identifiers(body, extended_env);
@@ -38,7 +38,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         extended_env.symbols.set(name.value, value.value);
         return evaluate (body, extended_env);
     }
-    else if (is_node(ast)) {
+    else if (is_call(ast)) {
 
         let evaluated_terms: Result<Value>[] = ast.data.map((ast: AST) => (evaluate(ast, env)));
         for (let term of evaluated_terms) {

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, Leaf, Node, make_leaf, make_node } from "./ast";
+import { AST, Leaf, Call, make_leaf, make_call } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
@@ -44,7 +44,7 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
         return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
     }
     else {
-        let node: Node     = make_node(node_counter, tokens[index], []);
+        let call: Call     = make_call(node_counter, tokens[index], []);
         node_counter++;
         index++; // consume '('
         index              = consume_whitespace(index, tokens);
@@ -52,7 +52,7 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
         if (is_error(attempt_expr.result)) return attempt_expr;
         index          = attempt_expr.index;
         node_counter   = attempt_expr.node_counter;
-        node.data.push(attempt_expr.result.value);
+        call.data.push(attempt_expr.result.value);
 
         while (index < tokens.length && is_token.whitespace(tokens[index])) { // at least one whitespace character exists before another expr
             index                      = consume_whitespace(index, tokens); // consume that one whitespace character along with all further whitespaces
@@ -60,7 +60,7 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
             if (is_error(attempt_another_expr.result)) break;
             index        = attempt_another_expr.index;
             node_counter = attempt_another_expr.node_counter;
-            node.data.push(attempt_another_expr.result.value);
+            call.data.push(attempt_another_expr.result.value);
         }
         index = consume_whitespace(index, tokens);
         
@@ -68,7 +68,7 @@ function call(index: number, node_counter: number, tokens: readonly Token[]): { 
             return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected ')'", index)}};
         }
         index++; // consume ')'
-        return { index: index, node_counter: node_counter, result: { ok: true, value: node } };
+        return { index: index, node_counter: node_counter, result: { ok: true, value: call } };
     }
 }
 

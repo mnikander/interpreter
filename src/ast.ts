@@ -3,38 +3,40 @@
 import { Item } from "./item";
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "./token";
 
-export type AST = Leaf | Node;
+export type AST = Leaf | Call;
 
-// node types for the AST
+// types for function calls and special forms
 
-export interface Node extends Item {
+export interface Call extends Item {
     kind: string,
     token_id: number,
     node_id: number,
     data: AST[]
 };
 
-export interface NodeLet extends Node {
-    kind: "Node",
+export interface Let extends Call {
+    kind: "Call",
     token_id: number,
     node_id: number,
     data: [AST, AST, AST, AST]
 };
 
-// type predicates for nodes
+// type predicates
 
-export function is_node(item: Item): item is Node { return item.kind === "Node"; }
+export function is_call(item: Item): item is Call { return item.kind === "Call"; }
 
-export function is_node_let(item: Item): item is NodeLet {
-    return is_node(item)
+export function is_call_let(item: Item): item is Let {
+    return is_call(item)
     && item.data.length === 4
     && is_leaf_identifier(item.data[0])
     && item.data[0].value === 'let'
     && is_leaf_identifier(item.data[1]);
 }
 
-export function make_node(node_counter: number, token: Token, data: AST[]): Node {
-    return { kind: "Node", token_id: token.id, node_id: node_counter, data: data };
+// constructor
+
+export function make_call(node_counter: number, token: Token, data: AST[]): Call {
+    return { kind: "Call", token_id: token.id, node_id: node_counter, data: data };
 }
 
 // leaf types for the AST

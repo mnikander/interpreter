@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_node, is_node_let } from "./ast";
+import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_call, is_call_let } from "./ast";
 import { error, Result } from "./error";
 
 export type Identifiers = {
@@ -20,7 +20,7 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
             return { ok: false, error: error("Semantic", "unknown identifier", ast.token_id)};
         }
     }
-    else if (is_node_let(ast)) {
+    else if (is_call_let(ast)) {
         const name  = ast.data[1];
         const value = ast.data[2];
         const body  = ast.data[3];
@@ -38,7 +38,7 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
 
         return { ok: true, value: undefined };
     }
-    else if (is_node(ast)) {
+    else if (is_call(ast)) {
         for (let child of ast.data) {
             const result = check_identifiers(child, env);
             if (!result.ok) return { ok: false, error: result.error};

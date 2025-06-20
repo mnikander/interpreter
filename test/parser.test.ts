@@ -3,7 +3,7 @@ import { lex } from '../src/lexer'
 import { is_error, is_ok } from '../src/error';
 import { parse } from '../src/parser';
 import { Token } from '../src/token';
-import { is_leaf_boolean, is_leaf_number, is_leaf_identifier, is_node } from '../src/ast';
+import { is_leaf_boolean, is_leaf_number, is_leaf_identifier, is_call } from '../src/ast';
 
 type OkLex = { ok: true, value: readonly Token[] };
 
@@ -162,9 +162,9 @@ describe('expressions', () => {
             let parsed = parse(lexed.value);
             expect(is_ok(parsed)).toBe(true);
             if (is_ok(parsed)) {
-                if(is_node(parsed.value)) {
+                if(is_call(parsed.value)) {
                     const ast = parsed.value;
-                    expect(ast.kind).toBe("Node");
+                    expect(ast.kind).toBe("Call");
                     expect(ast.data.length).toBe(3);
                     expect(is_leaf_identifier(ast.data[0])).toBe(true);
                     expect(is_leaf_number(ast.data[1])).toBe(true);
