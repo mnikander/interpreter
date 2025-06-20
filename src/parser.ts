@@ -47,9 +47,9 @@ function call(state: State): { state: State, result: Result<AST> } {
         let call: Call = make_call(state.node_counter, state.tokens[state.token_index], []);
         state = update(state);
         state = consume_whitespace(state);
-        const attempt_expr   = expr(state);
+        const attempt_expr = expr(state);
         if (is_error(attempt_expr.result)) return attempt_expr;
-        state    = attempt_expr.state;
+        state = attempt_expr.state;
         call.data.push(attempt_expr.result.value);
 
         while (state.token_index < state.tokens.length && is_token.whitespace(state.tokens[state.token_index])) { // at least one whitespace character exists before another expr
@@ -77,7 +77,6 @@ function atom(state: State): { state: State, result: Result<AST> } {
         state = update(state);
         return { state: state, result: { ok: true, value: atom }};
     }
-        
     return { state: state, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", state.token_index)}};
 }
 
