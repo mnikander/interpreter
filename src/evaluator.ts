@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_call, is_call_let, LeafIdentifier } from "./ast";
+import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let, AtomIdentifier } from "./ast";
 import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
@@ -13,10 +13,10 @@ export type Environment = {
 };
 
 export function evaluate(ast: AST, env: Environment): Result<Value> {
-    if (is_leaf_boolean(ast) || is_leaf_number(ast) || is_leaf_string(ast)) {
+    if (is_boolean(ast) || is_number(ast) || is_string(ast)) {
         return { ok: true, value: ast.value };
     }
-    else if (is_leaf_identifier(ast)) {
+    else if (is_identifier(ast)) {
         const identifier = lookup(ast.value, env);
         if (identifier !== undefined) {
             return { ok: true, value: identifier };
@@ -25,11 +25,11 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
             return { ok: false, error: error("Evaluation", "identifier", ast.token_id)};
         }
     }
-    else if (is_call_let(ast)) {
+    else if (is_let(ast)) {
         // let extended_env: Identifiers = { parent: env, symbols: new Set<string>() };
         // extended_env.symbols.add(name.value);
         // const body_check = check_identifiers(body, extended_env);
-        const name  = (ast.data[1] as LeafIdentifier);
+        const name  = (ast.data[1] as AtomIdentifier);
         const value = evaluate(ast.data[2], env);
         if (!value.ok) return value;
 

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, Leaf, Call, make_leaf, make_call } from "./ast";
+import { AST, Atom, Call, make_atom, make_call } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
@@ -77,7 +77,7 @@ function atom(token_index: number, node_counter: number, tokens: readonly Token[
     const token: Token = tokens[token_index];
     if(token_index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
         token_index++;
-        let atom: Leaf = make_leaf(node_counter, token);
+        let atom: Atom = make_atom(node_counter, token);
         node_counter++;
         return { index: token_index, node_counter: node_counter, result: { ok: true, value: atom }};
     }

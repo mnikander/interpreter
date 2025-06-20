@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_leaf_boolean, is_leaf_identifier, is_leaf_number, is_leaf_string, is_call, is_call_let } from "./ast";
+import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let } from "./ast";
 import { error, Result } from "./error";
 
 export type Identifiers = {
@@ -9,10 +9,10 @@ export type Identifiers = {
 };
 
 export function check_identifiers(ast: AST, env: Identifiers): Result<undefined> {
-    if (is_leaf_boolean(ast) || is_leaf_number(ast) || is_leaf_string(ast)) {
+    if (is_boolean(ast) || is_number(ast) || is_string(ast)) {
         return { ok: true, value: undefined};
     }
-    else if (is_leaf_identifier(ast)) {
+    else if (is_identifier(ast)) {
         if (lookup(ast.value, env)) {
             return { ok: true, value: undefined };
         }
@@ -20,12 +20,12 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
             return { ok: false, error: error("Semantic", "unknown identifier", ast.token_id)};
         }
     }
-    else if (is_call_let(ast)) {
+    else if (is_let(ast)) {
         const name  = ast.data[1];
         const value = ast.data[2];
         const body  = ast.data[3];
 
-        const name_check = is_leaf_identifier(name);
+        const name_check = is_identifier(name);
         if (!name_check) return { ok: false, error: error("Semantic", "not a valid identifier", name.token_id) };
 
         const value_check = check_identifiers(value, env);

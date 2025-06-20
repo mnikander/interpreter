@@ -3,7 +3,7 @@ import { lex } from '../src/lexer'
 import { is_error, is_ok } from '../src/error';
 import { parse } from '../src/parser';
 import { Token } from '../src/token';
-import { is_leaf_boolean, is_leaf_number, is_leaf_identifier, is_call } from '../src/ast';
+import { is_boolean, is_number, is_identifier, is_call } from '../src/ast';
 
 type OkLex = { ok: true, value: readonly Token[] };
 
@@ -19,8 +19,8 @@ describe('parse atoms', () => {
                 let ast = parsed.value;
                 expect(ast).toBeDefined();
                 if(ast !== undefined) {
-                    expect(is_leaf_boolean(ast)).toBe(true);
-                    if (is_leaf_boolean(ast)) {
+                    expect(is_boolean(ast)).toBe(true);
+                    if (is_boolean(ast)) {
                         expect(ast.kind).toBe("Boolean");
                         expect(ast.token_id).toBe(0);
                         expect(ast.value).toBe(true);
@@ -40,8 +40,8 @@ describe('parse atoms', () => {
                 let ast = parsed.value;
                 expect(ast).toBeDefined();
                 if(ast !== undefined) {
-                    expect(is_leaf_number(ast)).toBe(true);
-                    if (is_leaf_number(ast)) {
+                    expect(is_number(ast)).toBe(true);
+                    if (is_number(ast)) {
                         expect(ast.kind).toBe("Number");
                         expect(ast.token_id).toBe(0);
                         expect(ast.value).toBe(-0.1);
@@ -166,9 +166,9 @@ describe('expressions', () => {
                     const ast = parsed.value;
                     expect(ast.kind).toBe("Call");
                     expect(ast.data.length).toBe(3);
-                    expect(is_leaf_identifier(ast.data[0])).toBe(true);
-                    expect(is_leaf_number(ast.data[1])).toBe(true);
-                    expect(is_leaf_number(ast.data[2])).toBe(true);
+                    expect(is_identifier(ast.data[0])).toBe(true);
+                    expect(is_number(ast.data[1])).toBe(true);
+                    expect(is_number(ast.data[2])).toBe(true);
                 }
             }
         }
