@@ -12,82 +12,82 @@ export function parse(tokens: readonly Token[]): Result<AST> {
 }
 
 // line = expr *space
-function line(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    let attempt_expr = expr(index, node_counter, tokens);
-    index = attempt_expr.index;
-    node_counter = attempt_expr.node_counter;
-    index = consume_whitespace(index, tokens);
-    if (index !== tokens.length) {
-        return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "expected a single expression at", index)}};
+function line(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    let attempt_expr = expr(token_index, node_counter, tokens);
+    token_index      = attempt_expr.index;
+    node_counter     = attempt_expr.node_counter;
+    token_index      = consume_whitespace(token_index, tokens);
+    if (token_index !== tokens.length) {
+        return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "expected a single expression at", token_index)}};
     }
     else {
-        return { index: index, node_counter: node_counter, result: attempt_expr.result };
+        return { index: token_index, node_counter: node_counter, result: attempt_expr.result };
     }
 }
 
 // expr = *space (atom / call)
-function expr(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    index = consume_whitespace(index, tokens);
+function expr(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    token_index = consume_whitespace(token_index, tokens);
 
-    const attempt_atom = atom(index, node_counter, tokens);
+    const attempt_atom = atom(token_index, node_counter, tokens);
     if (is_ok(attempt_atom.result)) return attempt_atom;
     
-    const attempt_call = call(index, node_counter, tokens);
+    const attempt_call = call(token_index, node_counter, tokens);
     if (is_ok(attempt_call.result)) return attempt_call;
     
-    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an expression at", index)}};
+    return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an expression at", token_index)}};
 }
 
 // call = (open *space expr *(space *space expr) *space close)
-function call(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    if (index == tokens.length || !is_token.open(tokens[index])) {
-        return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", index)}};
+function call(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    if (token_index == tokens.length || !is_token.open(tokens[token_index])) {
+        return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", token_index)}};
     }
     else {
-        let call: Call     = make_call(node_counter, tokens[index], []);
+        let call: Call     = make_call(node_counter, tokens[token_index], []);
         node_counter++;
-        index++; // consume '('
-        index              = consume_whitespace(index, tokens);
-        const attempt_expr = expr(index, node_counter, tokens);
+        token_index++; // consume '('
+        token_index              = consume_whitespace(token_index, tokens);
+        const attempt_expr = expr(token_index, node_counter, tokens);
         if (is_error(attempt_expr.result)) return attempt_expr;
-        index          = attempt_expr.index;
+        token_index          = attempt_expr.index;
         node_counter   = attempt_expr.node_counter;
         call.data.push(attempt_expr.result.value);
 
-        while (index < tokens.length && is_token.whitespace(tokens[index])) { // at least one whitespace character exists before another expr
-            index                      = consume_whitespace(index, tokens); // consume that one whitespace character along with all further whitespaces
-            const attempt_another_expr = expr(index, node_counter, tokens);
+        while (token_index < tokens.length && is_token.whitespace(tokens[token_index])) { // at least one whitespace character exists before another expr
+            token_index                      = consume_whitespace(token_index, tokens); // consume that one whitespace character along with all further whitespaces
+            const attempt_another_expr = expr(token_index, node_counter, tokens);
             if (is_error(attempt_another_expr.result)) break;
-            index        = attempt_another_expr.index;
+            token_index        = attempt_another_expr.index;
             node_counter = attempt_another_expr.node_counter;
             call.data.push(attempt_another_expr.result.value);
         }
-        index = consume_whitespace(index, tokens);
+        token_index = consume_whitespace(token_index, tokens);
         
-        if (index == tokens.length || !is_token.close(tokens[index])) {
-            return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected ')'", index)}};
+        if (token_index == tokens.length || !is_token.close(tokens[token_index])) {
+            return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected ')'", token_index)}};
         }
-        index++; // consume ')'
-        return { index: index, node_counter: node_counter, result: { ok: true, value: call } };
+        token_index++; // consume ')'
+        return { index: token_index, node_counter: node_counter, result: { ok: true, value: call } };
     }
 }
 
 // atom = boolean / number / string / identifier
-function atom(index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    const token: Token = tokens[index];
-    if(index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
-        index++;
+function atom(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
+    const token: Token = tokens[token_index];
+    if(token_index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
+        token_index++;
         let atom: Leaf = make_leaf(node_counter, token);
         node_counter++;
-        return { index: index, node_counter: node_counter, result: { ok: true, value: atom }};
+        return { index: token_index, node_counter: node_counter, result: { ok: true, value: atom }};
     }
         
-    return { index: index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", index)}};
+    return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", token_index)}};
 }
 
-function consume_whitespace(index: number, tokens: readonly Token[]): number {
-    while(index < tokens.length && is_token.whitespace(tokens[index])) {
-        index++;
+function consume_whitespace(token_index: number, tokens: readonly Token[]): number {
+    while(token_index < tokens.length && is_token.whitespace(tokens[token_index])) {
+        token_index++;
     }
-    return index;
+    return token_index;
 }
