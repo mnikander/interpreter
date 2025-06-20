@@ -4,95 +4,90 @@ import { AST, Atom, Call, make_atom, make_call } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
+type State = { token_index: number, node_counter: number };
+
 export function parse(tokens: readonly Token[]): Result<AST> {
-    let index: number        = 0;
-    let node_counter: number = 0;
-    let parsed: { index: number, node_counter: number, result: Result<AST> } = line(index, node_counter, tokens);
+    let state: State = { token_index: 0, node_counter: 0 };
+    let parsed: { state: State, result: Result<AST> } = line(state, tokens);
     return parsed.result;
 }
 
 // line = expr *space
-function line(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    let attempt_expr = expr(token_index, node_counter, tokens);
-    token_index      = attempt_expr.index;
-    node_counter     = attempt_expr.node_counter;
-    token_index      = consume_whitespace(token_index, tokens);
-    if (token_index !== tokens.length) {
-        return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "expected a single expression at", token_index)}};
+function line(state: State, tokens: readonly Token[]): { state: State, result: Result<AST> } {
+    let attempt_expr = expr(state, tokens);
+    state = attempt_expr.state;
+    state = consume_whitespace(state, tokens);
+    if (state.token_index !== tokens.length) {
+        return { state: state, result: { ok: false, error: error("Parsing", "expected a single expression at", state.token_index)}};
     }
     else {
-        return { index: token_index, node_counter: node_counter, result: attempt_expr.result };
+        return { state: state, result: attempt_expr.result };
     }
 }
 
 // expr = *space (atom / call)
-function expr(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    token_index = consume_whitespace(token_index, tokens);
+function expr(state: State, tokens: readonly Token[]): { state: State, result: Result<AST> } {
+    state = consume_whitespace(state, tokens);
 
-    const attempt_atom = atom(token_index, node_counter, tokens);
+    const attempt_atom = atom(state, tokens);
     if (is_ok(attempt_atom.result)) return attempt_atom;
     
-    const attempt_call = call(token_index, node_counter, tokens);
+    const attempt_call = call(state, tokens);
     if (is_ok(attempt_call.result)) return attempt_call;
     
-    return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an expression at", token_index)}};
+    return { state: state, result: { ok: false, error: error("Parsing", "an expression at", state.token_index)}};
 }
 
 // call = (open *space expr *(space *space expr) *space close)
-function call(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    if (token_index == tokens.length || !is_token.open(tokens[token_index])) {
-        return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected '('", token_index)}};
+function call(state: State, tokens: readonly Token[]): { state: State, result: Result<AST> } {
+    if (state.token_index == tokens.length || !is_token.open(tokens[state.token_index])) {
+        return { state: state, result: { ok: false, error: error("Parsing", "a function call, expected '('", state.token_index)}};
     }
     else {
-        let call: Call       = make_call(node_counter, tokens[token_index], []);
-        node_counter++;
-        token_index++; // consume '('
-        token_index          = consume_whitespace(token_index, tokens);
-        const attempt_expr   = expr(token_index, node_counter, tokens);
+        let call: Call = make_call(state.node_counter, tokens[state.token_index], []);
+        state = update(state);
+        state = consume_whitespace(state, tokens);
+        const attempt_expr   = expr(state, tokens);
         if (is_error(attempt_expr.result)) return attempt_expr;
-        token_index          = attempt_expr.index;
-        node_counter         = attempt_expr.node_counter;
+        state    = attempt_expr.state;
         call.data.push(attempt_expr.result.value);
 
-        while (token_index < tokens.length && is_token.whitespace(tokens[token_index])) { // at least one whitespace character exists before another expr
-            token_index                = consume_whitespace(token_index, tokens); // consume that one whitespace character along with all further whitespaces
-            const attempt_another_expr = expr(token_index, node_counter, tokens);
+        while (state.token_index < tokens.length && is_token.whitespace(tokens[state.token_index])) { // at least one whitespace character exists before another expr
+            state = consume_whitespace(state, tokens); // consume that one whitespace character along with all further whitespaces
+            const attempt_another_expr = expr(state, tokens);
             if (is_error(attempt_another_expr.result)) break;
-            token_index                = attempt_another_expr.index;
-            node_counter               = attempt_another_expr.node_counter;
+            state = attempt_another_expr.state;
             call.data.push(attempt_another_expr.result.value);
         }
-        token_index = consume_whitespace(token_index, tokens);
+        state = consume_whitespace(state, tokens);
         
-        if (token_index == tokens.length || !is_token.close(tokens[token_index])) {
-            return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "a function call, expected ')'", token_index)}};
+        if (state.token_index == tokens.length || !is_token.close(tokens[state.token_index])) {
+            return { state: state, result: { ok: false, error: error("Parsing", "a function call, expected ')'", state.token_index)}};
         }
-        token_index++; // consume ')'
-        return { index: token_index, node_counter: node_counter, result: { ok: true, value: call } };
+        state.token_index++; // consume ')'
+        return { state: state, result: { ok: true, value: call } };
     }
 }
 
 // atom = boolean / number / string / identifier
-function atom(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
-    const token: Token = tokens[token_index];
-    if(token_index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
-        let atom: Atom = make_atom(node_counter, token);
-        node_counter++;
-        token_index++; // consume token
-        return { index: token_index, node_counter: node_counter, result: { ok: true, value: atom }};
+function atom(state: State, tokens: readonly Token[]): { state: State, result: Result<AST> } {
+    const token: Token = tokens[state.token_index];
+    if(state.token_index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
+        let atom: Atom = make_atom(state.node_counter, token);
+        state = update(state);
+        return { state: state, result: { ok: true, value: atom }};
     }
         
-    return { index: token_index, node_counter: node_counter, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", token_index)}};
+    return { state: state, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", state.token_index)}};
 }
 
-function consume_whitespace(token_index: number, tokens: readonly Token[]): number {
-    while(token_index < tokens.length && is_token.whitespace(tokens[token_index])) {
-        token_index++;
+function consume_whitespace(state: State, tokens: readonly Token[]): State {
+    while(state.token_index < tokens.length && is_token.whitespace(tokens[state.token_index])) {
+        state.token_index++;
     }
-    return token_index;
+    return state;
 }
 
-type State = { token_index: number, node_counter: number};
-function consume(state: State): State {
+function update(state: State): State {
     return { token_index: state.token_index + 1, node_counter: state.node_counter + 1 };
 }
