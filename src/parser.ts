@@ -76,9 +76,9 @@ function call(token_index: number, node_counter: number, tokens: readonly Token[
 function atom(token_index: number, node_counter: number, tokens: readonly Token[]): { index: number, node_counter: number, result: Result<AST> } {
     const token: Token = tokens[token_index];
     if(token_index < tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
-        token_index++;
         let atom: Atom = make_atom(node_counter, token);
         node_counter++;
+        token_index++; // consume token
         return { index: token_index, node_counter: node_counter, result: { ok: true, value: atom }};
     }
         
