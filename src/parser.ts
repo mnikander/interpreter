@@ -91,3 +91,8 @@ function consume_whitespace(token_index: number, tokens: readonly Token[]): numb
     }
     return token_index;
 }
+
+type State = { token_index: number, node_counter: number};
+function consume(state: State): State {
+    return { token_index: state.token_index + 1, node_counter: state.node_counter + 1 };
+}
