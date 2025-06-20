@@ -14,15 +14,15 @@ describe('parse atoms', () => {
         expect(is_ok(lexed)).toBe(true);
         if (is_ok(lexed)) {
             const parsed = parse(lexed.value);
-            expect(is_ok(parsed.ast)).toBe(true);
-            if (is_ok(parsed.ast)) {
-                let ast = parsed.ast.value;
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                let ast = parsed.value;
                 expect(ast).toBeDefined();
                 if(ast !== undefined) {
                     expect(is_boolean(ast)).toBe(true);
                     if (is_boolean(ast)) {
                         expect(ast.kind).toBe("Boolean");
-                        expect(ast.node_id).toBe(0);
+                        expect(ast.token_id).toBe(0);
                         expect(ast.value).toBe(true);
                     }
                 }
@@ -35,15 +35,15 @@ describe('parse atoms', () => {
         expect(is_ok(lexed)).toBe(true);
         if (is_ok(lexed)) {
             const parsed = parse(lexed.value);
-            expect(is_ok(parsed.ast)).toBe(true);
-            if (is_ok(parsed.ast)) {
-                let ast = parsed.ast.value;
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                let ast = parsed.value;
                 expect(ast).toBeDefined();
                 if(ast !== undefined) {
                     expect(is_number(ast)).toBe(true);
                     if (is_number(ast)) {
                         expect(ast.kind).toBe("Number");
-                        expect(ast.node_id).toBe(0);
+                        expect(ast.token_id).toBe(0);
                         expect(ast.value).toBe(-0.1);
                     }
                 }
@@ -58,35 +58,35 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex("(");
         expect(is_ok(lexed)).toBe(true);
         let parsed = parse((lexed as OkLex).value);
-        expect(is_error(parsed.ast)).toBe(true);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for ")"', () => {
         const lexed = lex(")");
         expect(is_ok(lexed)).toBe(true);
         let parsed = parse((lexed as OkLex).value);
-        expect(is_error(parsed.ast)).toBe(true);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for ")("', () => {
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
         let parsed = parse((lexed as OkLex).value);
-        expect(is_error(parsed.ast)).toBe(true);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for "(("', () => {
         const lexed = lex("((");
         expect(is_ok(lexed)).toBe(true);
         let parsed = parse((lexed as OkLex).value);
-        expect(is_error(parsed.ast)).toBe(true);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for "))"', () => {
         const lexed = lex("))");
         expect(is_ok(lexed)).toBe(true);
         let parsed = parse((lexed as OkLex).value);
-        expect(is_error(parsed.ast)).toBe(true);
+        expect(is_error(parsed)).toBe(true);
     });
 
     it('must report an error for "()"', () => {
@@ -94,7 +94,7 @@ describe('valid and invalid parentheses', () => {
         const lexed = lex(")(");
         expect(is_ok(lexed)).toBe(true);
         let parsed = parse((lexed as OkLex).value);
-        expect(is_error(parsed.ast)).toBe(true);
+        expect(is_error(parsed)).toBe(true);
     });
 });
 
@@ -107,7 +107,7 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.ast)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -119,7 +119,7 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.ast)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -130,7 +130,7 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.ast)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
@@ -141,18 +141,18 @@ describe('expressions', () => {
         }
         else {
             let parsed = parse(lexed.value);
-            expect(is_error(parsed.ast)).toBe(true);
+            expect(is_error(parsed)).toBe(true);
         }
     });
 
     it('must report an error for invalid identifiers, either during lexing or parsing', () => {
-        expect(is_error(lex('$a')) || is_error(parse((lex('$a') as OkLex).value).ast)).toBe(true);
-        expect(is_error(lex('a$')) || is_error(parse((lex('a$') as OkLex).value).ast)).toBe(true);
-        expect(is_error(lex('$1')) || is_error(parse((lex('$1') as OkLex).value).ast)).toBe(true);
-        expect(is_error(lex('1$')) || is_error(parse((lex('1$') as OkLex).value).ast)).toBe(true);
-        expect(is_error(lex('1a')) || is_error(parse((lex('1a') as OkLex).value).ast)).toBe(true);
-        expect(is_error(lex('1_')) || is_error(parse((lex('1_') as OkLex).value).ast)).toBe(true);
-        expect(is_error(lex('_+')) || is_error(parse((lex('_+') as OkLex).value).ast)).toBe(true);
+        expect(is_error(lex('$a')) || is_error(parse((lex('$a') as OkLex).value))).toBe(true);
+        expect(is_error(lex('a$')) || is_error(parse((lex('a$') as OkLex).value))).toBe(true);
+        expect(is_error(lex('$1')) || is_error(parse((lex('$1') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1$')) || is_error(parse((lex('1$') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1a')) || is_error(parse((lex('1a') as OkLex).value))).toBe(true);
+        expect(is_error(lex('1_')) || is_error(parse((lex('1_') as OkLex).value))).toBe(true);
+        expect(is_error(lex('_+')) || is_error(parse((lex('_+') as OkLex).value))).toBe(true);
     });
 
     it('must produce a valid AST for arithemetic expressions', () => {
@@ -160,10 +160,10 @@ describe('expressions', () => {
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {
             let parsed = parse(lexed.value);
-            expect(is_ok(parsed.ast)).toBe(true);
-            if (is_ok(parsed.ast)) {
-                if(is_call(parsed.ast.value)) {
-                    const ast = parsed.ast.value;
+            expect(is_ok(parsed)).toBe(true);
+            if (is_ok(parsed)) {
+                if(is_call(parsed.value)) {
+                    const ast = parsed.value;
                     expect(ast.kind).toBe("Call");
                     expect(ast.data.length).toBe(3);
                     expect(is_identifier(ast.data[0])).toBe(true);
