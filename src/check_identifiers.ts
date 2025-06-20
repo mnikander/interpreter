@@ -17,7 +17,7 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
             return { ok: true, value: undefined };
         }
         else {
-            return { ok: false, error: error("Semantic", "unknown identifier", ast.id)};
+            return { ok: false, error: error("Semantic", "unknown identifier", ast.node_id)};
         }
     }
     else if (is_let(ast)) {
@@ -26,7 +26,7 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
         const body  = ast.data[3];
 
         const name_check = is_identifier(name);
-        if (!name_check) return { ok: false, error: error("Semantic", "not a valid identifier", name.id) };
+        if (!name_check) return { ok: false, error: error("Semantic", "not a valid identifier", name.node_id) };
 
         const value_check = check_identifiers(value, env);
         if (!value_check.ok) return value_check;
@@ -46,7 +46,7 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
         return { ok: true, value: undefined };
     }
     else {
-        return { ok: false, error: error("Semantic", "unknown kind of AST entry", ast.id) };
+        return { ok: false, error: error("Semantic", "unknown kind of AST entry", ast.node_id) };
     }
 }
 
