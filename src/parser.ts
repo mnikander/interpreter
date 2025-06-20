@@ -1,15 +1,15 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, Atom, Call, make_atom, make_call } from "./ast";
+import { AST, Atom, Call, NodeToTokenId, make_atom, make_call } from "./ast";
 import { error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
-type ParserState = { token_index: number, node_counter: number, tokens: readonly Token[]};
+type ParserState = { token_index: number, node_counter: number, node_to_token_dictionary: NodeToTokenId, tokens: readonly Token[]};
 
-export function parse(tokens: readonly Token[]): Result<AST> {
-    let state: ParserState = { token_index: 0, node_counter: 0, tokens: tokens};
+export function parse(tokens: readonly Token[]): { ast: Result<AST>, token_lookup_table: NodeToTokenId } {
+    let state: ParserState = { token_index: 0, node_counter: 0, node_to_token_dictionary: new Map<number, number>(), tokens: tokens};
     let parsed: { state: ParserState, result: Result<AST> } = line(state);
-    return parsed.result;
+    return { ast: parsed.result, token_lookup_table: state.node_to_token_dictionary };
 }
 
 // line = expr *space
@@ -85,9 +85,11 @@ function consume_whitespace(state: ParserState): ParserState {
     while(token_index < state.tokens.length && is_token.whitespace(state.tokens[token_index])) {
         token_index++;
     }
-    return { token_index: token_index, node_counter: state.node_counter, tokens: state.tokens };
+    return { token_index: token_index, node_counter: state.node_counter, node_to_token_dictionary: state.node_to_token_dictionary, tokens: state.tokens };
 }
 
 function update(state: ParserState): ParserState {
-    return { token_index: state.token_index + 1, node_counter: state.node_counter + 1, tokens: state.tokens };
+    let lookup_table = state.node_to_token_dictionary;
+    lookup_table.set(state.node_counter, state.token_index);
+    return { token_index: state.token_index + 1, node_counter: state.node_counter + 1, node_to_token_dictionary: lookup_table, tokens: state.tokens };
 }

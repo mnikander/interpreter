@@ -3,27 +3,25 @@
 import { Item } from "./item";
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "./token";
 
+export type NodeToTokenId = Map<number, number>;
 export type AST = Atom | Call;
 
 // types for function calls, special forms, and atoms
 
 export interface Call extends Item {
     kind: string,
-    token_id: number,
     node_id: number,
     data: AST[]
 };
 
 export interface Let extends Call {
     kind: "Call",
-    token_id: number,
     node_id: number,
     data: [AST, AST, AST, AST]
 };
 
 export interface Atom extends Item {
     kind: string,
-    token_id: number,
     node_id: number,
     value: boolean | number | string,
 }
@@ -53,9 +51,9 @@ export function is_identifier(item: Item): item is AtomIdentifier { return item.
 // constructors
 
 export function make_call(node_counter: number, token: Token, data: AST[]): Call {
-    return { kind: "Call", token_id: token.id, node_id: node_counter, data: data };
+    return { kind: "Call", node_id: node_counter, data: data };
 }
 
 export function make_atom(node_counter: number, token: TokenBoolean | TokenNumber | TokenString | TokenIdentifier): Atom {
-    return {kind: token.subkind, token_id: token.id, node_id: node_counter, value: token.value}
+    return {kind: token.subkind, node_id: node_counter, value: token.value}
 }
