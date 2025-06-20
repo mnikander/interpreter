@@ -22,7 +22,7 @@ describe('parse atoms', () => {
                     expect(is_boolean(ast)).toBe(true);
                     if (is_boolean(ast)) {
                         expect(ast.kind).toBe("Boolean");
-                        expect(ast.node_id).toBe(0);
+                        expect(ast.id).toBe(0);
                         expect(ast.value).toBe(true);
                     }
                 }
@@ -43,7 +43,7 @@ describe('parse atoms', () => {
                     expect(is_number(ast)).toBe(true);
                     if (is_number(ast)) {
                         expect(ast.kind).toBe("Number");
-                        expect(ast.node_id).toBe(0);
+                        expect(ast.id).toBe(0);
                         expect(ast.value).toBe(-0.1);
                     }
                 }

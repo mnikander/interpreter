@@ -10,26 +10,26 @@ export type AST = Atom | Call;
 
 export interface Call extends Item {
     kind: string,
-    node_id: number,
+    id: number,
     data: AST[]
 };
 
 export interface Let extends Call {
     kind: "Call",
-    node_id: number,
+    id: number,
     data: [AST, AST, AST, AST]
 };
 
 export interface Atom extends Item {
     kind: string,
-    node_id: number,
+    id: number,
     value: boolean | number | string,
 }
 
-export interface AtomBoolean    extends Atom { kind: "Boolean",    token_id: number, node_id: number, value: boolean };
-export interface AtomNumber     extends Atom { kind: "Number",     token_id: number, node_id: number, value: number };
-export interface AtomString     extends Atom { kind: "String",     token_id: number, node_id: number, value: string };
-export interface AtomIdentifier extends Atom { kind: "Identifier", token_id: number, node_id: number, value: string };
+export interface AtomBoolean    extends Atom { kind: "Boolean",    token_id: number, id: number, value: boolean };
+export interface AtomNumber     extends Atom { kind: "Number",     token_id: number, id: number, value: number };
+export interface AtomString     extends Atom { kind: "String",     token_id: number, id: number, value: string };
+export interface AtomIdentifier extends Atom { kind: "Identifier", token_id: number, id: number, value: string };
 
 // type predicates
 
@@ -51,9 +51,9 @@ export function is_identifier(item: Item): item is AtomIdentifier { return item.
 // constructors
 
 export function make_call(node_counter: number, token: Token, data: AST[]): Call {
-    return { kind: "Call", node_id: node_counter, data: data };
+    return { kind: "Call", id: node_counter, data: data };
 }
 
 export function make_atom(node_counter: number, token: TokenBoolean | TokenNumber | TokenString | TokenIdentifier): Atom {
-    return {kind: token.subkind, node_id: node_counter, value: token.value}
+    return {kind: token.subkind, id: node_counter, value: token.value}
 }
