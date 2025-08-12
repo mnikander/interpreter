@@ -164,7 +164,7 @@ describe('expressions', () => {
             if (is_ok(parsed)) {
                 if(is_call(parsed.value)) {
                     const ast = parsed.value;
-                    expect(ast.kind).toBe("Call");
+                    expect(ast.kind).toBe("Call      ");
                     expect(ast.data.length).toBe(3);
                     expect(is_identifier(ast.data[0])).toBe(true);
                     expect(is_number(ast.data[1])).toBe(true);

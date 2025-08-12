@@ -15,7 +15,7 @@ export interface Call extends Item {
 };
 
 export interface Let extends Call {
-    kind: "Call",
+    kind: "Call      ",
     token: number,
     id: number,
     data: [AST, AST, AST, AST]
@@ -35,7 +35,7 @@ export interface AtomIdentifier extends Atom { kind: "Identifier", token: number
 
 // type predicates
 
-export function is_call(item: Item): item is Call { return item.kind === "Call"; }
+export function is_call(item: Item): item is Call { return item.kind === "Call      "; }
 
 export function is_let(item: Item): item is Let {
     return is_call(item)
@@ -53,7 +53,7 @@ export function is_identifier(item: Item): item is AtomIdentifier { return item.
 // constructors
 
 export function make_call(node_counter: number, token: Token, data: AST[]): Call {
-    return { kind: "Call", token: token.id, id: node_counter, data: data };
+    return { kind: "Call      ", token: token.id, id: node_counter, data: data };
 }
 
 export function make_atom(node_counter: number, token: TokenBoolean | TokenNumber | TokenString | TokenIdentifier): Atom {
