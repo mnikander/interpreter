@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let } from "./ast";
+import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let, is_lambda } from "./ast";
 import { error, Result } from "./error";
 
 export type Identifiers = {
@@ -19,6 +19,10 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
         else {
             return { ok: false, error: error("Semantic", "unknown identifier", ast.token)};
         }
+    }
+    else if (is_lambda(ast)) {
+        // TODO: do some actual checking of the identifiers for lambdas
+        return { ok: true, value: undefined };
     }
     else if (is_let(ast)) {
         const name  = ast.data[1];

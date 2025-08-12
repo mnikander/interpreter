@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let, AtomIdentifier } from "./ast";
+import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let, AtomIdentifier, is_lambda } from "./ast";
 import { Result, error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
@@ -24,6 +24,9 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         else {
             return { ok: false, error: error("Evaluation", "identifier", ast.token)};
         }
+    }
+    else if (is_lambda(ast)) {
+        return { ok: true, value: args=>args[0] };
     }
     else if (is_let(ast)) {
         const name  = (ast.data[1] as AtomIdentifier);

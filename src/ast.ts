@@ -14,6 +14,13 @@ export interface Call extends Item {
     data: AST[]
 };
 
+export interface Lambda extends Call {
+    kind: "Call      ",
+    token: number,
+    id: number,
+    data: [AST, AST, AST]
+};
+
 export interface Let extends Call {
     kind: "Call      ",
     token: number,
@@ -36,6 +43,13 @@ export interface AtomIdentifier extends Atom { kind: "Identifier", token: number
 // type predicates
 
 export function is_call(item: Item): item is Call { return item.kind === "Call      "; }
+
+export function is_lambda(item: Item): item is Lambda {
+    return is_call(item)
+    && item.data.length === 3
+    && is_identifier(item.data[0])
+    && item.data[0].value === 'lambda';
+}
 
 export function is_let(item: Item): item is Let {
     return is_call(item)
