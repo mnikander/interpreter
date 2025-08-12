@@ -38,7 +38,7 @@ function expr(state: ParserState): { state: ParserState, result: Result<AST> } {
     return { state: state, result: { ok: false, error: error("Parsing", "an expression at", state.token_index)}};
 }
 
-// call = (open *space expr *(space *space expr) *space close)
+// call = open *space expr *(space *space expr) *space close
 function call(state: ParserState): { state: ParserState, result: Result<AST> } {
     if (state.token_index == state.tokens.length || !is_token.open(state.tokens[state.token_index])) {
         return { state: state, result: { ok: false, error: error("Parsing", "a function call, expected '('", state.token_index)}};

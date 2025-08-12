@@ -26,9 +26,6 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         }
     }
     else if (is_let(ast)) {
-        // let extended_env: Identifiers = { parent: env, symbols: new Set<string>() };
-        // extended_env.symbols.add(name.value);
-        // const body_check = check_identifiers(body, extended_env);
         const name  = (ast.data[1] as AtomIdentifier);
         const value = evaluate(ast.data[2], env);
         if (!value.ok) return value;
@@ -36,10 +33,9 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         const body = ast.data[3];
         let extended_env: Environment = { parent: env, symbols: new Map<string, Value>() };
         extended_env.symbols.set(name.value, value.value);
-        return evaluate (body, extended_env);
+        return evaluate(body, extended_env);
     }
     else if (is_call(ast)) {
-
         let evaluated_terms: Result<Value>[] = ast.data.map((ast: AST) => (evaluate(ast, env)));
         for (let term of evaluated_terms) {
             if (is_error(term)) return term;
