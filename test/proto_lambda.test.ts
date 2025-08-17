@@ -33,3 +33,16 @@ describe('must evaluate basic expressions', () => {
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
     });
 });
+
+describe('must support let-bindings', () => {
+    it('constant value', () => {
+        const ast: AST = [
+            {id: 0, kind: 'Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
+            {id: 1, kind: 'Identifier', name: 'x'},
+            {id: 2, kind: 'Constant', value: 42},
+            {id: 3, kind: 'Reference', target: {id: 1}},
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(42);
+    });
+});

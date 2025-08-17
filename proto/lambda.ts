@@ -53,13 +53,15 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
     }
     else if (is_lambda(expr, ast)) {
         // dequeue an argument and store it in the environment instead
-        let [first, ...rest] = queued_args;
+        let [first, ...rest] = queued_args; // TODO: I need to ensure the argument is dequeued globally, so it's not used twice
         let extended_env = extend_env(env);
         extended_env.bindings.set(expr.binding.id, first);
         return evaluate(ast[expr.body.id], ast, extended_env, rest)
     }
     else if (is_let(expr, ast)) {
-        return 0; // TODO
+        let extended_env = extend_env(env);
+        extended_env.bindings.set(expr.binding.id, evaluate(ast[expr.value.id], ast, env, queued_args));
+        return evaluate(ast[expr.body.id], ast, extended_env, queued_args);
     }
     else if (is_call(expr, ast)) {
         // enqueue the provided argument
