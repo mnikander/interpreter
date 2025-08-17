@@ -1,47 +1,70 @@
 // Copyright (c) 2025 Marco Nikander
 
-export type Kinds      = 'Value' | 'Identifier' | 'Reference' | 'Lambda' | 'Let' | 'Call';
 export type Id         = {id: number};
-export type Value      = {id: number, kind: 'Value', value: (boolean | number)};
+export type Constant   = {id: number, kind: 'Constant', value: (boolean | number)};
 export type Identifier = {id: number, kind: 'Identifier', name: string};
 export type Reference  = {id: number, kind: 'Reference', target: Id};
 export type Lambda     = {id: number, kind: 'Lambda', binding: Id, body: Id};
 export type Let        = {id: number, kind: 'Let', binding: Id, value: Id, body: Id};
 export type Call       = {id: number, kind: 'Call', body: Id, args: Id};
-export type Node       = Value | Identifier | Reference | Lambda | Let | Call;
+export type Node       = Constant | Identifier | Reference | Lambda | Let | Call;
 export type AST        = Node[];
+export type Value      = boolean | number;
 
-export function is_value(expr: Node, ast: AST): expr is Value { return expr.kind === 'Value'; }
+export function is_constant(expr: Node, ast: AST): expr is Constant { return expr.kind === 'Constant'; }
 export function is_identifier(expr: Node, ast: AST): expr is Identifier { return expr.kind === 'Identifier'; }
 export function is_reference(expr: Node, ast: AST): expr is Reference { return expr.kind === 'Reference'; }
 export function is_lambda(expr: Node, ast: AST): expr is Lambda { return expr.kind === 'Lambda'; }
 export function is_let(expr: Node, ast: AST): expr is Let { return expr.kind === 'Let'; }
 export function is_call(expr: Node, ast: AST): expr is Call { return expr.kind === 'Call'; }
 
+// note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the AST, so that everything can be evaluated directly
 export type Environment = {
     parent: undefined | Environment,
-    symbols: Map<string, Value>,
+    bindings: Map<number, Value>,
 };
 
-// TODO: `, env: Environment`
-export function evaluate(expr: Node, ast: AST): boolean | number | string {
-    if (is_value(expr, ast)) {
+export function make_env(): Environment { return { parent: undefined, bindings: new Map<number, Value>()} }
+function extend_env(env: Environment): Environment { return { parent: env, bindings: new Map<number, Value>()}; }
+export function lookup(id: number, env: Environment): Value {
+    const entry: undefined | Value = env.bindings.get(id);
+    if (entry !== undefined) {
+        return entry;
+    }
+    else {
+        if (env.parent !== undefined) {
+            return lookup(id, env.parent);
+        }
+        else {
+            throw new Error(`variable with id ${id} is undefined`)
+        }
+    }
+}
+
+export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Value[]): Value {
+    if (is_constant(expr, ast)) {
         return expr.value;
     }
     else if (is_identifier(expr, ast)) {
-        return 0; // TODO: lookup in environment
+        return lookup(expr.id, env);
     }
     else if (is_reference(expr, ast)) {
-        return 0; // TODO
+        return evaluate(ast[expr.target.id], ast, env, queued_args);
     }
     else if (is_lambda(expr, ast)) {
-        return 0; // TODO
+        // dequeue an argument and store it in the environment instead
+        let [first, ...rest] = queued_args;
+        let extended_env = extend_env(env);
+        extended_env.bindings.set(expr.binding.id, first);
+        return evaluate(ast[expr.body.id], ast, extended_env, rest)
     }
     else if (is_let(expr, ast)) {
         return 0; // TODO
     }
     else if (is_call(expr, ast)) {
-        return 0; // TODO
+        // enqueue the provided argument
+        const evaluated_arg = evaluate(ast[expr.args.id], ast, env, queued_args);
+        return evaluate(ast[expr.body.id], ast, env, [...queued_args, evaluated_arg]);
     }
     else {
         throw new Error("unhandled case in evaluation control flow");
