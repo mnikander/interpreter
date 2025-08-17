@@ -16,6 +16,32 @@ export function is_lambda(expr: Expression): expr is Lambda { return expr[0].kin
 export function is_let(expr: Expression): expr is Let { return expr[0].kind === 'Let'; }
 export function is_call(expr: Expression): expr is Call { return expr[0].kind === 'Call'; }
 
+// TODO: try refactoring this prototype to use a flat array representation of the AST, instead of a tree structure, to make dereferencing easy
+/*
+TREE:
+
+[
+    {kind: 'Call', id: 0},
+    [
+        {kind: 'Lambda', id: 1},
+        'lambda',
+        [{kind: 'Identifier', id: 2}, 'x'],
+        [{kind: 'Reference', id: 3}, {target: 2}]
+    ],
+    [{kind: 'Value', id: 4}, 1]
+];
+
+ARRAY:
+
+[
+    {id: 0, kind: 'Call', fn: {node: 1}, args: {node: 4}],
+    {id: 1, kind: 'Lambda', binding: {node: 2}, body: {node: 3}],
+    {id: 2, kind: 'Identifier', name: 'x'],
+    {id: 3, kind: 'Reference', target: {node: 2}]
+    {id: 4, kind: 'Value', value: 1]
+];
+*/
+
 export type Environment = {
     parent: undefined | Environment,
     symbols: Map<string, Value>,
