@@ -31,6 +31,9 @@ export function evaluate(expr: Node, ast: AST): boolean | number | string {
     else if (is_identifier(expr, ast)) {
         return 0; // TODO: lookup in environment
     }
+    else if (is_reference(expr, ast)) {
+        return 0; // TODO
+    }
     else if (is_lambda(expr, ast)) {
         return 0; // TODO
     }
