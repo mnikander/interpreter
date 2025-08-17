@@ -1,40 +1,33 @@
 import { describe, it, expect } from 'vitest'
-import { Value, Identifier, Reference, Lambda, Let, Call, Expression, Environment, evaluate } from '../proto/lambda'
+import { Value, Identifier, Reference, Lambda, Let, Call, Node, AST, Environment, evaluate } from '../proto/lambda'
 
 describe('must evaluate basic expressions', () => {
     it('constant value', () => {
-        const expr: Value = [   
-                                {kind: 'Value', id: 0},
-                                42
-                            ];
-        expect(evaluate(expr)).toStrictEqual(42);
+        const ast: AST = [
+            { id: 0, kind: 'Value', value: 42}
+        ];
+        expect(evaluate(ast[0], ast)).toStrictEqual(42);
     });
 
     it.skip('constant function', () => {
-        const expr: Call =  [   
-                                {kind: 'Call', id: 0},
-                                [
-                                    {kind: 'Lambda', id: 1},
-                                    'lambda',
-                                    [{kind: 'Identifier', id: 2}, 'x'],
-                                    [{kind: 'Value', id: 3}, 42]
-                                ],
-                                [{kind: 'Value', id: 4}, 1]
-                            ];
-        expect(evaluate(expr)).toStrictEqual(42);
+        const ast: AST = [
+            {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
+            {id: 1, kind: 'Lambda', binding: {id: 2}, body: {id: 3}},
+            {id: 2, kind: 'Identifier', name: 'x'},
+            {id: 3, kind: 'Value', value: 42},
+            {id: 4, kind: 'Value', value: 1}
+        ];
+        expect(evaluate(ast[0], ast)).toStrictEqual(42);
     });
 
     it.skip('identity function', () => {
-        const expr: Call =  [
-                                {kind: 'Call', id: 0},
-                                [
-                                    {kind: 'Lambda', id: 1},
-                                    'lambda',
-                                    [{kind: 'Identifier', id: 2}, 'x'],
-                                    [{kind: 'Reference', id: 3}, {target: 2}]
-                                ],
-                                [{kind: 'Value', id: 4}, 1]
-                            ];
-        expect(evaluate(expr)).toStrictEqual(1);
+        const ast: AST = [
+            {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
+            {id: 1, kind: 'Lambda', binding: {id: 2}, body: {id: 3}},
+            {id: 2, kind: 'Identifier', name: 'x'},
+            {id: 3, kind: 'Reference', target: {id: 2}},
+            {id: 4, kind: 'Value', value: 1}
+        ];
+        expect(evaluate(ast[0], ast)).toStrictEqual(1);
     });
 });
