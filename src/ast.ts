@@ -48,7 +48,8 @@ export function is_lambda(item: Item): item is Lambda {
     return is_call(item)
     && item.data.length === 3
     && is_identifier(item.data[0])
-    && item.data[0].value === 'lambda';
+    && item.data[0].value === 'lambda'
+    && is_identifier(item.data[1]);
 }
 
 export function is_let(item: Item): item is Let {

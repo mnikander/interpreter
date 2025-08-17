@@ -12,6 +12,15 @@ export type Environment = {
     symbols: Variables,
 };
 
+// TODO:
+//  - when you hit a function call, create a closure, consisting of the function reference and the environment as dictionary of (id,value) pairs
+//  - do I really need to create the function type? or can the closure just contain the AST reference and then deal with the two cases, lambda vs. builtin, during the evaluation?
+//  - if the code was already type-checked before-hand, I can assume the types and number of arguments is correct, so I can just stick them into the evaluator
+//  - when you hit a lambda or a built-in function, compute the value using the entries in the environment
+//  - How do I know which argument of the function call, is assigned to which AST node ID? I either need to store the
+//    arguments in a list / activation record and just apply them in order, or I need to create a template for the
+//    activation record in advance, which contains this mapping from argument position to AST node ID.
+
 export function evaluate(ast: AST, env: Environment): Result<Value> {
     if (is_boolean(ast) || is_number(ast) || is_string(ast)) {
         return { ok: true, value: ast.value };
@@ -26,6 +35,9 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         }
     }
     else if (is_lambda(ast)) {
+        // TODO: look up the value of the argument in the extended environment, and evaluate the body of the lambda accordingly
+        const variable = (ast.data[1] as AtomIdentifier);
+        const body     = ast.data[2];
         return { ok: true, value: args=>args[0] };
     }
     else if (is_let(ast)) {
@@ -39,6 +51,9 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         return evaluate(body, extended_env);
     }
     else if (is_call(ast)) {
+        // TODO: I need to create an extended environment here, which contains the arguments. How do I bind the arguments to the correct IDs though?
+        // Do I need to create a closure before-hand which has the information about which argument will be assignd to which AST node ID? Or do I create an activation record instead?
+        // TODO: I need to differentiate between built-in functions and lambdas/closures for the actual function application
         let evaluated_terms: Result<Value>[] = ast.data.map((ast: AST) => (evaluate(ast, env)));
         for (let term of evaluated_terms) {
             if (is_error(term)) return term;
@@ -46,7 +61,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         const terms: Value[] = evaluated_terms.map((result: Result<Value>) => ((result as { ok: true, value: Value}).value));
         const fn: Value = terms[0];
         const args: Value[] = terms.slice(1);
-        return { ok: true, value: (fn as Function)(args) };
+        return { ok: true, value: (fn as Function)(args) }; // TODO: this line is specific to the built-in functions, not suitable for lambdas
     }
     else {
         return { ok: false, error: error("Evaluation", "unknown AST node", ast.token)};

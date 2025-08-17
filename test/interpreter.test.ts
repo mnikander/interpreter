@@ -204,15 +204,15 @@ describe('lambdas', () => {
         expect(interpret("((lambda a a) 2)")).toBe(2);
     });
 
-    it.skip('must evaluate lambda expressions with one argument', () => {
+    it('must evaluate lambda expressions with one argument', () => {
         expect(interpret("((lambda a (+ 1 a)) 2)")).toBe(3);
     });
 
-    it.skip('must evaluate nested lambda expressions of one argument', () => {
+    it('must evaluate nested lambda expressions of one argument', () => {
         expect(interpret("(((lambda a (lambda b a)) 1) 2)")).toBe(1);
     });
 
-    it.skip('must evaluate lambdas which are bound to a name', () => {
+    it('must evaluate lambdas which are bound to a name', () => {
         expect(interpret("(let successor (lambda x (+ x 1)) (successor 1))")).toBe(2);
     });
 
