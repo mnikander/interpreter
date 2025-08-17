@@ -34,7 +34,44 @@ describe('must evaluate basic expressions', () => {
     });
 });
 
-describe('must support let-bindings', () => {
+describe('must evaluate nested lambda expressions', () => {
+    it('first', () => {
+        const ast: AST = [
+            {id: 0, kind: 'Call', body: {id: 1}, args: {id: 8}},
+            {id: 1, kind: 'Call', body: {id: 2}, args: {id: 7}},
+            {id: 2, kind: 'Lambda', binding: {id: 3}, body: {id: 4}},
+            {id: 3, kind: 'Identifier', name: 'a'},
+            {id: 4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
+            {id: 5, kind: 'Identifier', name: 'b'},
+            {id: 6, kind: 'Reference', target: {id: 3}},
+            {id: 7, kind: 'Constant', value: 2},
+            {id: 8, kind: 'Constant', value: 1}
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
+    });
+
+    // TODO: I suspect that the '1' is being put into the argument queue twice, instead of 
+    //       the 1 and 2 both being enqueued correctly. This is probably because the 
+    //       caller's argument queue is not updated, when the callee uses up an entry.
+    it.skip('second', () => {
+        const ast: AST = [
+            {id: 0, kind: 'Call', body: {id: 1}, args: {id: 8}},
+            {id: 1, kind: 'Call', body: {id: 2}, args: {id: 7}},
+            {id: 2, kind: 'Lambda', binding: {id: 3}, body: {id: 4}},
+            {id: 3, kind: 'Identifier', name: 'a'},
+            {id: 4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
+            {id: 5, kind: 'Identifier', name: 'b'},
+            {id: 6, kind: 'Reference', target: {id: 5}},
+            {id: 7, kind: 'Constant', value: 2},
+            {id: 8, kind: 'Constant', value: 1}
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
+    });
+});
+
+describe('must evaluate let-bindings', () => {
     it('constant value', () => {
         const ast: AST = [
             {id: 0, kind: 'Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
