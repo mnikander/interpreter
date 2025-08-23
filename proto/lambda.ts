@@ -72,6 +72,8 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
     }
     else if (is_plus(expr, ast)) {
         // in this implementation Plus is a real binary operation, which does not support partial application
+        // TODO: if I want '+' and the other built-in functions to be treated like any other identifier,
+        //       then I need to call them using the same unary 'Call' node as for lambdas
         const eval_left  = evaluate(ast[expr.left.id], ast, env, queued_args);
         const eval_right = evaluate(ast[expr.right.id], ast, env, queued_args);
         if (typeof eval_left === "number" && typeof eval_right === "number") {

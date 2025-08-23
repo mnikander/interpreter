@@ -88,12 +88,29 @@ describe('must evaluate let-bindings', () => {
 });
 
 describe('must evaluate arithmetic expressions', () => {
-    it('plus', () => {
+    it('binary plus', () => {
         // (+ 1 2)
         const ast: AST = [
             {id: 0, kind: 'Plus', left: {id: 1}, right: {id: 2}},
             {id: 1, kind: 'Constant', value: 1},
             {id: 2, kind: 'Constant', value: 2}
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
+    });
+
+    it.skip('plus with support for partial application', () => {
+        // TODO: implement built-in functions capable of partial application
+        //       and give them pre-reserved IDs
+        const BUILTIN_PLUS = -1
+
+        // ((+ 2) 1)
+        const ast: AST = [
+            {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
+            {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
+            {id: 2, kind: 'Reference', target: {id: BUILTIN_PLUS}},
+            {id: 3, kind: 'Constant', value: 2},
+            {id: 4, kind: 'Constant', value: 1},
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
