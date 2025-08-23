@@ -51,10 +51,7 @@ describe('must evaluate nested lambda expressions', () => {
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
     });
 
-    // TODO: I suspect that the '1' is being put into the argument queue twice, instead of 
-    //       the 1 and 2 both being enqueued correctly. This is probably because the 
-    //       caller's argument queue is not updated, when the callee uses up an entry.
-    it.skip('second', () => {
+    it('second', () => {
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 8}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 7}},
@@ -67,7 +64,7 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 8, kind: 'Constant', value: 1}
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(2);
     });
 });
 
