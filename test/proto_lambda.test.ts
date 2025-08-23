@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { Constant, Identifier, Reference, Lambda, Let, Call, Node, AST, Environment, evaluate, make_env } from '../proto/lambda'
 
 describe('must evaluate basic expressions', () => {
+    // 42
     it('constant value', () => {
         const ast: AST = [
             { id: 0, kind: 'Constant', value: 42}
@@ -10,6 +11,7 @@ describe('must evaluate basic expressions', () => {
     });
 
     it('constant function', () => {
+        // ((lambda x 42) 1)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Lambda', binding: {id: 2}, body: {id: 3}},
@@ -22,6 +24,7 @@ describe('must evaluate basic expressions', () => {
     });
 
     it('identity function', () => {
+        // ((lambda x x) 1)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Lambda', binding: {id: 2}, body: {id: 3}},
@@ -36,6 +39,7 @@ describe('must evaluate basic expressions', () => {
 
 describe('must evaluate nested lambda expressions', () => {
     it('first', () => {
+        // (((lambda a (lambda b a)) 2) 1)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 8}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 7}},
@@ -52,6 +56,7 @@ describe('must evaluate nested lambda expressions', () => {
     });
 
     it('second', () => {
+        // (((lambda a (lambda b b)) 2) 1)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 8}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 7}},
@@ -70,6 +75,7 @@ describe('must evaluate nested lambda expressions', () => {
 
 describe('must evaluate let-bindings', () => {
     it('constant value', () => {
+        // (let x x 42)
         const ast: AST = [
             {id: 0, kind: 'Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
             {id: 1, kind: 'Identifier', name: 'x'},
