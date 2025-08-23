@@ -7,7 +7,8 @@ export type Reference  = {id: number, kind: 'Reference', target: Id};
 export type Lambda     = {id: number, kind: 'Lambda', binding: Id, body: Id};
 export type Let        = {id: number, kind: 'Let', binding: Id, value: Id, body: Id};
 export type Call       = {id: number, kind: 'Call', body: Id, args: Id};
-export type Node       = Constant | Identifier | Reference | Lambda | Let | Call;
+export type Plus       = {id: number, kind: 'Plus', left: Id, right: Id};
+export type Node       = Constant | Identifier | Reference | Lambda | Let | Call | Plus;
 export type AST        = Node[];
 export type Value      = boolean | number;
 
@@ -17,6 +18,7 @@ export function is_reference(expr: Node, ast: AST): expr is Reference { return e
 export function is_lambda(expr: Node, ast: AST): expr is Lambda { return expr.kind === 'Lambda'; }
 export function is_let(expr: Node, ast: AST): expr is Let { return expr.kind === 'Let'; }
 export function is_call(expr: Node, ast: AST): expr is Call { return expr.kind === 'Call'; }
+export function is_plus(expr: Node, ast: AST): expr is Plus { return expr.kind === 'Plus'; }
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the AST, so that everything can be evaluated directly
 export type Environment = {
@@ -67,6 +69,17 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
         // enqueue the provided argument
         const evaluated_arg = evaluate(ast[expr.args.id], ast, env, queued_args);
         return evaluate(ast[expr.body.id], ast, env, [...queued_args, evaluated_arg]);
+    }
+    else if (is_plus(expr, ast)) {
+        // in this implementation Plus is a real binary operation, which does not support partial application
+        const eval_left  = evaluate(ast[expr.left.id], ast, env, queued_args);
+        const eval_right = evaluate(ast[expr.right.id], ast, env, queued_args);
+        if (typeof eval_left === "number" && typeof eval_right === "number") {
+            return eval_left + eval_right;
+        }
+        else {
+            throw new Error("Plus operator only supports numbers");
+        }
     }
     else {
         throw new Error("unhandled case in evaluation control flow");

@@ -86,3 +86,35 @@ describe('must evaluate let-bindings', () => {
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(42);
     });
 });
+
+describe('must evaluate arithmetic expressions', () => {
+    it('plus', () => {
+        // (+ 1 2)
+        const ast: AST = [
+            {id: 0, kind: 'Plus', left: {id: 1}, right: {id: 2}},
+            {id: 1, kind: 'Constant', value: 1},
+            {id: 2, kind: 'Constant', value: 2}
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
+    });
+
+    it('lambda which uses plus', () => {
+        // (((lambda a (lambda b (+ a b))) 2) 1)
+        const ast: AST = [
+            {id:  0, kind: 'Call', body: {id: 1}, args: {id: 10}},
+            {id:  1, kind: 'Call', body: {id: 2}, args: {id: 9}},
+            {id:  2, kind: 'Lambda', binding: {id: 3}, body: {id: 4}},
+            {id:  3, kind: 'Identifier', name: 'a'},
+            {id:  4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
+            {id:  5, kind: 'Identifier', name: 'b'},
+            {id:  6, kind: 'Plus', left: {id: 7}, right: {id: 8}},
+            {id:  7, kind: 'Reference', target: {id: 3}},
+            {id:  8, kind: 'Reference', target: {id: 5}},
+            {id:  9, kind: 'Constant', value: 2},
+            {id: 10, kind: 'Constant', value: 1}
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
+    });
+});
