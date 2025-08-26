@@ -88,27 +88,12 @@ describe('must evaluate let-bindings', () => {
 });
 
 describe('must evaluate arithmetic expressions', () => {
-    it('binary plus', () => {
-        // (+ 1 2)
-        const ast: AST = [
-            {id: 0, kind: 'Plus', left: {id: 1}, right: {id: 2}},
-            {id: 1, kind: 'Constant', value: 1},
-            {id: 2, kind: 'Constant', value: 2}
-        ];
-        let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
-    });
-
-    it.skip('plus with support for partial application', () => {
-        // TODO: implement built-in functions capable of partial application
-        //       and give them pre-reserved IDs
-        const BUILTIN_PLUS = -1
-
+    it('plus with support for partial application', () => {
         // ((+ 2) 1)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
-            {id: 2, kind: 'Reference', target: {id: BUILTIN_PLUS}},
+            {id: 2, kind: 'Plus'},
             {id: 3, kind: 'Constant', value: 2},
             {id: 4, kind: 'Constant', value: 1},
         ];
@@ -117,19 +102,21 @@ describe('must evaluate arithmetic expressions', () => {
     });
 
     it('lambda which uses plus', () => {
-        // (((lambda a (lambda b (+ a b))) 2) 1)
+        // (( (lambda a (lambda b ((+ a) b))) 2)1)
         const ast: AST = [
-            {id:  0, kind: 'Call', body: {id: 1}, args: {id: 10}},
-            {id:  1, kind: 'Call', body: {id: 2}, args: {id: 9}},
+            {id:  0, kind: 'Call', body: {id: 1}, args: {id: 12}},
+            {id:  1, kind: 'Call', body: {id: 2}, args: {id: 11}},
             {id:  2, kind: 'Lambda', binding: {id: 3}, body: {id: 4}},
             {id:  3, kind: 'Identifier', name: 'a'},
             {id:  4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
             {id:  5, kind: 'Identifier', name: 'b'},
-            {id:  6, kind: 'Plus', left: {id: 7}, right: {id: 8}},
-            {id:  7, kind: 'Reference', target: {id: 3}},
-            {id:  8, kind: 'Reference', target: {id: 5}},
-            {id:  9, kind: 'Constant', value: 2},
-            {id: 10, kind: 'Constant', value: 1}
+            {id:  6, kind: 'Call', body: {id: 7}, args: {id: 10}},
+            {id:  7, kind: 'Call', body: {id: 8}, args: {id: 9}},
+            {id:  8, kind: 'Plus'},
+            {id:  9, kind: 'Reference', target: {id: 3}},
+            {id: 10, kind: 'Reference', target: {id: 5}},
+            {id: 11, kind: 'Constant', value: 2},
+            {id: 12, kind: 'Constant', value: 1}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);

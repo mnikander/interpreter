@@ -7,10 +7,13 @@ export type Reference  = {id: number, kind: 'Reference', target: Id};
 export type Lambda     = {id: number, kind: 'Lambda', binding: Id, body: Id};
 export type Let        = {id: number, kind: 'Let', binding: Id, value: Id, body: Id};
 export type Call       = {id: number, kind: 'Call', body: Id, args: Id};
-export type Plus       = {id: number, kind: 'Plus', left: Id, right: Id};
+export type Plus       = {id: number, kind: 'Plus'};
 export type Node       = Constant | Identifier | Reference | Lambda | Let | Call | Plus;
 export type AST        = Node[];
 export type Value      = boolean | number;
+
+// TODO: implement built-in functions capable of partial application
+//       and give them pre-reserved IDs
 
 export function is_constant(expr: Node, ast: AST): expr is Constant { return expr.kind === 'Constant'; }
 export function is_identifier(expr: Node, ast: AST): expr is Identifier { return expr.kind === 'Identifier'; }
@@ -71,13 +74,9 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
         return evaluate(ast[expr.body.id], ast, env, [...queued_args, evaluated_arg]);
     }
     else if (is_plus(expr, ast)) {
-        // in this implementation Plus is a real binary operation, which does not support partial application
-        // TODO: if I want '+' and the other built-in functions to be treated like any other identifier,
-        //       then I need to call them using the same unary 'Call' node as for lambdas
-        const eval_left  = evaluate(ast[expr.left.id], ast, env, queued_args);
-        const eval_right = evaluate(ast[expr.right.id], ast, env, queued_args);
-        if (typeof eval_left === "number" && typeof eval_right === "number") {
-            return eval_left + eval_right;
+        let [first, second, ...rest] = queued_args;
+        if (typeof first === "number" && typeof second === "number") {
+            return first + second;
         }
         else {
             throw new Error("Plus operator only supports numbers");
