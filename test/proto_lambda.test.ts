@@ -101,6 +101,23 @@ describe('must evaluate arithmetic expressions', () => {
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
     });
 
+    it('nested addition', () => {
+        // ((+ 1) ((+ 2) 3))
+        const ast: AST = [
+            {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
+            {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
+            {id: 2, kind: 'Plus'},
+            {id: 3, kind: 'Constant', value: 1},
+            {id: 4, kind: 'Call', body: {id: 5}, args: {id: 8}},
+            {id: 5, kind: 'Call', body: {id: 6}, args: {id: 7}},
+            {id: 6, kind: 'Plus'},
+            {id: 7, kind: 'Constant', value: 2},
+            {id: 8, kind: 'Constant', value: 3},
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(6);
+    });
+
     it('lambda which uses plus', () => {
         // (( (lambda a (lambda b ((+ a) b))) 2)1)
         const ast: AST = [
@@ -120,5 +137,5 @@ describe('must evaluate arithmetic expressions', () => {
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
-    });
+    });    
 });
