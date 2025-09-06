@@ -39,7 +39,8 @@ describe('must evaluate basic expressions', () => {
 
 describe('must evaluate nested lambda expressions', () => {
     it('first', () => {
-        // (((lambda a (lambda b a)) 2) 1)
+        // ((a, b -> a) 1 2)
+        // (((lambda a (lambda b a)) 1) 2)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 8}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 7}},
@@ -48,15 +49,16 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
             {id: 5, kind: 'Identifier', name: 'b'},
             {id: 6, kind: 'Reference', target: {id: 3}},
-            {id: 7, kind: 'Constant', value: 2},
-            {id: 8, kind: 'Constant', value: 1}
+            {id: 7, kind: 'Constant', value: 1},
+            {id: 8, kind: 'Constant', value: 2}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
     });
 
     it('second', () => {
-        // (((lambda a (lambda b b)) 2) 1)
+        // ((a, b -> b) 1 2)
+        // (((lambda a (lambda b b)) 1) 2)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 8}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 7}},
@@ -65,8 +67,8 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
             {id: 5, kind: 'Identifier', name: 'b'},
             {id: 6, kind: 'Reference', target: {id: 5}},
-            {id: 7, kind: 'Constant', value: 2},
-            {id: 8, kind: 'Constant', value: 1}
+            {id: 7, kind: 'Constant', value: 1},
+            {id: 8, kind: 'Constant', value: 2}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(2);
@@ -88,14 +90,15 @@ describe('must evaluate let-bindings', () => {
 });
 
 describe('must evaluate arithmetic expressions', () => {
-    it('plus with support for partial application', () => {
-        // ((+ 2) 1)
+    it('addition via partial application', () => {
+        // 1 + 2
+        // ((+ 1) 2)
         const ast: AST = [
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
             {id: 2, kind: 'Plus'},
-            {id: 3, kind: 'Constant', value: 2},
-            {id: 4, kind: 'Constant', value: 1},
+            {id: 3, kind: 'Constant', value: 1},
+            {id: 4, kind: 'Constant', value: 2},
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
@@ -119,7 +122,7 @@ describe('must evaluate arithmetic expressions', () => {
     });
 
     it('lambda which uses plus', () => {
-        // (( (lambda a (lambda b ((+ a) b))) 2)1)
+        // (( (lambda a (lambda b ((+ a) b))) 1)2)
         const ast: AST = [
             {id:  0, kind: 'Call', body: {id: 1}, args: {id: 12}},
             {id:  1, kind: 'Call', body: {id: 2}, args: {id: 11}},
@@ -132,14 +135,14 @@ describe('must evaluate arithmetic expressions', () => {
             {id:  8, kind: 'Plus'},
             {id:  9, kind: 'Reference', target: {id: 3}},
             {id: 10, kind: 'Reference', target: {id: 5}},
-            {id: 11, kind: 'Constant', value: 2},
-            {id: 12, kind: 'Constant', value: 1}
+            {id: 11, kind: 'Constant', value: 1},
+            {id: 12, kind: 'Constant', value: 2}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
-    });    
+    });
 
-    it.skip('subtraction via partial application', () => {
+    it('subtraction via partial application', () => {
         // 3 - 1
         // ((- 3) 1)
         const ast: AST = [
