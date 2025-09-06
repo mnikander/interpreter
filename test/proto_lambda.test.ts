@@ -77,7 +77,7 @@ describe('must evaluate nested lambda expressions', () => {
 
 describe('must evaluate let-bindings', () => {
     it('constant value', () => {
-        // (let x x 42)
+        // (let x 42 x)
         const ast: AST = [
             {id: 0, kind: 'Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
             {id: 1, kind: 'Identifier', name: 'x'},
