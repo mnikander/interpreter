@@ -48,7 +48,7 @@ export function lookup(id: number, env: Environment): Value {
     }
 }
 
-export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Value[]): Value {
+export function evaluate(expr: Node, ast: AST, env: Environment, stacked_args: Value[]): Value {
     if (is_constant(expr, ast)) {
         return expr.value;
     }
@@ -56,15 +56,15 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
         return lookup(expr.id, env);
     }
     else if (is_reference(expr, ast)) {
-        return evaluate(ast[expr.target.id], ast, env, queued_args);
+        return evaluate(ast[expr.target.id], ast, env, stacked_args);
     }
     else if (is_lambda(expr, ast)) {
         // dequeue an argument and store it in the environment instead
-        let first = queued_args.pop();
+        let first = stacked_args.pop();
         if (first !== undefined) {
             let extended_env = extend_env(env);
             extended_env.bindings.set(expr.binding.id, first);
-            return evaluate(ast[expr.body.id], ast, extended_env, queued_args)
+            return evaluate(ast[expr.body.id], ast, extended_env, stacked_args)
         }
         else {
             throw new Error("No arguments to bind to variable")
@@ -72,17 +72,17 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
     }
     else if (is_let(expr, ast)) {
         let extended_env = extend_env(env);
-        extended_env.bindings.set(expr.binding.id, evaluate(ast[expr.value.id], ast, env, queued_args));
-        return evaluate(ast[expr.body.id], ast, extended_env, queued_args);
+        extended_env.bindings.set(expr.binding.id, evaluate(ast[expr.value.id], ast, env, stacked_args));
+        return evaluate(ast[expr.body.id], ast, extended_env, stacked_args);
     }
     else if (is_call(expr, ast)) {
         // enqueue the provided argument
-        const evaluated_arg = evaluate(ast[expr.args.id], ast, env, queued_args);
-        return evaluate(ast[expr.body.id], ast, env, [...queued_args, evaluated_arg]);
+        const evaluated_arg = evaluate(ast[expr.args.id], ast, env, stacked_args);
+        return evaluate(ast[expr.body.id], ast, env, [...stacked_args, evaluated_arg]);
     }
     else if (is_plus(expr, ast)) {
-        let first = queued_args.pop();
-        let second = queued_args.pop();
+        let first = stacked_args.pop();
+        let second = stacked_args.pop();
         if (typeof first === "number" && typeof second === "number") {
             return first + second;
         }
@@ -91,8 +91,8 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
         }
     }
     else if (is_minus(expr, ast)) {
-        let first = queued_args.pop();
-        let second = queued_args.pop();
+        let first = stacked_args.pop();
+        let second = stacked_args.pop();
         if (typeof first === "number" && typeof second === "number") {
             return first - second;
         }
