@@ -8,7 +8,8 @@ export type Lambda     = {id: number, kind: 'Lambda', binding: Id, body: Id};
 export type Let        = {id: number, kind: 'Let', binding: Id, value: Id, body: Id};
 export type Call       = {id: number, kind: 'Call', body: Id, args: Id};
 export type Plus       = {id: number, kind: 'Plus'};
-export type Node       = Constant | Identifier | Reference | Lambda | Let | Call | Plus;
+export type Minus      = {id: number, kind: 'Minus'};
+export type Node       = Constant | Identifier | Reference | Lambda | Let | Call | Plus | Minus;
 export type AST        = Node[];
 export type Value      = boolean | number;
 
@@ -22,6 +23,7 @@ export function is_lambda(expr: Node, ast: AST): expr is Lambda { return expr.ki
 export function is_let(expr: Node, ast: AST): expr is Let { return expr.kind === 'Let'; }
 export function is_call(expr: Node, ast: AST): expr is Call { return expr.kind === 'Call'; }
 export function is_plus(expr: Node, ast: AST): expr is Plus { return expr.kind === 'Plus'; }
+export function is_minus(expr: Node, ast: AST): expr is Minus { return expr.kind === 'Minus'; }
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the AST, so that everything can be evaluated directly
 export type Environment = {
@@ -77,6 +79,15 @@ export function evaluate(expr: Node, ast: AST, env: Environment, queued_args: Va
         let [first, second, ...rest] = queued_args;
         if (typeof first === "number" && typeof second === "number") {
             return first + second;
+        }
+        else {
+            throw new Error("Plus operator only supports numbers");
+        }
+    }
+    else if (is_minus(expr, ast)) {
+        let [first, second, ...rest] = queued_args;
+        if (typeof first === "number" && typeof second === "number") {
+            return first - second;
         }
         else {
             throw new Error("Plus operator only supports numbers");

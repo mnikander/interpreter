@@ -138,4 +138,18 @@ describe('must evaluate arithmetic expressions', () => {
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
     });    
+
+    it.skip('subtraction via partial application', () => {
+        // 3 - 1
+        // ((- 3) 1)
+        const ast: AST = [
+            {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
+            {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
+            {id: 2, kind: 'Minus'},
+            {id: 3, kind: 'Constant', value: 3},
+            {id: 4, kind: 'Constant', value: 1},
+        ];
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(2);
+    });
 });
