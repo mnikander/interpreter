@@ -64,6 +64,9 @@ function atom(state: State): State {
     return state;
 }
 
+// TODO: I need to distinguish between a unary function call, a lambda, and a let-binding if I want to use hard-coded
+// types with a fixed number of arguments
+
 // call = open *space expr *(space *space expr) *space close
 function call(state: State): State {
     let token: Token;
