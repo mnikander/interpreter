@@ -38,6 +38,17 @@ function expr(state: ParserState): { state: ParserState, result: Result<AST> } {
     return { state: state, result: { ok: false, error: error("Parsing", "an expression at", state.token_index)}};
 }
 
+// atom = boolean / number / string / identifier
+function atom(state: ParserState): { state: ParserState, result: Result<AST> } {
+    const token: Token = state.tokens[state.token_index];
+    if(state.token_index < state.tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
+        let atom: Atom = make_atom(state.node_counter, token);
+        state = update(state);
+        return { state: state, result: { ok: true, value: atom }};
+    }
+    return { state: state, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", state.token_index)}};
+}
+
 // call = open *space expr *(space *space expr) *space close
 function call(state: ParserState): { state: ParserState, result: Result<AST> } {
     if (state.token_index == state.tokens.length || !is_token.open(state.tokens[state.token_index])) {
@@ -67,17 +78,6 @@ function call(state: ParserState): { state: ParserState, result: Result<AST> } {
         state.token_index++; // consume ')'
         return { state: state, result: { ok: true, value: call } };
     }
-}
-
-// atom = boolean / number / string / identifier
-function atom(state: ParserState): { state: ParserState, result: Result<AST> } {
-    const token: Token = state.tokens[state.token_index];
-    if(state.token_index < state.tokens.length && (is_token.boolean(token) || is_token.number(token) || is_token.string(token) || is_token.identifier(token))) {
-        let atom: Atom = make_atom(state.node_counter, token);
-        state = update(state);
-        return { state: state, result: { ok: true, value: atom }};
-    }
-    return { state: state, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", state.token_index)}};
 }
 
 function consume_whitespace(state: ParserState): ParserState {
