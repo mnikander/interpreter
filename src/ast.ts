@@ -14,6 +14,13 @@ export interface Call extends Item {
     data: AST[]
 };
 
+export interface Lambda extends Call {
+    kind: "Call      ",
+    token: number,
+    id: number,
+    data: [AST, AST, AST]
+};
+
 export interface Let extends Call {
     kind: "Call      ",
     token: number,
@@ -42,6 +49,14 @@ export function is_let(item: Item): item is Let {
     && item.data.length === 4
     && is_identifier(item.data[0])
     && item.data[0].value === 'let'
+    && is_identifier(item.data[1]);
+}
+
+export function is_lambda(item: Item): item is Lambda {
+    return is_call(item)
+    && item.data.length === 3
+    && is_identifier(item.data[0])
+    && item.data[0].value === 'lambda'
     && is_identifier(item.data[1]);
 }
 
