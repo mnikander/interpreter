@@ -32,7 +32,7 @@ describe('basic values', () => {
 });
 
 describe('valid input and output', () => {
-    it('must tolerate extra whitespaces within an expression', () => {
+    it('should tolerate extra whitespaces within an expression', () => {
         const result = interpret("  (  +  1  2  )  ");
         expect(result).toBe(3);
     });
