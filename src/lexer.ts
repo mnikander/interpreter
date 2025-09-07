@@ -5,7 +5,7 @@ import { Result, is_ok } from './error'
 import { Item } from './item'
 
 const rule = {
-    whitespace:  { description: "a whitespace character",     regex: /^\s/},
+    whitespace:  { description: "one or more whitespace characters", regex: /^\s+/},
     open:        { description: "(",                          regex: /\(/},
     close:       { description: ")",                          regex: /\)/},
     bool:        { description: "a boolean",                  regex: /^(true|false)/},
