@@ -6,14 +6,14 @@ import { Item } from './item'
 
 const rule = {
     whitespace:  { description: "one or more whitespace characters", regex: /^\s+/},
-    open:        { description: "(",                          regex: /\(/},
-    close:       { description: ")",                          regex: /\)/},
-    bool:        { description: "a boolean",                  regex: /^(true|false)/},
-    int:         { description: "an integer",                 regex: /^[-+]?[0-9]+/},
-    float:       { description: "a float",                    regex: /^[-+]?((\d+\.\d*)|(\d*\.\d+))/},
-    string:      { description: "a string",                   regex: /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/},
-    id_alphanum: { description: "an alphanumeric identifier", regex: /^[_a-zA-Z][_a-zA-Z0-9]*/},
-    id_special:  { description: "an operation identifier",    regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
+    open:        { description: "(",                                 regex: /\(/},
+    close:       { description: ")",                                 regex: /\)/},
+    bool:        { description: "a boolean",                         regex: /^(true|false)/},
+    int:         { description: "an integer",                        regex: /^[-+]?[0-9]+/},
+    float:       { description: "a float",                           regex: /^[-+]?((\d+\.\d*)|(\d*\.\d+))/},
+    string:      { description: "a string",                          regex: /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/},
+    id_alphanum: { description: "an alphanumeric identifier",        regex: /^[_a-zA-Z][_a-zA-Z0-9]*/},
+    id_special:  { description: "an operation identifier",           regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
 };
 
 interface State extends Item {
