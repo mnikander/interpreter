@@ -64,7 +64,7 @@ function call(state: ParserState): { state: ParserState, result: Result<AST> } {
         call.data.push(attempt_expr.result.value);
 
         while (state.token_index < state.tokens.length && is_token.whitespace(state.tokens[state.token_index])) { // at least one whitespace character exists before another expr
-            state = consume_whitespace(state); // consume that one whitespace character along with all further whitespaces
+            state = consume_whitespace(state);
             const attempt_another_expr = expr(state);
             if (is_error(attempt_another_expr.result)) break;
             state = attempt_another_expr.state;
@@ -82,7 +82,7 @@ function call(state: ParserState): { state: ParserState, result: Result<AST> } {
 
 function consume_whitespace(state: ParserState): ParserState {
     let token_index: number = state.token_index;
-    while(token_index < state.tokens.length && is_token.whitespace(state.tokens[token_index])) {
+    if(token_index < state.tokens.length && is_token.whitespace(state.tokens[token_index])) {
         token_index++;
     }
     return { token_index: token_index, node_counter: state.node_counter, tokens: state.tokens };
