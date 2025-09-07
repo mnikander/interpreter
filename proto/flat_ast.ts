@@ -27,9 +27,3 @@ export function is_let(expr: Flat_Node, ast: Flat_AST): expr is Flat_Let { retur
 export function is_call(expr: Flat_Node, ast: Flat_AST): expr is Flat_Call { return expr.kind === 'Flat_Call'; }
 export function is_plus(expr: Flat_Node, ast: Flat_AST): expr is Flat_Plus { return expr.kind === 'Flat_Plus'; }
 export function is_minus(expr: Flat_Node, ast: Flat_AST): expr is Flat_Minus { return expr.kind === 'Flat_Minus'; }
-
-// constructors
-
-export function make_call(node_counter: number, token: Token, body: Id, arg: Id): Flat_Call {
-    return { id: node_counter, token: token.id, kind: "Flat_Call", body: body, arg: arg };
-}
