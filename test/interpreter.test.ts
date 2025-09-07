@@ -32,6 +32,11 @@ describe('basic values', () => {
 });
 
 describe('valid input and output', () => {
+    it('must tolerate extra whitespaces within an expression', () => {
+        const result = interpret("  (  +  1  2  )  ");
+        expect(result).toBe(3);
+    });
+
     it('must report an error if the input consists of more than one expression', () => {
         const result = interpret("1 2");
         expect(result).toContain("error");
