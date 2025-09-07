@@ -12,6 +12,12 @@ export function parse(tokens: readonly Token[]): Result<AST> {
     return parsed.result;
 }
 
+export function parse_nested(tokens: readonly Token[]): { node_counter: number, result: Result<AST> } {
+    let state: ParserState = { token_index: 0, node_counter: 0, tokens: tokens};
+    let parsed: { state: ParserState, result: Result<AST> } = line(state);
+    return { node_counter: parsed.state.node_counter, result: parsed.result };
+}
+
 // line = expr *space
 function line(state: ParserState): { state: ParserState, result: Result<AST> } {
     let attempt_expr = expr(state);
