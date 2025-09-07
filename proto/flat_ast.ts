@@ -2,34 +2,34 @@
 
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "./../src/token";
 
-export type Id         = {id: number};
-export type Constant   = {id: number, token: number, kind: 'Constant', value: (boolean | number | string)};
-export type Identifier = {id: number, token: number, kind: 'Identifier', name: string};
-export type Reference  = {id: number, token: number, kind: 'Reference', target: Id};
-export type Lambda     = {id: number, token: number, kind: 'Lambda', binding: Id, body: Id};
-export type Let        = {id: number, token: number, kind: 'Let', binding: Id, value: Id, body: Id};
-export type Call       = {id: number, token: number, kind: 'Call', body: Id, arg: Id};
-export type Plus       = {id: number, token: number, kind: 'Plus'};
-export type Minus      = {id: number, token: number, kind: 'Minus'};
-export type Node       = Constant | Identifier | Reference | Lambda | Let | Call | Plus | Minus;
-export type Atom       = Constant | Identifier;
-export type AST        = Node[];
-export type Value      = boolean | number;
+export type Value           = boolean | number;
+export type Id              = {id: number};
+export type Flat_Constant   = {id: number, token: number, kind: 'Flat_Constant', value: (boolean | number | string)};
+export type Flat_Identifier = {id: number, token: number, kind: 'Flat_Identifier', name: string};
+export type Flat_Reference  = {id: number, token: number, kind: 'Flat_Reference', target: Id};
+export type Flat_Lambda     = {id: number, token: number, kind: 'Flat_Lambda', binding: Id, body: Id};
+export type Flat_Let        = {id: number, token: number, kind: 'Flat_Let', binding: Id, value: Id, body: Id};
+export type Flat_Call       = {id: number, token: number, kind: 'Flat_Call', body: Id, arg: Id};
+export type Flat_Plus       = {id: number, token: number, kind: 'Flat_Plus'};
+export type Flat_Minus      = {id: number, token: number, kind: 'Flat_Minus'};
+export type Flat_Node       = Flat_Constant | Flat_Identifier | Flat_Reference | Flat_Lambda | Flat_Let | Flat_Call | Flat_Plus | Flat_Minus;
+export type Flat_Atom       = Flat_Constant | Flat_Identifier;
+export type Flat_AST        = Flat_Node[];
 
 // TODO: implement built-in functions capable of partial application
 //       and give them pre-reserved IDs
 
-export function is_constant(expr: Node, ast: AST): expr is Constant { return expr.kind === 'Constant'; }
-export function is_identifier(expr: Node, ast: AST): expr is Identifier { return expr.kind === 'Identifier'; }
-export function is_reference(expr: Node, ast: AST): expr is Reference { return expr.kind === 'Reference'; }
-export function is_lambda(expr: Node, ast: AST): expr is Lambda { return expr.kind === 'Lambda'; }
-export function is_let(expr: Node, ast: AST): expr is Let { return expr.kind === 'Let'; }
-export function is_call(expr: Node, ast: AST): expr is Call { return expr.kind === 'Call'; }
-export function is_plus(expr: Node, ast: AST): expr is Plus { return expr.kind === 'Plus'; }
-export function is_minus(expr: Node, ast: AST): expr is Minus { return expr.kind === 'Minus'; }
+export function is_constant(expr: Flat_Node, ast: Flat_AST): expr is Flat_Constant { return expr.kind === 'Flat_Constant'; }
+export function is_identifier(expr: Flat_Node, ast: Flat_AST): expr is Flat_Identifier { return expr.kind === 'Flat_Identifier'; }
+export function is_reference(expr: Flat_Node, ast: Flat_AST): expr is Flat_Reference { return expr.kind === 'Flat_Reference'; }
+export function is_lambda(expr: Flat_Node, ast: Flat_AST): expr is Flat_Lambda { return expr.kind === 'Flat_Lambda'; }
+export function is_let(expr: Flat_Node, ast: Flat_AST): expr is Flat_Let { return expr.kind === 'Flat_Let'; }
+export function is_call(expr: Flat_Node, ast: Flat_AST): expr is Flat_Call { return expr.kind === 'Flat_Call'; }
+export function is_plus(expr: Flat_Node, ast: Flat_AST): expr is Flat_Plus { return expr.kind === 'Flat_Plus'; }
+export function is_minus(expr: Flat_Node, ast: Flat_AST): expr is Flat_Minus { return expr.kind === 'Flat_Minus'; }
 
 // constructors
 
-export function make_call(node_counter: number, token: Token, body: Id, arg: Id): Call {
-    return { id: node_counter, token: token.id, kind: "Call", body: body, arg: arg };
+export function make_call(node_counter: number, token: Token, body: Id, arg: Id): Flat_Call {
+    return { id: node_counter, token: token.id, kind: "Flat_Call", body: body, arg: arg };
 }

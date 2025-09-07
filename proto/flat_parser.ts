@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token, TokenOpen, TokenWhitespace } from "./../src/token";
-import { Id, Constant, Identifier, Reference, Lambda, Let, Call, Plus, Minus, Node, Atom, AST, Value } from "./flat_ast";
+import { Value, Id, Flat_Constant, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./flat_ast";
 
 // I need to:
 // - iterate over the tokens
@@ -9,9 +9,9 @@ import { Id, Constant, Identifier, Reference, Lambda, Let, Call, Plus, Minus, No
 // - output possible errors
 // - error output could be either individual, possibly using exceptions, or accumulated as a list
 
-type State = { token_counter: number, parameter_counter: number, tokens: readonly Token[], ast: Node[] };
+type State = { token_counter: number, parameter_counter: number, tokens: readonly Token[], ast: Flat_Node[] };
 
-export function parse(tokens: readonly Token[]): Node[] {
+export function parse(tokens: readonly Token[]): Flat_Node[] {
     let state: State = { token_counter: 0, parameter_counter: 0, tokens, ast: [] };
     state = line(state);
     state = link_parameters(state);
@@ -50,12 +50,12 @@ function atom(state: State): State {
     const token: Token = peek(state);
     // boolean / number / string
     if (is_token.boolean(token) || is_token.number(token) || is_token.string(token)) {
-        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Constant', value: token.value });
+        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Flat_Constant', value: token.value });
         state = consume(state);
     }
     // identifier
     else if (is_token.identifier(token)) {
-        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Identifier', name: token.value });
+        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Flat_Identifier', name: token.value });
         state = consume(state);
     }
     else {
@@ -75,7 +75,7 @@ function call(state: State): State {
     token = peek(state);
     if (is_opening(token)) {
         // TODO: find a way to link both arguments correctly, instead of hardcoding the last one to -1
-        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Call', body: { id: state.ast.length+1 }, arg: { id: state.parameter_counter-1 }});
+        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Flat_Call', body: { id: state.ast.length+1 }, arg: { id: state.parameter_counter-1 }});
         state.parameter_counter--;
         state = consume(state); // consume open paren
     }
@@ -202,8 +202,8 @@ function is_in_bounds(state: State): boolean {
 
 function link_parameters(state: State): State {
     for (let i=0; i<state.ast.length; ++i) {
-        let node: Node = state.ast[i];
-        if (node.kind === 'Call' && node.arg.id <= 0) {
+        let node: Flat_Node = state.ast[i];
+        if (node.kind === 'Flat_Call' && node.arg.id <= 0) {
             node.arg.id = state.ast.length + node.arg.id;
         }
     }
