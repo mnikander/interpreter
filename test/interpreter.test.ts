@@ -37,6 +37,11 @@ describe('valid input and output', () => {
         expect(result).toBe(3);
     });
 
+    it('should tolerate newlines and tabs within an expression', () => {
+        const result = interpret("(\n\t+\n\t1\n\t2\n)  ");
+        expect(result).toBe(3);
+    });
+
     it('must report an error if the input consists of more than one expression', () => {
         const result = interpret("1 2");
         expect(result).toContain("error");
