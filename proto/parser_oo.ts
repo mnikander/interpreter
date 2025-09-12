@@ -1,8 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_error } from "../src/error";
-import { is_token, Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, TokenOpen, TokenClose, TokenWhitespace } from "../src/token";
-import { Result } from "../src/error";
+import { is_error, Result } from "../src/error";
+import { is_token, Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "../src/token";
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
 export type Nested_Atom       = Nested_Identifier | Nested_Boolean | Nested_Number | Nested_String;
