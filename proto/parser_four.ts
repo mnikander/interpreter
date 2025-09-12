@@ -21,7 +21,7 @@ type State = { index: number, node_count: number, tokens: readonly Token[] };
 export function parse(tokens: Result<readonly Token[]>) : Result<[number, Nested_Expression]> {
     if (is_error(tokens)) return tokens;
     else {
-        let parser: State                               = { index: 0, node_count: 0, tokens: tokens.value };
+        const parser: State = skip_whitespace({ index: 0, node_count: 0, tokens: tokens.value });
         let result: Result<[State, Nested_Expression]> = expr(parser);
 
         if (is_ok(result)) {
@@ -111,6 +111,13 @@ function iden(parser: State): Result<[State, Nested_Identifier]> {
     else {
         return fail("Parsing", "expected an identifier", parser.index);
     }
+}
+
+function skip_whitespace(parser: State): State {
+    while (parser.index < parser.tokens.length && is_token.whitespace(parser.tokens[parser.index])) {
+        parser.index++;
+    }
+    return parser;
 }
 
 function is_at_end(parser: State): boolean {
