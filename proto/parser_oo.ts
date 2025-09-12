@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { ok, fail, is_error, is_ok, error_to_string } from "../src/error";
+import { is_error } from "../src/error";
 import { is_token, Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, TokenOpen, TokenClose, TokenWhitespace } from "../src/token";
 import { Result } from "../src/error";
 
@@ -235,7 +235,6 @@ class Parser {
         }
     }
 }
-
 
 export function parse(tokens: Result<readonly Token[]>) : { ast: Nested_Expression, node_count: number } {
     if (is_error(tokens)) {
