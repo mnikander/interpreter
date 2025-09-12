@@ -2,7 +2,7 @@
 
 import { Error, Result, ok, fail, is_error, is_ok } from "../src/error";
 import { Item } from "../src/item";
-import { is_token, Token } from "./../src/token";
+import { is_token, Token } from "../src/token";
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
 export type Nested_Atom       = Nested_Identifier | Nested_Boolean | Nested_Number | Nested_String;
