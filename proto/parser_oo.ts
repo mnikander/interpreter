@@ -138,7 +138,7 @@ class Parser {
             const body: Nested_Expression = this.expr();
             this.skip_whitespace();
             this.expect_closing();
-            return { id: id, token: potential_keyword.id, kind: "Nested_Lambda", binding: variable, body: body };
+            return { id: id, token: potential_keyword.id-1, kind: "Nested_Lambda", binding: variable, body: body };
         }
     }
 
@@ -161,7 +161,7 @@ class Parser {
             const body: Nested_Expression = this.expr();
             this.skip_whitespace();
             this.expect_closing();
-            return { id: id, token: potential_keyword.id, kind: "Nested_Let", binding: variable, value: value, body: body };
+            return { id: id, token: potential_keyword.id-1, kind: "Nested_Let", binding: variable, value: value, body: body };
         }
     }
 
@@ -180,7 +180,7 @@ class Parser {
         const if_false: Nested_Expression = this.expr();
         this.skip_whitespace();
         this.expect_closing();
-        return { id: id, token: potential_keyword.id, kind: "Nested_If", condition: condition, if_true: if_true, if_false: if_false };
+        return { id: id, token: potential_keyword.id-1, kind: "Nested_If", condition: condition, if_true: if_true, if_false: if_false };
     }
 
     // (expr expr)
@@ -193,7 +193,7 @@ class Parser {
         const arg: Nested_Expression = this.expr();
         this.skip_whitespace();
         this.expect_closing();
-        return { id: id, token: fn.token, kind: "Nested_Call", fn: fn, arg: arg };
+        return { id: id, token: fn.token-1, kind: "Nested_Call", fn: fn, arg: arg };
     }
 
     skip_whitespace() {
