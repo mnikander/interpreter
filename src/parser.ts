@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { AST, Atom, Call, make_atom, make_call } from "./ast";
-import { error, is_error, is_ok, Result } from "./error";
+import { make_error, is_error, is_ok, Result } from "./error";
 import { is_token, Token } from "./token";
 
 type ParserState = { token_index: number, node_counter: number, tokens: readonly Token[]};
@@ -24,7 +24,7 @@ function line(state: ParserState): { state: ParserState, result: Result<AST> } {
     state = attempt_expr.state;
     state = consume_whitespace(state);
     if (state.token_index !== state.tokens.length) {
-        return { state: state, result: { ok: false, error: error("Parsing", "expected a single expression at", state.token_index)}};
+        return { state: state, result: { ok: false, error: make_error("Parsing", "expected a single expression at", state.token_index)}};
     }
     else {
         return { state: state, result: attempt_expr.result };
@@ -41,7 +41,7 @@ function expr(state: ParserState): { state: ParserState, result: Result<AST> } {
     const attempt_call = call(state);
     if (is_ok(attempt_call.result)) return attempt_call;
     
-    return { state: state, result: { ok: false, error: error("Parsing", "an expression at", state.token_index)}};
+    return { state: state, result: { ok: false, error: make_error("Parsing", "an expression at", state.token_index)}};
 }
 
 // atom = boolean / number / string / identifier
@@ -52,13 +52,13 @@ function atom(state: ParserState): { state: ParserState, result: Result<AST> } {
         state = update(state);
         return { state: state, result: { ok: true, value: atom }};
     }
-    return { state: state, result: { ok: false, error: error("Parsing", "an atom, expected a boolean, number, string, or identifier", state.token_index)}};
+    return { state: state, result: { ok: false, error: make_error("Parsing", "an atom, expected a boolean, number, string, or identifier", state.token_index)}};
 }
 
 // call = open *space expr *(space *space expr) *space close
 function call(state: ParserState): { state: ParserState, result: Result<AST> } {
     if (state.token_index == state.tokens.length || !is_token.open(state.tokens[state.token_index])) {
-        return { state: state, result: { ok: false, error: error("Parsing", "a function call, expected '('", state.token_index)}};
+        return { state: state, result: { ok: false, error: make_error("Parsing", "a function call, expected '('", state.token_index)}};
     }
     else {
         let call: Call = make_call(state.node_counter, state.tokens[state.token_index], []);
@@ -79,7 +79,7 @@ function call(state: ParserState): { state: ParserState, result: Result<AST> } {
         state = consume_whitespace(state);
         
         if (state.token_index == state.tokens.length || !is_token.close(state.tokens[state.token_index])) {
-            return { state: state, result: { ok: false, error: error("Parsing", "a function call, expected ')'", state.token_index)}};
+            return { state: state, result: { ok: false, error: make_error("Parsing", "a function call, expected ')'", state.token_index)}};
         }
         state.token_index++; // consume ')'
         return { state: state, result: { ok: true, value: call } };

@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let, AtomIdentifier } from "./ast";
-import { Result, error, is_error } from "./error";
+import { Result, make_error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
 export type Value            = Primitive | ((args: Primitive[]) => Primitive)
@@ -22,7 +22,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
             return { ok: true, value: identifier };
         }
         else {
-            return { ok: false, error: error("Evaluation", "identifier", ast.token)};
+            return { ok: false, error: make_error("Evaluation", "identifier", ast.token)};
         }
     }
     else if (is_let(ast)) {
@@ -46,7 +46,7 @@ export function evaluate(ast: AST, env: Environment): Result<Value> {
         return { ok: true, value: (fn as Function)(args) };
     }
     else {
-        return { ok: false, error: error("Evaluation", "unknown AST node", ast.token)};
+        return { ok: false, error: make_error("Evaluation", "unknown AST node", ast.token)};
     }
 }
 

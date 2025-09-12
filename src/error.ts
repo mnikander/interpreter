@@ -10,12 +10,12 @@ export interface Error extends Item {
     message: string,
 }
 
-export function error(subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Error {
+export function make_error(subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Error {
     return { kind: "Error", subkind: subkind, token_id: token_number, message: message };
 }
 
 export function error_to_string(error: Error, tokens: Token[]): string {
-    return `${error.subkind} error: ${error.message} '${tokens[error.token_id].value}'`;
+    return `${error.subkind} error: ${error.message} at token number ${error.token_id} '${tokens[error.token_id].value}'`;
 }
 
 export type Result<T> = { ok: true, value: T } | { ok: false, error: Error };
