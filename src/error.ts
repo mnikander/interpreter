@@ -27,3 +27,11 @@ export function is_ok<T>(result: Result<T>): result is { ok: true, value: T } {
 export function is_error<T>(result: Result<T>): result is { ok: false, error: Error } {
     return result.ok === false;
 }
+
+export function ok<T> (value: T): Result<T> {
+    return { ok: true, value: value };
+}
+
+export function fail<T> (subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Result<T> {
+    return { ok: false, error: make_error(subkind, message, token_number) };
+}
