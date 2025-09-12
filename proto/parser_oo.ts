@@ -60,8 +60,10 @@ class Parser {
         this.index++;
     }
 
-    emit() {
+    emit(): number {
+        const id = this.node_count;
         this.node_count++;
+        return id;
     }
 
     is_more_tokens(): boolean {
@@ -82,91 +84,121 @@ class Parser {
 
         if (is_token.boolean(this.peek())) {
             this.consume();
-            this.emit();
-            return { id: this.node_count, token: this.index-1, kind: "Nested_Boolean", value: (this.previous() as TokenBoolean).value };
+            const id = this.emit();
+            return { id: id, token: this.index-1, kind: "Nested_Boolean", value: (this.previous() as TokenBoolean).value };
         }
         else if (is_token.number(this.peek())) {
             this.consume();
-            this.emit();
-            return { id: this.node_count, token: this.index-1, kind: "Nested_Number", value: (this.previous() as TokenNumber).value };
+            const id = this.emit();
+            return { id: id, token: this.index-1, kind: "Nested_Number", value: (this.previous() as TokenNumber).value };
         }
         else if (is_token.string(this.peek())) {
             this.consume();
-            this.emit();
-            return { id: this.node_count, token: this.index-1, kind: "Nested_String", value: (this.previous() as TokenString).value };
+            const id = this.emit();
+            return { id: id, token: this.index-1, kind: "Nested_String", value: (this.previous() as TokenString).value };
         }
         else if (is_token.identifier(this.peek())) {
             this.consume();
-            this.emit();
-            return { id: this.node_count, token: this.index-1, kind: "Nested_Identifier", name: (this.previous() as TokenIdentifier).value };
+            const id = this.emit();
+            return { id: id, token: this.index-1, kind: "Nested_Identifier", name: (this.previous() as TokenIdentifier).value };
         }
         else if (is_token.open(this.peek())) {
             this.consume();
-            const node_id = this.node_count; // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
-            this.emit(); // we are going to emit an AST node of some kind, and we must increment the node counter BEFORE we go into the recursion
             this.skip_whitespace();
             
             const potential_keyword: Token = this.peek();
-            if (is_token.identifier(potential_keyword) && potential_keyword.value === "lambda") { // (lambda identifier expr)
-                this.consume();
-                this.expect_whitespace();
-
-                const variable: Nested_Expression = this.expr();
-                if (!is_identifier(variable)) {
-                    throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
-                }
-                else {
-                    this.expect_whitespace();
-
-                    const body: Nested_Expression = this.expr();
-                    this.skip_whitespace();
-                    this.expect_closing();
-                    return { id: node_id, token: potential_keyword.id, kind: "Nested_Lambda", binding: variable, body: body };
-                }
+            if (is_token.identifier(potential_keyword) && potential_keyword.value === "lambda") {
+                return this.lambda();
             }
-            else if (is_token.identifier(potential_keyword) && potential_keyword.value === "let") { // (let identifier expr expr)
-                this.consume();
-                this.expect_whitespace();
-
-                const variable: Nested_Expression = this.expr();
-                if (!is_identifier(variable)) {
-                    throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
-                }
-                else {
-                    this.expect_whitespace();
-                    const value: Nested_Expression = this.expr();
-                    this.expect_whitespace();
-                    const body: Nested_Expression = this.expr();
-                    this.skip_whitespace();
-                    this.expect_closing();
-                    return { id: node_id, token: potential_keyword.id, kind: "Nested_Let", binding: variable, value: value, body: body };
-                }
+            else if (is_token.identifier(potential_keyword) && potential_keyword.value === "let") {
+                return this.letbind();
             }
-            else if (is_token.identifier(potential_keyword) && potential_keyword.value === "if") { // (if expr expr expr)
-                this.consume();
-
-                this.expect_whitespace();
-                const condition: Nested_Expression = this.expr();
-                this.expect_whitespace();
-                const if_true: Nested_Expression = this.expr();
-                this.expect_whitespace();
-                const if_false: Nested_Expression = this.expr();
-                this.skip_whitespace();
-                this.expect_closing();
-                return { id: node_id, token: potential_keyword.id, kind: "Nested_If", condition: condition, if_true: if_true, if_false: if_false };
+            else if (is_token.identifier(potential_keyword) && potential_keyword.value === "if") {
+                return this.iff();
             }
-            else { // (expr expr)
-                const fn: Nested_Expression = this.expr();
-                this.expect_whitespace();
-                const arg: Nested_Expression = this.expr();
-                this.skip_whitespace();
-                this.expect_closing();
-                return { id: node_id, token: potential_keyword.id, kind: "Nested_Call", fn: fn, arg: arg };
+            else {
+                return this.call();
             }
         }
         else {
             throw Error(`Unknown token kind '${this.peek()}' (token ${this.index} of ${this.tokens.length})`);
         }
+    }
+
+    // (lambda identifier expr)
+    lambda(): Nested_Lambda {
+        // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
+        const id = this.emit();
+        const potential_keyword: Token = this.peek();
+        this.consume();
+        this.expect_whitespace();
+
+        const variable: Nested_Expression = this.expr();
+        if (!is_identifier(variable)) {
+            throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
+        }
+        else {
+            this.expect_whitespace();
+
+            const body: Nested_Expression = this.expr();
+            this.skip_whitespace();
+            this.expect_closing();
+            return { id: id, token: potential_keyword.id, kind: "Nested_Lambda", binding: variable, body: body };
+        }
+    }
+
+    // (let identifier expr expr)
+    letbind(): Nested_Let {
+        // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
+        const id = this.emit();
+        const potential_keyword: Token = this.peek();
+        this.consume();
+        this.expect_whitespace();
+
+        const variable: Nested_Expression = this.expr();
+        if (!is_identifier(variable)) {
+            throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
+        }
+        else {
+            this.expect_whitespace();
+            const value: Nested_Expression = this.expr();
+            this.expect_whitespace();
+            const body: Nested_Expression = this.expr();
+            this.skip_whitespace();
+            this.expect_closing();
+            return { id: id, token: potential_keyword.id, kind: "Nested_Let", binding: variable, value: value, body: body };
+        }
+    }
+
+    // (if expr expr expr)
+    iff(): Nested_If {
+        // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
+        const id = this.emit();
+        const potential_keyword: Token = this.peek();
+        this.consume();
+
+        this.expect_whitespace();
+        const condition: Nested_Expression = this.expr();
+        this.expect_whitespace();
+        const if_true: Nested_Expression = this.expr();
+        this.expect_whitespace();
+        const if_false: Nested_Expression = this.expr();
+        this.skip_whitespace();
+        this.expect_closing();
+        return { id: id, token: potential_keyword.id, kind: "Nested_If", condition: condition, if_true: if_true, if_false: if_false };
+    }
+
+    // (expr expr)
+    call(): Nested_Call {
+        // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
+        const id = this.emit();
+
+        const fn: Nested_Expression = this.expr();
+        this.expect_whitespace();
+        const arg: Nested_Expression = this.expr();
+        this.skip_whitespace();
+        this.expect_closing();
+        return { id: id, token: fn.token, kind: "Nested_Call", fn: fn, arg: arg };
     }
 
     skip_whitespace() {

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
-import { Nested_Call, Nested_Expression, parse } from '../proto/parser_oo';
+import { Nested_Call, Nested_Expression, Nested_Identifier, Nested_Lambda, Nested_Number, parse } from '../proto/parser_oo';
 import { Token } from '../src/token';
 
 describe('parse atoms', () => {
@@ -103,11 +103,32 @@ describe('expressions', () => {
         expect(ast.kind).toBe("Nested_Call");
     });
 
-    it('must produce a valid AST for lambda expression', () => {
+    it('must produce a valid AST for a simple lambda expression', () => {
+        const parsed = parse(lex("((lambda x x) 42)"));
+        let ast: Nested_Expression = parsed.ast;
+        let node_count: number     = parsed.node_count;
+        expect(node_count).toBe(5);
+        expect(ast.kind).toBe("Nested_Call");
+        expect((ast as Nested_Call).id).toBe(0);
+        expect((ast as Nested_Call).fn.id).toBe(1);
+        expect((ast as Nested_Call).arg.id).toBe(4);
+        expect(((ast as Nested_Call).arg as Nested_Number).value).toBe(42);
+        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.id).toBe(2);
+        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.kind).toBe("Nested_Identifier");
+        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.name).toBe("x");
+        expect((((ast as Nested_Call).fn) as Nested_Lambda).body.id).toBe(3);
+        expect((((ast as Nested_Call).fn) as Nested_Lambda).body.kind).toBe("Nested_Identifier");
+        expect(((((ast as Nested_Call).fn) as Nested_Lambda).body as Nested_Identifier).name).toBe("x");
+    });
+
+    it('must produce a valid AST for a nested lambda expression', () => {
         const parsed = parse(lex("(((lambda a (lambda b a)) 1) 2)"));
         let ast: Nested_Expression = parsed.ast;
         let node_count: number     = parsed.node_count;
         expect(node_count).toBe(9);
         expect(ast.kind).toBe("Nested_Call");
+        expect((ast as Nested_Call).id).toBe(0);
+        expect((ast as Nested_Call).fn.id).toBe(1);
+        expect((ast as Nested_Call).arg.id).toBe(8);
     });
 });
