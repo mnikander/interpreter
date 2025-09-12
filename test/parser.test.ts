@@ -30,7 +30,7 @@ describe('parse atoms', () => {
         }
     });
 
-    it('must parse "-0.1" to a number'), () => {
+    it('must parse "-0.1" to a number', () => {
         const lexed = lex('-0.1');
         expect(is_ok(lexed)).toBe(true);
         if (is_ok(lexed)) {
@@ -49,7 +49,7 @@ describe('parse atoms', () => {
                 }
             }
         }
-    }
+    });
 });
 
 describe('valid and invalid parentheses', () => {
