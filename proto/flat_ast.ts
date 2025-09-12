@@ -1,7 +1,5 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "./../src/token";
-
 export type Value           = boolean | number;
 export type Id              = {id: number};
 export type Flat_Constant   = {id: number, token: number, kind: 'Flat_Constant', value: (boolean | number | string)};
