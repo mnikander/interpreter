@@ -3,9 +3,6 @@ import { lex } from '../src/lexer'
 import { Nested_Call, Nested_Expression, parse } from '../proto/parser_oo';
 import { Token } from '../src/token';
 
-type OkLex   = { ok: true, value: readonly Token[] };
-type OkParse = { ok: true, value: [number, Nested_Expression] };
-
 describe('parse atoms', () => {
 
     it('must parse "true" to a boolean', () => {
