@@ -65,10 +65,6 @@ class Parser {
         return id;
     }
 
-    is_more_tokens(): boolean {
-        return this.index < this.tokens.length;
-    }
-
     is_at_end(): boolean {
         return this.index === this.tokens.length;
     }
