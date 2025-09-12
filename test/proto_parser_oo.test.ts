@@ -94,18 +94,18 @@ describe('expressions', () => {
         expect(() => parse((lex('_+')))).toThrow();
     });
 
-    it('must produce a valid AST for an arithemetic expression', () => {
+    it('must produce a valid AST for an arithmetic expression', () => {
         const parsed = parse(lex("((+ 1) 2)"));
-        let ast: Nested_Expression = parsed.ast;
-        let node_count: number     = parsed.node_count;
+        const ast: Nested_Expression = parsed.ast;
+        const node_count: number     = parsed.node_count;
         expect(node_count).toBe(5);
         expect(ast.kind).toBe("Nested_Call");
     });
 
     it('must produce a valid AST for a simple lambda expression', () => {
         const parsed = parse(lex("((lambda x x) 42)"));
-        let ast: Nested_Expression = parsed.ast;
-        let node_count: number     = parsed.node_count;
+        const ast: Nested_Expression = parsed.ast;
+        const node_count: number     = parsed.node_count;
         expect(node_count).toBe(5);
         expect(ast.kind).toBe("Nested_Call");
         expect((ast as Nested_Call).id).toBe(0);
@@ -122,8 +122,8 @@ describe('expressions', () => {
 
     it('must produce a valid AST for a nested lambda expression', () => {
         const parsed = parse(lex("(((lambda a (lambda b a)) 1) 2)"));
-        let ast: Nested_Expression = parsed.ast;
-        let node_count: number     = parsed.node_count;
+        const ast: Nested_Expression = parsed.ast;
+        const node_count: number     = parsed.node_count;
         expect(node_count).toBe(9);
         expect(ast.kind).toBe("Nested_Call");
         expect((ast as Nested_Call).id).toBe(0);
