@@ -28,7 +28,7 @@ export function is_error<T>(result: Result<T>): result is { ok: false, error: Er
     return result.ok === false;
 }
 
-export function ok<T> (value: T): Result<T> {
+export function pass<T> (value: T): Result<T> {
     return { ok: true, value: value };
 }
 

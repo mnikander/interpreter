@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { make_token, Token } from './token'
-import { Result, is_ok } from './error'
+import { Result, is_ok, pass, fail } from './error'
 import { Item } from './item'
 
 const rule = {
@@ -30,7 +30,7 @@ export function lex(line: string): Result<Token[]> {
             result = next_token(result.value);
         }
         else {
-            return { ok: true, value: result.value.tokens };
+            return pass(result.value.tokens);
         }
     }
     return result;
@@ -66,7 +66,7 @@ function next_token(state: State): Result<State> {
     result = try_token(rule.id_special, make_token.identifier, state);
     if (is_ok(result)) return result;
 
-    return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `invalid token, expected an atom`} };
+    return fail("Lexing", "invalid token, expected an atom", state.tokens.length);
 }
 
 function try_token(rule: { description: string, regex: RegExp }, make_token: undefined | Function, state: State): Result<State> {
@@ -78,9 +78,9 @@ function try_token(rule: { description: string, regex: RegExp }, make_token: und
         if (make_token !== undefined) {
             state.tokens.push(make_token(state.tokens.length, state.index, word)); // TODO: it might be possible to construct a raw AST by appending into a data field here, instead of into a flat list of tokens
         }
-        return { ok: true, value: state };
+        return pass(state);
     }
     else {
-        return { ok: false, error: { kind: "Error", subkind: "Lexing", token_id: state.tokens.length, message: `invalid token, expected ${rule.description}`} };
+        return fail("Lexing", `invalid token, expected ${rule.description}`, state.tokens.length);
     }
 }
