@@ -37,7 +37,7 @@ describe('convert atoms', () => {
 });
 
 describe('expressions', () => {
-    it('must produce a valid AST for arithemetic expressions', () => {
+    it('must produce a valid AST for arithmetic expressions', () => {
         const text: string       = "((+ 1) 2)";
         const parsed             = parse(lex(text));
         const node_count: number = parsed.node_count;

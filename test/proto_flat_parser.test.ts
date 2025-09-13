@@ -143,7 +143,7 @@ describe('expressions', () => {
         else { expect(() => parse(lexed_6.value)).toThrow(); }
     });
 
-    it('must produce a valid AST for arithemetic expressions', () => {
+    it('must produce a valid AST for arithmetic expressions', () => {
         const lexed = lex("((+ 1) 2)");
         expect(is_ok(lexed)).toBe(true);
         const ast = parse((lexed as OkLex).value);

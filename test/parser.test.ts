@@ -155,7 +155,7 @@ describe('expressions', () => {
         expect(is_error(lex('_+')) || is_error(parse((lex('_+') as OkLex).value))).toBe(true);
     });
 
-    it('must produce a valid AST for arithemetic expressions', () => {
+    it('must produce a valid AST for arithmetic expressions', () => {
         const lexed = lex("(+ 1 2)");
         expect(is_ok(lexed)).toBe(true);
         if(is_ok(lexed)) {

@@ -106,7 +106,7 @@ describe('expressions', () => {
         expect(is_error(parse((lex('_+'))))).toBe(true);
     });
 
-    it.skip('must produce a valid AST for arithemetic expressions', () => {
+    it.skip('must produce a valid AST for arithmetic expressions', () => {
         let parsed = parse(lex("((+ 1) 2)"));
         expect(is_ok(parsed)).toBe(true);
         let ast: Nested_Expression = parsed.ast;
