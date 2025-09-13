@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
 import { is_error, is_ok } from '../src/error';
-import { parse } from '../proto/flat_parser';
-import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./../proto/flat_ast";
+import { parse, Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from '../proto/flat_parser';
 
 import { Token } from '../src/token';
 
