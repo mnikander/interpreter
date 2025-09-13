@@ -2,6 +2,7 @@
 
 export type Id              = {id: number};
 export type Value           = boolean | number;
+export type Flat_AST        = Flat_Expression[];
 export type Flat_Expression = Flat_Literal | Flat_Identifier | Flat_Reference | Flat_Lambda | Flat_Let | Flat_If | Flat_Call | Flat_Plus | Flat_Minus;
 export type Flat_Atom       = Flat_Literal | Flat_Identifier;
 export type Flat_Literal    = {id: number, token?: number, kind: 'Flat_Literal', value: (boolean | number | string)};
@@ -13,7 +14,6 @@ export type Flat_If         = {id: number, token?: number, kind: 'Flat_If', cond
 export type Flat_Call       = {id: number, token?: number, kind: 'Flat_Call', body: Id, arg: Id};
 export type Flat_Plus       = {id: number, token?: number, kind: 'Flat_Plus'};
 export type Flat_Minus      = {id: number, token?: number, kind: 'Flat_Minus'};
-export type Flat_AST        = Flat_Expression[];
 
 // TODO: implement built-in functions capable of partial application
 //       and give them pre-reserved IDs
