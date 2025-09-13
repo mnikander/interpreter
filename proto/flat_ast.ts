@@ -17,7 +17,7 @@ export type Flat_AST        = Flat_Node[];
 // TODO: implement built-in functions capable of partial application
 //       and give them pre-reserved IDs
 
-export function is_constant(expr: Flat_Node, ast: Flat_AST): expr is Flat_Literal { return expr.kind === 'Flat_Literal'; }
+export function is_literal(expr: Flat_Node, ast: Flat_AST): expr is Flat_Literal { return expr.kind === 'Flat_Literal'; }
 export function is_identifier(expr: Flat_Node, ast: Flat_AST): expr is Flat_Identifier { return expr.kind === 'Flat_Identifier'; }
 export function is_reference(expr: Flat_Node, ast: Flat_AST): expr is Flat_Reference { return expr.kind === 'Flat_Reference'; }
 export function is_lambda(expr: Flat_Node, ast: Flat_AST): expr is Flat_Lambda { return expr.kind === 'Flat_Lambda'; }
