@@ -130,7 +130,7 @@ class Parser {
 
         const variable: Nested_Expression = this.expr();
         if (!is_identifier(variable)) {
-            throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
+            throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
             this.expect_whitespace();
@@ -152,7 +152,7 @@ class Parser {
 
         const variable: Nested_Expression = this.expr();
         if (!is_identifier(variable)) {
-            throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
+            throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
             this.expect_whitespace();
@@ -211,7 +211,7 @@ class Parser {
                 this.consume();
             }
             else {
-                throw new Error(`Expected whitespace but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
+                throw new Error(`Expected whitespace but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
             }
         }
     }
@@ -225,7 +225,7 @@ class Parser {
                 this.consume();
             }
             else {
-                throw new Error(`Expected ')' but got a ${this.peek().kind} instead (token ${this.index} of ${this.tokens.length})`);
+                throw new Error(`Expected ')' but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
             }
         }
     }
@@ -245,7 +245,7 @@ export function parse(tokens: Result<readonly Token[]>) : { ast: Nested_Expressi
             return { ast: expression, node_count: parser.node_count };
         }
         else {
-            throw Error(`Failed to parse input fully (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Expected a single expression, failed to fully parse input (token ${parser.index} of ${parser.tokens.length})`);
         }
     }
 }

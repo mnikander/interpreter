@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Nested_Expression, is_boolean, is_call, is_identifier, is_lambda, is_let, is_number, is_string } from "./parser_oo";
+import { Nested_Expression, is_boolean, is_call, is_identifier, is_lambda, is_let, is_if, is_number, is_string } from "./parser_oo";
 import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_Atom, Flat_AST } from "./flat_ast";
 
 export function flatten(ast: Nested_Expression, node_count: number): Flat_AST {
@@ -29,6 +29,10 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
         flat_ast                  = flatten_nodes(nested_ast.value, flat_ast);
         flat_ast                  = flatten_nodes(nested_ast.body, flat_ast);
     }
+    else if (is_if(nested_ast)) {
+        // TODO
+        throw Error('The flattening of if-expressions is not implemented yet');
+    }
     else if (is_call(nested_ast)) {
         const index               = nested_ast.id;
         const body_id             = { id: nested_ast.fn.id };
@@ -49,7 +53,7 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
         flat_ast[index]           = node;
     }
     else {
-        throw Error(`Cannot convert node of kind '${nested_ast.kind}' to a flat node kind.`);
+        throw Error(`Cannot convert nested node of kind '${nested_ast.kind}' to a corresponding kind of flat node.`);
     }
 
     return flat_ast;
