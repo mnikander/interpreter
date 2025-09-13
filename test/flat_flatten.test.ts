@@ -99,7 +99,6 @@ describe('expressions', () => {
     });
 
     it('must produce a valid AST for let-bindings', () => {
-        // (let x 42 x)
         const text: string       = "(let x 42 x)";
         const parsed             = parse(lex(text));
         const node_count: number = parsed.node_count;
@@ -114,6 +113,32 @@ describe('expressions', () => {
 
         expect(node_count).toBe(4);
         expect(flat_ast.length).toBe(4);
+        expect(flat_ast).toStrictEqual(expected);
+    });
+
+    it('must produce a valid AST when let-binding to a function', () => {
+        const text: string       = "(let increment (lambda x ((+ 1) x)) (increment 41))";
+        const parsed             = parse(lex(text));
+        const node_count: number = parsed.node_count;
+        const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
+
+        const expected: Flat_Expression[] = [
+            {id:  0, token:  0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 9}},
+            {id:  1, token:  3, kind: 'Flat_Identifier', name: 'increment'},
+            {id:  2, token:  5, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
+            {id:  3, token:  8, kind: 'Flat_Identifier', name: 'x'},
+            {id:  4, token: 10, kind: 'Flat_Call', body: {id: 5}, arg: {id: 8}}, // 8 is large
+            {id:  5, token: 11, kind: 'Flat_Call', body: {id: 6}, arg: {id: 7}},
+            {id:  6, token: 12, kind: 'Flat_Identifier', name: '+'},
+            {id:  7, token: 14, kind: 'Flat_Literal', value: 1},
+            {id:  8, token: 17, kind: 'Flat_Identifier', name: 'x'},
+            {id:  9, token: 21, kind: 'Flat_Call', body: {id: 10}, arg: {id: 11}},
+            {id: 10, token: 22, kind: 'Flat_Identifier', name: 'increment'},
+            {id: 11, token: 24, kind: 'Flat_Literal', value: 41},
+        ];
+
+        expect(node_count).toBe(12);
+        expect(flat_ast.length).toBe(12);
         expect(flat_ast).toStrictEqual(expected);
     });
 });
