@@ -89,6 +89,29 @@ describe('must evaluate let-bindings', () => {
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(42);
     });
+
+    it.skip('binding a function', () => {
+        // (let increment (lambda x ((+ 1) x)) (increment 41))
+
+        const ast: Flat_AST = [
+            {id:  0, token:  0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 9}},
+            {id:  1, token:  3, kind: 'Flat_Identifier', name: 'increment'},
+            {id:  2, token:  5, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
+            {id:  3, token:  8, kind: 'Flat_Identifier', name: 'x'},
+            {id:  4, token: 10, kind: 'Flat_Call', body: {id: 5}, arg: {id: 8}}, // 8 is large
+            {id:  5, token: 11, kind: 'Flat_Call', body: {id: 6}, arg: {id: 7}},
+            {id:  6, token: 12, kind: 'Flat_Plus'},
+            {id:  7, token: 14, kind: 'Flat_Literal', value: 1},
+            {id:  8, token: 17, kind: 'Flat_Reference', target: {id: 3}},
+            {id:  9, token: 21, kind: 'Flat_Call', body: {id: 10}, arg: {id: 11}},
+            {id: 10, token: 22, kind: 'Flat_Reference', target: {id: 1}},
+            {id: 11, token: 24, kind: 'Flat_Literal', value: 41},
+        ];
+
+        let env = make_env();
+        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(42);
+    });
+
 });
 
 describe('must evaluate arithmetic expressions', () => {

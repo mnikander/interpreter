@@ -197,7 +197,7 @@ describe('lambdas', () => {
     });
 
     it.skip('must evaluate lambdas which are bound to a name', () => {
-        expect(interpret("(let successor (lambda x ((+ x) 1)) (successor 1))")).toBe(2);
+        expect(interpret("(let increment (lambda x ((+ 1) x)) (increment 41))")).toBe(42);
     });
 
     it.skip('may evaluate lambda expressions with multiple arguments', () => {
