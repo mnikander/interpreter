@@ -1,7 +1,9 @@
 // Copyright (c) 2025 Marco Nikander
 
-export type Value           = boolean | number;
 export type Id              = {id: number};
+export type Value           = boolean | number;
+export type Flat_Node       = Flat_Literal | Flat_Identifier | Flat_Reference | Flat_Lambda | Flat_Let | Flat_Call | Flat_Plus | Flat_Minus;
+export type Flat_Atom       = Flat_Literal | Flat_Identifier;
 export type Flat_Literal    = {id: number, token?: number, kind: 'Flat_Literal', value: (boolean | number | string)};
 export type Flat_Identifier = {id: number, token?: number, kind: 'Flat_Identifier', name: string};
 export type Flat_Reference  = {id: number, token?: number, kind: 'Flat_Reference', target: Id};
@@ -10,8 +12,6 @@ export type Flat_Let        = {id: number, token?: number, kind: 'Flat_Let', bin
 export type Flat_Call       = {id: number, token?: number, kind: 'Flat_Call', body: Id, arg: Id};
 export type Flat_Plus       = {id: number, token?: number, kind: 'Flat_Plus'};
 export type Flat_Minus      = {id: number, token?: number, kind: 'Flat_Minus'};
-export type Flat_Node       = Flat_Literal | Flat_Identifier | Flat_Reference | Flat_Lambda | Flat_Let | Flat_Call | Flat_Plus | Flat_Minus;
-export type Flat_Atom       = Flat_Literal | Flat_Identifier;
 export type Flat_AST        = Flat_Node[];
 
 // TODO: implement built-in functions capable of partial application
