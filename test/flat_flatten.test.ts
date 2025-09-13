@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
 import { parse } from '../src/flat/parser_oo';
-import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "../src/flat/flat_ast";
+import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Expression, Flat_Atom, Flat_AST } from "../src/flat/flat_ast";
 import { flatten } from '../src/flat/flatten';
 
 describe('convert atoms', () => {
@@ -12,7 +12,7 @@ describe('convert atoms', () => {
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
-        const expected: Flat_Node[] = [
+        const expected: Flat_Expression[] = [
             {id: 0, token: 0, kind: 'Flat_Literal', value: true},
         ];
 
@@ -27,7 +27,7 @@ describe('convert atoms', () => {
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
-        const expected: Flat_Node[] = [
+        const expected: Flat_Expression[] = [
             {id: 0, token: 0, kind: 'Flat_Literal', value: -0.1},
         ];
         expect(node_count).toBe(1);
@@ -43,7 +43,7 @@ describe('expressions', () => {
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
-        const expected: Flat_Node[] = [
+        const expected: Flat_Expression[] = [
             {id: 0, token: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, token: 1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 3}},
             {id: 2, token: 2, kind: 'Flat_Identifier', name: '+'},
@@ -62,7 +62,7 @@ describe('expressions', () => {
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
-        const expected: Flat_Node[] = [
+        const expected: Flat_Expression[] = [
             {id: 0, token: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, token: 1, kind: 'Flat_Lambda', binding: {id: 2}, body: {id: 3}},
             {id: 2, token: 4, kind: 'Flat_Identifier', name: 'x'},
@@ -81,7 +81,7 @@ describe('expressions', () => {
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
-        const expected: Flat_Node[] = [
+        const expected: Flat_Expression[] = [
             {id: 0, token:  0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 8}},
             {id: 1, token:  1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 7}},
             {id: 2, token:  2, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
@@ -105,7 +105,7 @@ describe('expressions', () => {
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
-        const expected: Flat_Node[] = [
+        const expected: Flat_Expression[] = [
             {id: 0, token: 0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
             {id: 1, token: 3, kind: 'Flat_Identifier', name: 'x'},
             {id: 2, token: 5, kind: 'Flat_Literal', value: 42},

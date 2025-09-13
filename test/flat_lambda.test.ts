@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { Environment, evaluate, make_env } from '../src/flat/lambda'
-import { Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Node, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus } from "../src/flat/flat_ast";
+import { Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Expression, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus } from "../src/flat/flat_ast";
 
 
 describe('must evaluate basic expressions', () => {

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Id, Value, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Node, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus } from "./flat_ast";
+import { Id, Value, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Expression, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus } from "./flat_ast";
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {
@@ -25,7 +25,7 @@ export function lookup(id: number, env: Environment): Value {
     }
 }
 
-export function evaluate(expr: Flat_Node, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
+export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
     if (is_literal(expr, ast)) {
         return expr.value;
     }

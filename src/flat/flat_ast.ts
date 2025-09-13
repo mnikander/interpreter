@@ -2,7 +2,7 @@
 
 export type Id              = {id: number};
 export type Value           = boolean | number;
-export type Flat_Node       = Flat_Literal | Flat_Identifier | Flat_Reference | Flat_Lambda | Flat_Let | Flat_If | Flat_Call | Flat_Plus | Flat_Minus;
+export type Flat_Expression = Flat_Literal | Flat_Identifier | Flat_Reference | Flat_Lambda | Flat_Let | Flat_If | Flat_Call | Flat_Plus | Flat_Minus;
 export type Flat_Atom       = Flat_Literal | Flat_Identifier;
 export type Flat_Literal    = {id: number, token?: number, kind: 'Flat_Literal', value: (boolean | number | string)};
 export type Flat_Identifier = {id: number, token?: number, kind: 'Flat_Identifier', name: string};
@@ -13,17 +13,17 @@ export type Flat_If         = {id: number, token?: number, kind: 'Flat_If', cond
 export type Flat_Call       = {id: number, token?: number, kind: 'Flat_Call', body: Id, arg: Id};
 export type Flat_Plus       = {id: number, token?: number, kind: 'Flat_Plus'};
 export type Flat_Minus      = {id: number, token?: number, kind: 'Flat_Minus'};
-export type Flat_AST        = Flat_Node[];
+export type Flat_AST        = Flat_Expression[];
 
 // TODO: implement built-in functions capable of partial application
 //       and give them pre-reserved IDs
 
-export function is_literal(expr: Flat_Node, ast: Flat_AST): expr is Flat_Literal { return expr.kind === 'Flat_Literal'; }
-export function is_identifier(expr: Flat_Node, ast: Flat_AST): expr is Flat_Identifier { return expr.kind === 'Flat_Identifier'; }
-export function is_reference(expr: Flat_Node, ast: Flat_AST): expr is Flat_Reference { return expr.kind === 'Flat_Reference'; }
-export function is_lambda(expr: Flat_Node, ast: Flat_AST): expr is Flat_Lambda { return expr.kind === 'Flat_Lambda'; }
-export function is_let(expr: Flat_Node, ast: Flat_AST): expr is Flat_Let { return expr.kind === 'Flat_Let'; }
-export function is_if(expr: Flat_Node, ast: Flat_AST): expr is Flat_If { return expr.kind === 'Flat_If'; }
-export function is_call(expr: Flat_Node, ast: Flat_AST): expr is Flat_Call { return expr.kind === 'Flat_Call'; }
-export function is_plus(expr: Flat_Node, ast: Flat_AST): expr is Flat_Plus { return expr.kind === 'Flat_Plus'; }
-export function is_minus(expr: Flat_Node, ast: Flat_AST): expr is Flat_Minus { return expr.kind === 'Flat_Minus'; }
+export function is_literal(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Literal { return expr.kind === 'Flat_Literal'; }
+export function is_identifier(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Identifier { return expr.kind === 'Flat_Identifier'; }
+export function is_reference(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Reference { return expr.kind === 'Flat_Reference'; }
+export function is_lambda(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Lambda { return expr.kind === 'Flat_Lambda'; }
+export function is_let(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Let { return expr.kind === 'Flat_Let'; }
+export function is_if(expr: Flat_Expression, ast: Flat_AST): expr is Flat_If { return expr.kind === 'Flat_If'; }
+export function is_call(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Call { return expr.kind === 'Flat_Call'; }
+export function is_plus(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Plus { return expr.kind === 'Flat_Plus'; }
+export function is_minus(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Minus { return expr.kind === 'Flat_Minus'; }
