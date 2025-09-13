@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { Literal, Identifier, Reference, Lambda, Let, Call, Node, AST, Environment, evaluate, make_env } from '../proto/lambda'
+import { Literal, Identifier, Reference, Lambda, Let, Call, Node, AST, Environment, evaluate, make_env } from '../src/flat/lambda'
 
 describe('must evaluate basic expressions', () => {
     // 42

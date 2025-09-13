@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
-import { Nested_Call, Nested_Expression, Nested_Identifier, Nested_Lambda, Nested_Number, parse } from '../proto/parser_oo';
+import { Nested_Call, Nested_Expression, Nested_Identifier, Nested_Lambda, Nested_Number, parse } from '../src/flat/parser_oo';
 
 describe('parse atoms', () => {
 
