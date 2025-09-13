@@ -9,7 +9,9 @@ export type Environment = {
 };
 
 export function make_env(): Environment { return { parent: undefined, bindings: new Map<number, Value>()} }
+
 function extend_env(env: Environment): Environment { return { parent: env, bindings: new Map<number, Value>()}; }
+
 export function lookup(id: number, env: Environment): Value {
     const entry: undefined | Value = env.bindings.get(id);
     if (entry !== undefined) {
