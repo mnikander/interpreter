@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token, TokenOpen, TokenWhitespace } from "./../src/token";
-import { Value, Id, Flat_Constant, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./flat_ast";
+import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./flat_ast";
 
 // I need to:
 // - iterate over the tokens
@@ -50,7 +50,7 @@ function atom(state: State): State {
     const token: Token = peek(state);
     // boolean / number / string
     if (is_token.boolean(token) || is_token.number(token) || is_token.string(token)) {
-        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Flat_Constant', value: token.value });
+        state.ast.push({ id: state.ast.length, token: state.token_counter, kind: 'Flat_Literal', value: token.value });
         state = consume(state);
     }
     // identifier

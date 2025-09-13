@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
 import { parse } from '../proto/parser_oo';
-import { Value, Id, Flat_Constant, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./../proto/flat_ast";
+import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./../proto/flat_ast";
 import { flatten } from '../proto/flatten';
 
 describe('convert atoms', () => {
@@ -13,7 +13,7 @@ describe('convert atoms', () => {
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
         const expected: Flat_Node[] = [
-            {id: 0, token: 0, kind: 'Flat_Constant', value: true},
+            {id: 0, token: 0, kind: 'Flat_Literal', value: true},
         ];
 
         expect(node_count).toBe(1);
@@ -28,7 +28,7 @@ describe('convert atoms', () => {
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
         const expected: Flat_Node[] = [
-            {id: 0, token: 0, kind: 'Flat_Constant', value: -0.1},
+            {id: 0, token: 0, kind: 'Flat_Literal', value: -0.1},
         ];
         expect(node_count).toBe(1);
         expect(flat_ast.length).toBe(1);
@@ -47,8 +47,8 @@ describe('expressions', () => {
             {id: 0, token: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, token: 1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 3}},
             {id: 2, token: 2, kind: 'Flat_Identifier', name: '+'},
-            {id: 3, token: 4, kind: 'Flat_Constant', value: 1},
-            {id: 4, token: 7, kind: 'Flat_Constant', value: 2},
+            {id: 3, token: 4, kind: 'Flat_Literal', value: 1},
+            {id: 4, token: 7, kind: 'Flat_Literal', value: 2},
         ];
         
         expect(node_count).toBe(5);
@@ -67,7 +67,7 @@ describe('expressions', () => {
             {id: 1, token: 1, kind: 'Flat_Lambda', binding: {id: 2}, body: {id: 3}},
             {id: 2, token: 4, kind: 'Flat_Identifier', name: 'x'},
             {id: 3, token: 6, kind: 'Flat_Identifier', name: 'x'},
-            {id: 4, token: 9, kind: 'Flat_Constant', value: 42},
+            {id: 4, token: 9, kind: 'Flat_Literal', value: 42},
         ];
         
         expect(node_count).toBe(5);
@@ -89,8 +89,8 @@ describe('expressions', () => {
             {id: 4, token:  7, kind: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
             {id: 5, token: 10, kind: 'Flat_Identifier', name: 'b'},
             {id: 6, token: 12, kind: 'Flat_Identifier', name: 'a'},
-            {id: 7, token: 16, kind: 'Flat_Constant', value: 1},
-            {id: 8, token: 19, kind: 'Flat_Constant', value: 2}
+            {id: 7, token: 16, kind: 'Flat_Literal', value: 1},
+            {id: 8, token: 19, kind: 'Flat_Literal', value: 2}
         ];
 
         expect(node_count).toBe(9);
@@ -108,7 +108,7 @@ describe('expressions', () => {
         const expected: Flat_Node[] = [
             {id: 0, token: 0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
             {id: 1, token: 3, kind: 'Flat_Identifier', name: 'x'},
-            {id: 2, token: 5, kind: 'Flat_Constant', value: 42},
+            {id: 2, token: 5, kind: 'Flat_Literal', value: 42},
             {id: 3, token: 7, kind: 'Flat_Identifier', name: 'x'},
         ];
 

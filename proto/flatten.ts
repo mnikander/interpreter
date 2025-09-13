@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Nested_Expression, is_boolean, is_call, is_identifier, is_lambda, is_let, is_number, is_string } from "./parser_oo";
-import { Value, Id, Flat_Constant, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Node, Flat_Atom, Flat_AST } from "./flat_ast";
+import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Node, Flat_Atom, Flat_AST } from "./flat_ast";
 
 export function flatten(ast: Nested_Expression, node_count: number): Flat_AST {
     const flat: Flat_Node[] = Array(node_count);
@@ -40,7 +40,7 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
     }
     else if (is_boolean(nested_ast) || is_number(nested_ast) || is_string(nested_ast)) {
         const index               = nested_ast.id;
-        let node: Flat_Constant   = { id: index, token: nested_ast.token, kind: 'Flat_Constant', value: nested_ast.value };
+        let node: Flat_Literal   = { id: index, token: nested_ast.token, kind: 'Flat_Literal', value: nested_ast.value };
         flat_ast[index]           = node;
     }
     else if (is_identifier(nested_ast)) {

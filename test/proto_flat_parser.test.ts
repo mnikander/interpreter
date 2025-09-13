@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
 import { is_error, is_ok } from '../src/error';
 import { parse } from '../proto/flat_parser';
-import { Value, Id, Flat_Constant, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./../proto/flat_ast";
+import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Node, Flat_Atom, Flat_AST } from "./../proto/flat_ast";
 
 import { Token } from '../src/token';
 
@@ -15,9 +15,9 @@ describe('parse atoms', () => {
         expect(is_ok(lexed)).toBe(true);
 
         const ast = parse((lexed as OkLex).value);
-        expect(ast[0].kind).toBe('Flat_Constant');
+        expect(ast[0].kind).toBe('Flat_Literal');
         expect(ast[0].token).toBe(0);
-        expect((ast[0] as Flat_Constant).value).toBe(true);
+        expect((ast[0] as Flat_Literal).value).toBe(true);
     });
 
     it('must parse "-0.1" to a number'), () => {
@@ -25,9 +25,9 @@ describe('parse atoms', () => {
         expect(is_ok(lexed)).toBe(true);
 
         const ast = parse((lexed as OkLex).value);
-        expect(ast[0].kind).toBe('Flat_Constant');
+        expect(ast[0].kind).toBe('Flat_Literal');
         expect(ast[0].token).toBe(0);
-        expect((ast[0] as Flat_Constant).value).toBe(-0.1);
+        expect((ast[0] as Flat_Literal).value).toBe(-0.1);
     }
 });
 
@@ -159,11 +159,11 @@ describe('expressions', () => {
         expect(ast[2].kind).toBe('Flat_Identifier');
         expect((ast[2] as Flat_Identifier).name).toStrictEqual('+');
 
-        expect(ast[3].kind).toBe('Flat_Constant');
-        expect((ast[3] as Flat_Constant).value).toBe(1);
+        expect(ast[3].kind).toBe('Flat_Literal');
+        expect((ast[3] as Flat_Literal).value).toBe(1);
 
-        expect(ast[4].kind).toBe('Flat_Constant');
-        expect((ast[4] as Flat_Constant).value).toBe(2);
+        expect(ast[4].kind).toBe('Flat_Literal');
+        expect((ast[4] as Flat_Literal).value).toBe(2);
     });
 
     it.skip('must produce a valid AST for lambda expressions', () => {
@@ -178,8 +178,8 @@ describe('expressions', () => {
             {id: 4, token: 8, kind: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
             {id: 5, token: 11, kind: 'Flat_Identifier', name: 'b'},
             {id: 6, token: 13, kind: 'Flat_Reference', target: {id: 3}},
-            {id: 7, token: 17, kind: 'Flat_Constant', value: 1},
-            {id: 8, token: 20, kind: 'Flat_Constant', value: 2}
+            {id: 7, token: 17, kind: 'Flat_Literal', value: 1},
+            {id: 8, token: 20, kind: 'Flat_Literal', value: 2}
         ];
 
         expect(ast.length).toBe(9);
@@ -195,11 +195,11 @@ describe('expressions', () => {
         expect(ast[5].kind).toBe('Flat_Identifier');
         expect(ast[6].kind).toBe('Flat_Reference');
 
-        expect(ast[7].kind).toBe('Flat_Constant');
-        expect((ast[7] as Flat_Constant).value).toBe(1);
+        expect(ast[7].kind).toBe('Flat_Literal');
+        expect((ast[7] as Flat_Literal).value).toBe(1);
 
-        expect(ast[8].kind).toBe('Flat_Constant');
-        expect((ast[8] as Flat_Constant).value).toBe(2);
+        expect(ast[8].kind).toBe('Flat_Literal');
+        expect((ast[8] as Flat_Literal).value).toBe(2);
     });
 
     it.skip('must produce a valid AST for let-bindings', () => {
@@ -210,7 +210,7 @@ describe('expressions', () => {
         const expected: Flat_Node[] = [
             {id: 0, token: 0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
             {id: 1, token: 3, kind: 'Flat_Identifier', name: 'x'},
-            {id: 2, token: 5, kind: 'Flat_Constant', value: 42},
+            {id: 2, token: 5, kind: 'Flat_Literal', value: 42},
             {id: 3, token: 7, kind: 'Flat_Reference', target: {id: 1}},
         ];
 
@@ -220,8 +220,8 @@ describe('expressions', () => {
         expect(ast[1].kind).toBe('Flat_Identifier');
         expect((ast[1] as Flat_Identifier).name).toBe('x');
 
-        expect(ast[2].kind).toBe('Flat_Constant');
-        expect((ast[2] as Flat_Constant).value).toBe('42');
+        expect(ast[2].kind).toBe('Flat_Literal');
+        expect((ast[2] as Flat_Literal).value).toBe('42');
 
         expect(ast[3].kind).toBe('Flat_Reference');
         expect((ast[3] as Flat_Reference).target.id).toBe(1);
