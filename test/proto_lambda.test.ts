@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest'
-import { Constant, Identifier, Reference, Lambda, Let, Call, Node, AST, Environment, evaluate, make_env } from '../proto/lambda'
+import { Literal, Identifier, Reference, Lambda, Let, Call, Node, AST, Environment, evaluate, make_env } from '../proto/lambda'
 
 describe('must evaluate basic expressions', () => {
     // 42
     it('constant value', () => {
         const ast: AST = [
-            { id: 0, kind: 'Constant', value: 42}
+            { id: 0, kind: 'Literal', value: 42}
         ];
         expect(evaluate(ast[0], ast, make_env(), [])).toStrictEqual(42);
     });
@@ -16,8 +16,8 @@ describe('must evaluate basic expressions', () => {
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Lambda', binding: {id: 2}, body: {id: 3}},
             {id: 2, kind: 'Identifier', name: 'x'},
-            {id: 3, kind: 'Constant', value: 42},
-            {id: 4, kind: 'Constant', value: 1}
+            {id: 3, kind: 'Literal', value: 42},
+            {id: 4, kind: 'Literal', value: 1}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env,[])).toStrictEqual(42);
@@ -30,7 +30,7 @@ describe('must evaluate basic expressions', () => {
             {id: 1, kind: 'Lambda', binding: {id: 2}, body: {id: 3}},
             {id: 2, kind: 'Identifier', name: 'x'},
             {id: 3, kind: 'Reference', target: {id: 2}},
-            {id: 4, kind: 'Constant', value: 1}
+            {id: 4, kind: 'Literal', value: 1}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
@@ -49,8 +49,8 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
             {id: 5, kind: 'Identifier', name: 'b'},
             {id: 6, kind: 'Reference', target: {id: 3}},
-            {id: 7, kind: 'Constant', value: 1},
-            {id: 8, kind: 'Constant', value: 2}
+            {id: 7, kind: 'Literal', value: 1},
+            {id: 8, kind: 'Literal', value: 2}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
@@ -67,8 +67,8 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 4, kind: 'Lambda', binding: {id: 5}, body: {id: 6}},
             {id: 5, kind: 'Identifier', name: 'b'},
             {id: 6, kind: 'Reference', target: {id: 5}},
-            {id: 7, kind: 'Constant', value: 1},
-            {id: 8, kind: 'Constant', value: 2}
+            {id: 7, kind: 'Literal', value: 1},
+            {id: 8, kind: 'Literal', value: 2}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(2);
@@ -81,7 +81,7 @@ describe('must evaluate let-bindings', () => {
         const ast: AST = [
             {id: 0, kind: 'Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
             {id: 1, kind: 'Identifier', name: 'x'},
-            {id: 2, kind: 'Constant', value: 42},
+            {id: 2, kind: 'Literal', value: 42},
             {id: 3, kind: 'Reference', target: {id: 1}},
         ];
         let env = make_env();
@@ -97,8 +97,8 @@ describe('must evaluate arithmetic expressions', () => {
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
             {id: 2, kind: 'Plus'},
-            {id: 3, kind: 'Constant', value: 1},
-            {id: 4, kind: 'Constant', value: 2},
+            {id: 3, kind: 'Literal', value: 1},
+            {id: 4, kind: 'Literal', value: 2},
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
@@ -110,12 +110,12 @@ describe('must evaluate arithmetic expressions', () => {
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
             {id: 2, kind: 'Plus'},
-            {id: 3, kind: 'Constant', value: 1},
+            {id: 3, kind: 'Literal', value: 1},
             {id: 4, kind: 'Call', body: {id: 5}, args: {id: 8}},
             {id: 5, kind: 'Call', body: {id: 6}, args: {id: 7}},
             {id: 6, kind: 'Plus'},
-            {id: 7, kind: 'Constant', value: 2},
-            {id: 8, kind: 'Constant', value: 3},
+            {id: 7, kind: 'Literal', value: 2},
+            {id: 8, kind: 'Literal', value: 3},
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(6);
@@ -135,8 +135,8 @@ describe('must evaluate arithmetic expressions', () => {
             {id:  8, kind: 'Plus'},
             {id:  9, kind: 'Reference', target: {id: 3}},
             {id: 10, kind: 'Reference', target: {id: 5}},
-            {id: 11, kind: 'Constant', value: 1},
-            {id: 12, kind: 'Constant', value: 2}
+            {id: 11, kind: 'Literal', value: 1},
+            {id: 12, kind: 'Literal', value: 2}
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
@@ -149,8 +149,8 @@ describe('must evaluate arithmetic expressions', () => {
             {id: 0, kind: 'Call', body: {id: 1}, args: {id: 4}},
             {id: 1, kind: 'Call', body: {id: 2}, args: {id: 3}},
             {id: 2, kind: 'Minus'},
-            {id: 3, kind: 'Constant', value: 3},
-            {id: 4, kind: 'Constant', value: 1},
+            {id: 3, kind: 'Literal', value: 3},
+            {id: 4, kind: 'Literal', value: 1},
         ];
         let env = make_env();
         expect(evaluate(ast[0], ast, env, [])).toStrictEqual(2);

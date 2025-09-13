@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 export type Id         = {id: number};
-export type Constant   = {id: number, kind: 'Constant', value: (boolean | number)};
+export type Literal   = {id: number, kind: 'Literal', value: (boolean | number)};
 export type Identifier = {id: number, kind: 'Identifier', name: string};
 export type Reference  = {id: number, kind: 'Reference', target: Id};
 export type Lambda     = {id: number, kind: 'Lambda', binding: Id, body: Id};
@@ -9,14 +9,14 @@ export type Let        = {id: number, kind: 'Let', binding: Id, value: Id, body:
 export type Call       = {id: number, kind: 'Call', body: Id, args: Id};
 export type Plus       = {id: number, kind: 'Plus'};
 export type Minus      = {id: number, kind: 'Minus'};
-export type Node       = Constant | Identifier | Reference | Lambda | Let | Call | Plus | Minus;
+export type Node       = Literal | Identifier | Reference | Lambda | Let | Call | Plus | Minus;
 export type AST        = Node[];
 export type Value      = boolean | number;
 
 // TODO: implement built-in functions capable of partial application
 //       and give them pre-reserved IDs
 
-export function is_constant(expr: Node, ast: AST): expr is Constant { return expr.kind === 'Constant'; }
+export function is_literal(expr: Node, ast: AST): expr is Literal { return expr.kind === 'Literal'; }
 export function is_identifier(expr: Node, ast: AST): expr is Identifier { return expr.kind === 'Identifier'; }
 export function is_reference(expr: Node, ast: AST): expr is Reference { return expr.kind === 'Reference'; }
 export function is_lambda(expr: Node, ast: AST): expr is Lambda { return expr.kind === 'Lambda'; }
@@ -49,7 +49,7 @@ export function lookup(id: number, env: Environment): Value {
 }
 
 export function evaluate(expr: Node, ast: AST, env: Environment, stacked_args: Value[]): Value {
-    if (is_constant(expr, ast)) {
+    if (is_literal(expr, ast)) {
         return expr.value;
     }
     else if (is_identifier(expr, ast)) {
