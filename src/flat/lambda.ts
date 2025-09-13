@@ -1,31 +1,8 @@
 // Copyright (c) 2025 Marco Nikander
 
-export type Id         = {id: number};
-export type Literal   = {id: number, kind: 'Literal', value: (boolean | number)};
-export type Identifier = {id: number, kind: 'Identifier', name: string};
-export type Reference  = {id: number, kind: 'Reference', target: Id};
-export type Lambda     = {id: number, kind: 'Lambda', binding: Id, body: Id};
-export type Let        = {id: number, kind: 'Let', binding: Id, value: Id, body: Id};
-export type Call       = {id: number, kind: 'Call', body: Id, args: Id};
-export type Plus       = {id: number, kind: 'Plus'};
-export type Minus      = {id: number, kind: 'Minus'};
-export type Node       = Literal | Identifier | Reference | Lambda | Let | Call | Plus | Minus;
-export type AST        = Node[];
-export type Value      = boolean | number;
+import { Id, Value, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Node, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus } from "./flat_ast";
 
-// TODO: implement built-in functions capable of partial application
-//       and give them pre-reserved IDs
-
-export function is_literal(expr: Node, ast: AST): expr is Literal { return expr.kind === 'Literal'; }
-export function is_identifier(expr: Node, ast: AST): expr is Identifier { return expr.kind === 'Identifier'; }
-export function is_reference(expr: Node, ast: AST): expr is Reference { return expr.kind === 'Reference'; }
-export function is_lambda(expr: Node, ast: AST): expr is Lambda { return expr.kind === 'Lambda'; }
-export function is_let(expr: Node, ast: AST): expr is Let { return expr.kind === 'Let'; }
-export function is_call(expr: Node, ast: AST): expr is Call { return expr.kind === 'Call'; }
-export function is_plus(expr: Node, ast: AST): expr is Plus { return expr.kind === 'Plus'; }
-export function is_minus(expr: Node, ast: AST): expr is Minus { return expr.kind === 'Minus'; }
-
-// note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the AST, so that everything can be evaluated directly
+// note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {
     parent: undefined | Environment,
     bindings: Map<number, Value>,
@@ -48,7 +25,7 @@ export function lookup(id: number, env: Environment): Value {
     }
 }
 
-export function evaluate(expr: Node, ast: AST, env: Environment, stacked_args: Value[]): Value {
+export function evaluate(expr: Flat_Node, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
     if (is_literal(expr, ast)) {
         return expr.value;
     }
@@ -77,7 +54,7 @@ export function evaluate(expr: Node, ast: AST, env: Environment, stacked_args: V
     }
     else if (is_call(expr, ast)) {
         // enqueue the provided argument
-        const evaluated_arg = evaluate(ast[expr.args.id], ast, env, stacked_args);
+        const evaluated_arg = evaluate(ast[expr.arg.id], ast, env, stacked_args);
         return evaluate(ast[expr.body.id], ast, env, [...stacked_args, evaluated_arg]);
     }
     else if (is_plus(expr, ast)) {
@@ -87,7 +64,7 @@ export function evaluate(expr: Node, ast: AST, env: Environment, stacked_args: V
             return first + second;
         }
         else {
-            throw new Error("Plus operator only supports numbers");
+            throw new Error("Flat_Plus operator only supports numbers");
         }
     }
     else if (is_minus(expr, ast)) {
@@ -97,7 +74,7 @@ export function evaluate(expr: Node, ast: AST, env: Environment, stacked_args: V
             return first - second;
         }
         else {
-            throw new Error("Plus operator only supports numbers");
+            throw new Error("Flat_Plus operator only supports numbers");
         }
     }
     else {
