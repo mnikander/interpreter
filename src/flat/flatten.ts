@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Nested_Expression, is_boolean, is_call, is_identifier, is_lambda, is_let, is_if, is_number, is_string } from "./parser_oo";
-import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_Atom, Flat_AST } from "./flat_ast";
+import { Nested_Expression, is_boolean, is_call, is_identifier, is_binding, is_lambda, is_let, is_if, is_number, is_string } from "./parser_oo";
+import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_Atom, Flat_AST, Flat_Binding } from "./flat_ast";
 
 export function flatten(ast: Nested_Expression, node_count: number): Flat_AST {
     const flat: Flat_Expression[] = Array(node_count);
@@ -50,6 +50,11 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
     else if (is_identifier(nested_ast)) {
         const index               = nested_ast.id;
         let node: Flat_Identifier = { id: index, token: nested_ast.token, kind: 'Flat_Identifier', name: nested_ast.name };
+        flat_ast[index]           = node;
+    }
+    else if (is_binding(nested_ast)) {
+        const index               = nested_ast.id;
+        let node: Flat_Binding = { id: index, token: nested_ast.token, kind: 'Flat_Binding', name: nested_ast.name };
         flat_ast[index]           = node;
     }
     else {

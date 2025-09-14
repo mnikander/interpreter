@@ -4,14 +4,15 @@ import { is_error, Result } from "../error";
 import { is_token, Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "../token";
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
-export type Nested_Atom       = Nested_Identifier | Nested_Boolean | Nested_Number | Nested_String;
+export type Nested_Atom       = Nested_Identifier | Nested_Binding | Nested_Boolean | Nested_Number | Nested_String;
 export type Nested_Boolean    = {id: number, token: number, kind: 'Nested_Boolean', value: boolean};
 export type Nested_Number     = {id: number, token: number, kind: 'Nested_Number', value: number};
 export type Nested_String     = {id: number, token: number, kind: 'Nested_String', value: string};
 export type Nested_Identifier = {id: number, token: number, kind: 'Nested_Identifier', name: string};
+export type Nested_Binding    = {id: number, token: number, kind: 'Nested_Binding', name: string};
 export type Nested_Reference  = {id: number, token: number, kind: 'Nested_Reference', target: string};
-export type Nested_Lambda     = {id: number, token: number, kind: 'Nested_Lambda', binding: Nested_Identifier, body: Nested_Expression};
-export type Nested_Let        = {id: number, token: number, kind: 'Nested_Let', binding: Nested_Identifier, value: Nested_Expression, body: Nested_Expression};
+export type Nested_Lambda     = {id: number, token: number, kind: 'Nested_Lambda', binding: Nested_Binding, body: Nested_Expression};
+export type Nested_Let        = {id: number, token: number, kind: 'Nested_Let', binding: Nested_Binding, value: Nested_Expression, body: Nested_Expression};
 export type Nested_If         = {id: number, token: number, kind: 'Nested_If', condition: Nested_Expression, if_true: Nested_Expression, if_false: Nested_Expression};
 export type Nested_Call       = {id: number, token: number, kind: 'Nested_Call', fn: Nested_Expression, arg: Nested_Expression};
 
@@ -21,6 +22,7 @@ export function is_boolean(expr: Nested_Expression): expr is Nested_Boolean { re
 export function is_number(expr: Nested_Expression): expr is Nested_Number { return expr.kind === 'Nested_Number'; }
 export function is_string(expr: Nested_Expression): expr is Nested_String { return expr.kind === 'Nested_String'; }
 export function is_identifier(expr: Nested_Expression): expr is Nested_Identifier { return expr.kind === 'Nested_Identifier'; }
+export function is_binding(expr: Nested_Expression): expr is Nested_Binding { return expr.kind === 'Nested_Binding'; }
 export function is_lambda(expr: Nested_Expression): expr is Nested_Lambda { return expr.kind === 'Nested_Lambda'; }
 export function is_let(expr: Nested_Expression): expr is Nested_Let { return expr.kind === 'Nested_Let'; }
 export function is_if(expr: Nested_Expression): expr is Nested_If { return expr.kind === 'Nested_If'; }
@@ -128,11 +130,11 @@ class Parser {
         this.consume();
         this.expect_whitespace();
 
-        const variable: Nested_Expression = this.expr();
-        if (!is_identifier(variable)) {
+        if (!is_token.identifier(this.peek())) {
             throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
+            const variable: Nested_Binding = this.binding();
             this.expect_whitespace();
 
             const body: Nested_Expression = this.expr();
@@ -150,11 +152,11 @@ class Parser {
         this.consume();
         this.expect_whitespace();
 
-        const variable: Nested_Expression = this.expr();
-        if (!is_identifier(variable)) {
+        if (!is_token.identifier(this.peek())) {
             throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
+            const variable: Nested_Binding = this.binding();
             this.expect_whitespace();
             const value: Nested_Expression = this.expr();
             this.expect_whitespace();
@@ -194,6 +196,13 @@ class Parser {
         this.skip_whitespace();
         this.expect_closing();
         return { id: id, token: fn.token-1, kind: "Nested_Call", fn: fn, arg: arg };
+    }
+
+    binding(): Nested_Binding {
+        const id = this.emit();
+        const token = (this.peek() as TokenIdentifier);
+        this.consume();
+        return { id: id, token: token.id, kind: "Nested_Binding", name: token.value };
     }
 
     skip_whitespace() {

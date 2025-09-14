@@ -65,7 +65,7 @@ describe('expressions', () => {
         const expected: Flat_Expression[] = [
             {id: 0, token: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, token: 1, kind: 'Flat_Lambda', binding: {id: 2}, body: {id: 3}},
-            {id: 2, token: 4, kind: 'Flat_Identifier', name: 'x'},
+            {id: 2, token: 4, kind: 'Flat_Binding', name: 'x'},
             {id: 3, token: 6, kind: 'Flat_Identifier', name: 'x'},
             {id: 4, token: 9, kind: 'Flat_Literal', value: 42},
         ];
@@ -85,9 +85,9 @@ describe('expressions', () => {
             {id: 0, token:  0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 8}},
             {id: 1, token:  1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 7}},
             {id: 2, token:  2, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
-            {id: 3, token:  5, kind: 'Flat_Identifier', name: 'a'},
+            {id: 3, token:  5, kind: 'Flat_Binding', name: 'a'},
             {id: 4, token:  7, kind: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
-            {id: 5, token: 10, kind: 'Flat_Identifier', name: 'b'},
+            {id: 5, token: 10, kind: 'Flat_Binding', name: 'b'},
             {id: 6, token: 12, kind: 'Flat_Identifier', name: 'a'},
             {id: 7, token: 16, kind: 'Flat_Literal', value: 1},
             {id: 8, token: 19, kind: 'Flat_Literal', value: 2}
@@ -106,7 +106,7 @@ describe('expressions', () => {
 
         const expected: Flat_Expression[] = [
             {id: 0, token: 0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
-            {id: 1, token: 3, kind: 'Flat_Identifier', name: 'x'},
+            {id: 1, token: 3, kind: 'Flat_Binding', name: 'x'},
             {id: 2, token: 5, kind: 'Flat_Literal', value: 42},
             {id: 3, token: 7, kind: 'Flat_Identifier', name: 'x'},
         ];
@@ -124,9 +124,9 @@ describe('expressions', () => {
 
         const expected: Flat_Expression[] = [
             {id:  0, token:  0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 9}},
-            {id:  1, token:  3, kind: 'Flat_Identifier', name: 'increment'},
+            {id:  1, token:  3, kind: 'Flat_Binding', name: 'increment'},
             {id:  2, token:  5, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
-            {id:  3, token:  8, kind: 'Flat_Identifier', name: 'x'},
+            {id:  3, token:  8, kind: 'Flat_Binding', name: 'x'},
             {id:  4, token: 10, kind: 'Flat_Call', body: {id: 5}, arg: {id: 8}}, // 8 is large
             {id:  5, token: 11, kind: 'Flat_Call', body: {id: 6}, arg: {id: 7}},
             {id:  6, token: 12, kind: 'Flat_Identifier', name: '+'},

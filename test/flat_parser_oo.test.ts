@@ -113,7 +113,7 @@ describe('expressions', () => {
         expect((ast as Nested_Call).arg.id).toBe(4);
         expect(((ast as Nested_Call).arg as Nested_Number).value).toBe(42);
         expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.id).toBe(2);
-        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.kind).toBe("Nested_Identifier");
+        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.kind).toBe("Nested_Binding");
         expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.name).toBe("x");
         expect((((ast as Nested_Call).fn) as Nested_Lambda).body.id).toBe(3);
         expect((((ast as Nested_Call).fn) as Nested_Lambda).body.kind).toBe("Nested_Identifier");
