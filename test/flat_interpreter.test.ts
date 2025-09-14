@@ -139,26 +139,26 @@ describe.skip('nested expressions', () => {
     });
 });
 
-describe.skip('let-bindings', () => {
+describe('let-bindings', () => {
     it('must support variable binding', () => {
         expect(interpret('(let x 42 x)')).toBe(42);
         expect(interpret('(let x true x)')).toBe(true);
     });
 
-    it('must support nested variable bindings', () => {
+    it.skip('must support nested variable bindings', () => {
         expect(interpret('(let x 1 (let y 2 ((+ x) y)))')).toBe(3);
     });
 
-    it('must support variable binding inside of nested expressions', () => {
+    it.skip('must support variable binding inside of nested expressions', () => {
         expect(interpret('(let x 41 ((+ x) 1))')).toBe(42);
         expect(interpret('(let x 1 ((+ x) ((* x) 2)))')).toBe(3);
     });
 
-    it('must support function binding', () => {
+    it.skip('must support function binding', () => {
         expect(interpret('(let add + ((add 1) 2))')).toBe(3);
     });
 
-    it('must resolve shadowed variables correctly', () => {
+    it.skip('must resolve shadowed variables correctly', () => {
         expect(interpret('(let x 1 ((+ x) (let x 2 ((+ 1) x))))')).toBe(4);
     });
 
@@ -166,11 +166,11 @@ describe.skip('let-bindings', () => {
         expect(() => interpret('(let 4 2 x)')).toThrow(); // toThrowError(/identifier/);
     });
 
-    it('must report an error if the 2nd argument the let-binding contains undefined variables', () => {
+    it.skip('must report an error if the 2nd argument the let-binding contains undefined variables', () => {
         expect(() => interpret('(let x 2 ((+ x) y))')).toThrow(); // toThrowError(/identifier/);
     });
 
-    it('must report an error if the 3rd argument the let-binding contains undefined variables', () => {
+    it.skip('must report an error if the 3rd argument the let-binding contains undefined variables', () => {
         expect(() => interpret('(let x 2 ((+ x) y))')).toThrow(); // toThrowError(/identifier/);
     });
 
@@ -192,7 +192,7 @@ describe('lambdas', () => {
         expect(interpret("((lambda a ((+ 1) a)) 2)")).toBe(3);
     });
 
-    it.skip('must evaluate nested lambda expressions of one argument', () => {
+    it('must evaluate nested lambda expressions of one argument', () => {
         expect(interpret("(((lambda a (lambda b a)) 1) 2)")).toBe(1);
     });
 

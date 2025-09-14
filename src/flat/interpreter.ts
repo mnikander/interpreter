@@ -7,6 +7,7 @@ import { Token } from "../token";
 import { Environment, make_env, evaluate } from "./lambda";
 import { Flat_AST, Value } from "./flat_ast";
 import { flatten } from "./flatten";
+import { resolve_references } from "./reference_resolution";
 
 export function interpret(prompt: string) {
     const lexed: Result<Token[]> = lex(prompt);
@@ -15,10 +16,12 @@ export function interpret(prompt: string) {
     const parsed = parse(lexed);
     const ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
+    const linked_ast: Flat_AST = resolve_references(ast);
+
     // TODO: check identifiers and resolve identifiers
 
     let env: Environment = make_env();
-    const evaluated: Value = evaluate(ast[0], ast, env, []);
+    const evaluated: Value = evaluate(linked_ast[0], linked_ast, env, []);
 
     return evaluated;
 }

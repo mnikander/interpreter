@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { Environment, evaluate, make_env } from '../src/flat/lambda'
-import { Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Expression, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus } from "../src/flat/flat_ast";
+import { Id, Flat_Literal, Flat_Identifier, Flat_Binding, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Expression, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus } from "../src/flat/flat_ast";
 
 
 describe('must evaluate basic expressions', () => {
@@ -17,7 +17,7 @@ describe('must evaluate basic expressions', () => {
         const ast: Flat_AST = [
             {id: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, kind: 'Flat_Lambda', binding: {id: 2}, body: {id: 3}},
-            {id: 2, kind: 'Flat_Identifier', name: 'x'},
+            {id: 2, kind: 'Flat_Binding', name: 'x'},
             {id: 3, kind: 'Flat_Literal', value: 42},
             {id: 4, kind: 'Flat_Literal', value: 1}
         ];
@@ -30,7 +30,7 @@ describe('must evaluate basic expressions', () => {
         const ast: Flat_AST = [
             {id: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, kind: 'Flat_Lambda', binding: {id: 2}, body: {id: 3}},
-            {id: 2, kind: 'Flat_Identifier', name: 'x'},
+            {id: 2, kind: 'Flat_Binding', name: 'x'},
             {id: 3, kind: 'Flat_Reference', target: {id: 2}},
             {id: 4, kind: 'Flat_Literal', value: 1}
         ];
@@ -47,9 +47,9 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 8}},
             {id: 1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 7}},
             {id: 2, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
-            {id: 3, kind: 'Flat_Identifier', name: 'a'},
+            {id: 3, kind: 'Flat_Binding', name: 'a'},
             {id: 4, kind: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
-            {id: 5, kind: 'Flat_Identifier', name: 'b'},
+            {id: 5, kind: 'Flat_Binding', name: 'b'},
             {id: 6, kind: 'Flat_Reference', target: {id: 3}},
             {id: 7, kind: 'Flat_Literal', value: 1},
             {id: 8, kind: 'Flat_Literal', value: 2}
@@ -65,9 +65,9 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 8}},
             {id: 1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 7}},
             {id: 2, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
-            {id: 3, kind: 'Flat_Identifier', name: 'a'},
+            {id: 3, kind: 'Flat_Binding', name: 'a'},
             {id: 4, kind: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
-            {id: 5, kind: 'Flat_Identifier', name: 'b'},
+            {id: 5, kind: 'Flat_Binding', name: 'b'},
             {id: 6, kind: 'Flat_Reference', target: {id: 5}},
             {id: 7, kind: 'Flat_Literal', value: 1},
             {id: 8, kind: 'Flat_Literal', value: 2}
@@ -82,7 +82,7 @@ describe('must evaluate let-bindings', () => {
         // (let x 42 x)
         const ast: Flat_AST = [
             {id: 0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 3}},
-            {id: 1, kind: 'Flat_Identifier', name: 'x'},
+            {id: 1, kind: 'Flat_Binding', name: 'x'},
             {id: 2, kind: 'Flat_Literal', value: 42},
             {id: 3, kind: 'Flat_Reference', target: {id: 1}},
         ];
@@ -95,9 +95,9 @@ describe('must evaluate let-bindings', () => {
 
         const ast: Flat_AST = [
             {id:  0, token:  0, kind: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 9}},
-            {id:  1, token:  3, kind: 'Flat_Identifier', name: 'increment'},
+            {id:  1, token:  3, kind: 'Flat_Binding', name: 'increment'},
             {id:  2, token:  5, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
-            {id:  3, token:  8, kind: 'Flat_Identifier', name: 'x'},
+            {id:  3, token:  8, kind: 'Flat_Binding', name: 'x'},
             {id:  4, token: 10, kind: 'Flat_Call', body: {id: 5}, arg: {id: 8}}, // 8 is large
             {id:  5, token: 11, kind: 'Flat_Call', body: {id: 6}, arg: {id: 7}},
             {id:  6, token: 12, kind: 'Flat_Plus'},
@@ -152,9 +152,9 @@ describe('must evaluate arithmetic expressions', () => {
             {id:  0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 12}},
             {id:  1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 11}},
             {id:  2, kind: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
-            {id:  3, kind: 'Flat_Identifier', name: 'a'},
+            {id:  3, kind: 'Flat_Binding', name: 'a'},
             {id:  4, kind: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
-            {id:  5, kind: 'Flat_Identifier', name: 'b'},
+            {id:  5, kind: 'Flat_Binding', name: 'b'},
             {id:  6, kind: 'Flat_Call', body: {id: 7}, arg: {id: 10}},
             {id:  7, kind: 'Flat_Call', body: {id: 8}, arg: {id: 9}},
             {id:  8, kind: 'Flat_Plus'},
