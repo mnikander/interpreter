@@ -2,6 +2,8 @@
 
 A simple interpreter for symbolic expressions which runs in the browser.
 The goal is to implement the core of a [lambda language](https://github.com/mnikander/lambda).
+The current implementation in `src/` will soon be replaced by a more capable implementation in `src/flat/`.
+The 'flat' implementation uses an array-based AST and aims to implement unary lambda calculus.
 
 ## [Try it online](https://mnikander.github.io/interpreter/)
 
