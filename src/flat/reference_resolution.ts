@@ -14,35 +14,6 @@ export type Scope = {
     bindings: Map<string, number>,
 };
 
-export function is_global_scope(item: Item): item is GlobalScope { return item.kind === "GlobalScope"; }
-export function is_local_scope(item: Item): item is Scope { return item.kind === "Scope"; }
-export function make_global_scope(): GlobalScope { return { kind: "GlobalScope", bindings: new Map<string, "builtin" | number>()} }
-function extend_scope(scope: GlobalScope | Scope): Scope { return { kind: "Scope", parent: scope, bindings: new Map<string, number>()}; }
-
-export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | number {
-    if (is_global_scope(scope)) {
-        const entry: undefined | number | "builtin" = scope.bindings.get(name);
-        if (entry !== undefined) {
-            return entry;
-        }
-        else {
-            throw new Error(`variable with name ${name} is undefined`)
-        }
-    }
-    else if (is_local_scope(scope)) {
-        const entry: undefined | number = scope.bindings.get(name);
-        if (entry !== undefined) {
-            return entry;
-        }
-        else {
-            return lookup(name, scope.parent);
-        }
-    }
-    else {
-        throw Error('Invalid kind of scope. Something is wrong with the reference resolution implementation.')
-    }
-}
-
 export function resolve_references(ast: Flat_AST): Flat_AST {
     let copy = ast.map(x => x);
     let scope = make_global_scope();
@@ -102,3 +73,32 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         throw Error(`Reference resolution not implemented for node ${expr.id} of kind ${expr.kind}`)
     }
 }
+
+export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | number {
+    if (is_global_scope(scope)) {
+        const entry: undefined | number | "builtin" = scope.bindings.get(name);
+        if (entry !== undefined) {
+            return entry;
+        }
+        else {
+            throw new Error(`variable with name ${name} is undefined`)
+        }
+    }
+    else if (is_local_scope(scope)) {
+        const entry: undefined | number = scope.bindings.get(name);
+        if (entry !== undefined) {
+            return entry;
+        }
+        else {
+            return lookup(name, scope.parent);
+        }
+    }
+    else {
+        throw Error('Invalid kind of scope. Something is wrong with the reference resolution implementation.')
+    }
+}
+
+function is_global_scope(item: Item): item is GlobalScope { return item.kind === "GlobalScope"; }
+function is_local_scope(item: Item): item is Scope { return item.kind === "Scope"; }
+function make_global_scope(): GlobalScope { return { kind: "GlobalScope", bindings: new Map<string, "builtin" | number>()} }
+function extend_scope(scope: GlobalScope | Scope): Scope { return { kind: "Scope", parent: scope, bindings: new Map<string, number>()}; }
