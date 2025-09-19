@@ -32,12 +32,12 @@ describe('basic values', () => {
 });
 
 describe('valid input and output', () => {
-    it.skip('should tolerate extra whitespaces within an expression', () => {
+    it('should tolerate extra whitespaces within an expression', () => {
         const result = interpret("  (  (  +  1  )  2  )  ");
         expect(result).toBe(3);
     });
 
-    it.skip('should tolerate newlines and tabs within an expression', () => {
+    it('should tolerate newlines and tabs within an expression', () => {
         const result = interpret("(\n\t(\n\t+\n\t1\n\t)\n\t2\n\t)  ");
         expect(result).toBe(3);
     });
@@ -46,7 +46,7 @@ describe('valid input and output', () => {
         expect(() => interpret("1 2")).toThrowError(/expression/);
     });
 
-    it.skip('must report an error when calling a function with not enough arguments', () => {
+    it('must report an error when calling a function with not enough arguments', () => {
         expect(() => interpret("(+ 1)")).toThrow(); // toThrowError(/argument/)
     });
 
