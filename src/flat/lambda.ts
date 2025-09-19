@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Value, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus, is_binding } from "./flat_ast";
+import { Value, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin } from "./flat_ast";
+import { evaluate_builtin } from "./builtin";
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {
@@ -64,26 +65,6 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
         // enqueue the provided argument
         const evaluated_arg = evaluate(ast[expr.arg.id], ast, env, stacked_args);
         return evaluate(ast[expr.body.id], ast, env, [...stacked_args, evaluated_arg]);
-    }
-    else if (is_plus(expr, ast)) {
-        let first = stacked_args.pop();
-        let second = stacked_args.pop();
-        if (typeof first === "number" && typeof second === "number") {
-            return first + second;
-        }
-        else {
-            throw new Error("Flat_Plus operator only supports numbers");
-        }
-    }
-    else if (is_minus(expr, ast)) {
-        let first = stacked_args.pop();
-        let second = stacked_args.pop();
-        if (typeof first === "number" && typeof second === "number") {
-            return first - second;
-        }
-        else {
-            throw new Error("Flat_Plus operator only supports numbers");
-        }
     }
     else {
         throw new Error("unhandled case in evaluation control flow");
