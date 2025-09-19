@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Id, Value, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Expression, Flat_Atom, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus, is_binding, Flat_Binding } from "./flat_ast";
+import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus, is_binding } from "./flat_ast";
 
 export type LookupTable = {
     parent: undefined | LookupTable,
@@ -38,7 +38,6 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, env: LookupTable): Flat_A
         return ast;
     }
     else if (is_identifier(expr, ast)) {
-        // TODO: lookup name and replace this node
         const current_id: number                = expr.id;
         const current_token: undefined | number = expr.token;
         const target_id: number                 = lookup(expr.name, env);
