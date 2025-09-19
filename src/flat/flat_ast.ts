@@ -14,9 +14,6 @@ export type Flat_If         = {id: number, token?: number, kind: 'Flat_If', cond
 export type Flat_Call       = {id: number, token?: number, kind: 'Flat_Call', body: Id, arg: Id};
 export type Flat_Builtin    = {id: number, token?: number, kind: 'Flat_Builtin', name: "==" | "!=" | "<" | ">" | "<=" | ">=" | "+" | "-" | "*" | "/" | "%" | "~" | "&&" | "||" | "!"};
 
-// TODO: implement built-in functions capable of partial application
-//       and give them pre-reserved IDs
-
 export function is_literal(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Literal { return expr.kind === 'Flat_Literal'; }
 export function is_identifier(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Identifier { return expr.kind === 'Flat_Identifier'; }
 export function is_binding(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Binding { return expr.kind === 'Flat_Binding'; }

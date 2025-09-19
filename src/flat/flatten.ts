@@ -30,7 +30,7 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
         flat_ast                  = flatten_nodes(nested_ast.body, flat_ast);
     }
     else if (is_if(nested_ast)) {
-        // TODO
+        // TODO: implement if-node
         throw Error('The flattening of if-expressions is not implemented yet');
     }
     else if (is_call(nested_ast)) {
