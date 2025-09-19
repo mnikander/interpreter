@@ -4,7 +4,6 @@ export type Id              = {id: number};
 export type Value           = boolean | number;
 export type Flat_AST        = Flat_Expression[];
 export type Flat_Expression = Flat_Literal | Flat_Identifier | Flat_Binding | Flat_Reference | Flat_Lambda | Flat_Let | Flat_If | Flat_Call | Flat_Plus | Flat_Minus;
-export type Flat_Atom       = Flat_Literal | Flat_Identifier;
 export type Flat_Literal    = {id: number, token?: number, kind: 'Flat_Literal', value: (boolean | number | string)};
 export type Flat_Identifier = {id: number, token?: number, kind: 'Flat_Identifier', name: string};
 export type Flat_Binding    = {id: number, token?: number, kind: 'Flat_Binding', name: string};

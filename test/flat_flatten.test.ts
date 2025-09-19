@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
 import { parse } from '../src/flat/parser_oo';
-import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Expression, Flat_Atom, Flat_AST } from "../src/flat/flat_ast";
+import { Value, Id, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus, Flat_Minus, Flat_Expression, Flat_AST } from "../src/flat/flat_ast";
 import { flatten } from '../src/flat/flatten';
 
 describe('convert atoms', () => {
