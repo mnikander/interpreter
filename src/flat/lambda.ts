@@ -35,7 +35,7 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
     else if (is_identifier(expr, ast)) {
         throw Error(`Cannot evaluate unresolved reference to '${expr.name}' at token ${expr.token}`)
     }
-    else if ( is_binding(expr, ast)) {
+    else if (is_binding(expr, ast)) {
         return lookup(expr.id, env);
     }
     else if (is_builtin(expr, ast)) {
