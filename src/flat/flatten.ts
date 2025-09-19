@@ -1,5 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
+import { Item } from "../item";
 import { Nested_Expression, is_boolean, is_call, is_identifier, is_binding, is_lambda, is_let, is_if, is_number, is_string } from "./parser_oo";
 import { Flat_Literal, Flat_Identifier, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_AST, Flat_Binding } from "./flat_ast";
 
@@ -58,7 +59,7 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
         flat_ast[index]           = node;
     }
     else {
-        throw Error(`Cannot convert nested node of kind '${nested_ast.kind}' to a corresponding kind of flat node.`);
+        throw Error(`Cannot convert nested node of kind '${(nested_ast as Item).kind}' to a corresponding kind of flat node.`);
     }
 
     return flat_ast;
