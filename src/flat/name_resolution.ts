@@ -14,7 +14,7 @@ export type Scope = {
     bindings: Map<string, number>,
 };
 
-export function resolve_references(ast: Flat_AST): Flat_AST {
+export function resolve_names(ast: Flat_AST): Flat_AST {
     let copy = ast.map(x => x);
     let scope = make_global_scope();
 
