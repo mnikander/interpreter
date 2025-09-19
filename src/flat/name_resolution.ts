@@ -5,7 +5,7 @@ import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, 
 
 export type GlobalScope = {
     kind: "GlobalScope"
-    bindings: Map<string, ("builtin" | number)>;
+    bindings: Map<string, ("builtin")>;
 };
 
 export type Scope = {
@@ -15,9 +15,8 @@ export type Scope = {
 };
 
 export function resolve_names(ast: Flat_AST): Flat_AST {
-    let copy = ast.map(x => x);
-    let scope = make_global_scope();
-
+    let copy: Flat_AST     = ast.map(x => x);
+    let scope: GlobalScope = make_global_scope();
     return resolve(copy[0], copy, scope);
 }
 
@@ -76,7 +75,7 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
 
 export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | number {
     if (is_global_scope(scope)) {
-        const entry: undefined | number | "builtin" = scope.bindings.get(name);
+        const entry: undefined | "builtin" = scope.bindings.get(name);
         if (entry !== undefined) {
             return entry;
         }
@@ -103,8 +102,7 @@ function is_local_scope(item: Item): item is Scope { return item.kind === "Scope
 function extend_scope(scope: GlobalScope | Scope): Scope { return { kind: "Scope", parent: scope, bindings: new Map<string, number>()}; }
 function make_global_scope(): GlobalScope {
     const builtins = ["==" , "!=" , "<" , ">" , "<=" , ">=" , "+" , "-" , "*" , "/" , "%" , "~" , "&&" , "||" , "!"];
-    let globals    = new Map<string, "builtin" | number>();
-    // TODO: global scope ONLY contains builtins ^^^^^^ so why allow numbers in the map at all? remove them!
+    let globals    = new Map<string, "builtin">();
     for (let b of builtins) {
         globals.set(b, "builtin");
     }
