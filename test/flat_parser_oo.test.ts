@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
-import { Nested_Call, Nested_Expression, Nested_Identifier, Nested_Lambda, Nested_Number, parse } from '../src/flat/parser_oo';
+import { Nested_Boolean, Nested_Call, Nested_Expression, Nested_Identifier, Nested_Lambda, Nested_Number, Nested_String, parse } from '../src/flat/parser_oo';
 
 describe('parse atoms', () => {
 
@@ -8,28 +8,28 @@ describe('parse atoms', () => {
         const text: string = 'true';
         const parsed = parse(lex(text));
         expect(parsed.ast.kind).toBe("Nested_Boolean");
-        expect(parsed.ast.value).toBe(true);
+        expect((parsed.ast as Nested_Boolean).value).toBe(true);
     });
 
     it('must parse "-0.1" to a number', () => {
         const text: string = '-0.1';
         const parsed = parse(lex(text));
         expect(parsed.ast.kind).toBe("Nested_Number");
-        expect(parsed.ast.value).toEqual(-0.1);
+        expect((parsed.ast as Nested_Number).value).toEqual(-0.1);
     });
 
     it.skip('must parse "hello world" to a string', () => {
         const text: string = '"hello world"';
         const parsed = parse(lex(text));
         expect(parsed.ast.kind).toBe("Nested_String");
-        expect(parsed.ast.value).toEqual("hello world");
+        expect((parsed.ast as Nested_String).value).toEqual("hello world");
     });
 
     it('must parse "+" to an identifier', () => {
         const text: string = "+";
         const parsed = parse(lex(text));
         expect(parsed.ast.kind).toBe("Nested_Identifier");
-        expect(parsed.ast.name).toEqual("+");
+        expect((parsed.ast as Nested_Identifier).name).toEqual("+");
     });
 });
 
