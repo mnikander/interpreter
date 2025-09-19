@@ -100,7 +100,7 @@ describe('must evaluate let-bindings', () => {
             {id:  3, token:  8, kind: 'Flat_Binding', name: 'x'},
             {id:  4, token: 10, kind: 'Flat_Call', body: {id: 5}, arg: {id: 8}}, // 8 is large
             {id:  5, token: 11, kind: 'Flat_Call', body: {id: 6}, arg: {id: 7}},
-            {id:  6, token: 12, kind: 'Flat_Plus'},
+            {id:  6, token: 12, kind: 'Flat_Builtin', name: "+"},
             {id:  7, token: 14, kind: 'Flat_Literal', value: 1},
             {id:  8, token: 17, kind: 'Flat_Reference', target: {id: 3}},
             {id:  9, token: 21, kind: 'Flat_Call', body: {id: 10}, arg: {id: 11}},
@@ -121,7 +121,7 @@ describe('must evaluate arithmetic expressions', () => {
         const ast: Flat_AST = [
             {id: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 3}},
-            {id: 2, kind: 'Flat_Plus'},
+            {id: 2, kind: 'Flat_Builtin', name: "+"},
             {id: 3, kind: 'Flat_Literal', value: 1},
             {id: 4, kind: 'Flat_Literal', value: 2},
         ];
@@ -134,11 +134,11 @@ describe('must evaluate arithmetic expressions', () => {
         const ast: Flat_AST = [
             {id: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 3}},
-            {id: 2, kind: 'Flat_Plus'},
+            {id: 2, kind: 'Flat_Builtin', name: "+"},
             {id: 3, kind: 'Flat_Literal', value: 1},
             {id: 4, kind: 'Flat_Call', body: {id: 5}, arg: {id: 8}},
             {id: 5, kind: 'Flat_Call', body: {id: 6}, arg: {id: 7}},
-            {id: 6, kind: 'Flat_Plus'},
+            {id: 6, kind: 'Flat_Builtin', name: "+"},
             {id: 7, kind: 'Flat_Literal', value: 2},
             {id: 8, kind: 'Flat_Literal', value: 3},
         ];
@@ -157,7 +157,7 @@ describe('must evaluate arithmetic expressions', () => {
             {id:  5, kind: 'Flat_Binding', name: 'b'},
             {id:  6, kind: 'Flat_Call', body: {id: 7}, arg: {id: 10}},
             {id:  7, kind: 'Flat_Call', body: {id: 8}, arg: {id: 9}},
-            {id:  8, kind: 'Flat_Plus'},
+            {id:  8, kind: 'Flat_Builtin', name: "+"},
             {id:  9, kind: 'Flat_Reference', target: {id: 3}},
             {id: 10, kind: 'Flat_Reference', target: {id: 5}},
             {id: 11, kind: 'Flat_Literal', value: 1},
@@ -173,7 +173,7 @@ describe('must evaluate arithmetic expressions', () => {
         const ast: Flat_AST = [
             {id: 0, kind: 'Flat_Call', body: {id: 1}, arg: {id: 4}},
             {id: 1, kind: 'Flat_Call', body: {id: 2}, arg: {id: 3}},
-            {id: 2, kind: 'Flat_Minus'},
+            {id: 2, kind: 'Flat_Builtin', name: "-"},
             {id: 3, kind: 'Flat_Literal', value: 3},
             {id: 4, kind: 'Flat_Literal', value: 1},
         ];
