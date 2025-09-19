@@ -67,7 +67,7 @@ describe('valid input and output', () => {
     });
 });
 
-describe.skip('arithmetic and logical expressions', () => {
+describe('arithmetic and logical expressions', () => {
     it('must add two integers together', () => {
         const result = interpret("((+ 1) 2)");
         expect(result).toBe(3);
@@ -79,30 +79,30 @@ describe.skip('arithmetic and logical expressions', () => {
     });
 
     it("must evaluate logical 'and' expressions", () => {
-        const ff = interpret("((& false) false)");
+        const ff = interpret("((&& false) false)");
         expect(ff).toBe(false);
 
-        const ft = interpret("((& false) true)");
+        const ft = interpret("((&& false) true)");
         expect(ft).toBe(false);
 
-        const tf = interpret("((& true) false)");
+        const tf = interpret("((&& true) false)");
         expect(tf).toBe(false);
 
-        const tt = interpret("((& true) true)");
+        const tt = interpret("((&& true) true)");
         expect(tt).toBe(true);
     });
 
     it("must evaluate logical 'or' expressions", () => {
-        const ff = interpret("((| false) false)");
+        const ff = interpret("((|| false) false)");
         expect(ff).toBe(false);
 
-        const ft = interpret("((| false) true)");
+        const ft = interpret("((|| false) true)");
         expect(ft).toBe(true);
 
-        const tf = interpret("((| true) false)");
+        const tf = interpret("((|| true) false)");
         expect(tf).toBe(true);
 
-        const tt = interpret("((| true) true)");
+        const tt = interpret("((|| true) true)");
         expect(tt).toBe(true);
     });
 });
@@ -246,7 +246,7 @@ describe.skip('type system', () => {
     });
 
     it('must report an error when applying functions to incompatible types', () => {
-        expect(interpret("((& 1) true)")).toContain("error");
+        expect(interpret("((&& 1) true)")).toContain("error");
         expect(interpret("((+ 1) true)")).toContain("error");
         expect(interpret("((+ 1) +)")).toContain("error");
     });

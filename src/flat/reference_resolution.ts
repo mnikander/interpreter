@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "../item";
-import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding } from "./flat_ast";
+import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding } from "./flat_ast";
 
 export type GlobalScope = {
     kind: "GlobalScope"
@@ -30,8 +30,8 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         const current_token: undefined | number = expr.token;
         const target_id: "builtin" | number     = lookup(expr.name, scope);
         if (target_id === "builtin") {
-            // TODO: create an AST node for built-in functions
-            throw Error('Resolution of builtin functions has not been implemented yet.')
+            const builtin: Flat_Builtin = { id: current_id, token: current_token, kind: "Flat_Builtin", name: expr.name };
+            ast[current_id]             = builtin;
         }
         else {
             const ref: Flat_Reference = { id: current_id, token: current_token, kind: "Flat_Reference", target: {id: target_id} };
@@ -100,5 +100,13 @@ export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | nu
 
 function is_global_scope(item: Item): item is GlobalScope { return item.kind === "GlobalScope"; }
 function is_local_scope(item: Item): item is Scope { return item.kind === "Scope"; }
-function make_global_scope(): GlobalScope { return { kind: "GlobalScope", bindings: new Map<string, "builtin" | number>()} }
 function extend_scope(scope: GlobalScope | Scope): Scope { return { kind: "Scope", parent: scope, bindings: new Map<string, number>()}; }
+function make_global_scope(): GlobalScope {
+    const builtins = ["==" , "!=" , "<" , ">" , "<=" , ">=" , "+" , "-" , "*" , "/" , "%" , "~" , "&&" , "||" , "!"];
+    let globals    = new Map<string, "builtin" | number>();
+    // TODO: global scope ONLY contains builtins ^^^^^^ so why allow numbers in the map at all? remove them!
+    for (let b of builtins) {
+        globals.set(b, "builtin");
+    }
+    return { kind: "GlobalScope", bindings: globals};
+}
