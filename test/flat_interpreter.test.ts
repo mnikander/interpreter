@@ -150,11 +150,11 @@ describe('let-bindings', () => {
         expect(interpret('(let x 1 (let y 2 y))')).toBe(2);
     });
 
-    it.skip('must support nested variable bindings in nested expressions', () => {
+    it('must support nested variable bindings in nested expressions', () => {
         expect(interpret('(let x 1 (let y 2 ((+ x) y)))')).toBe(3);
     });
 
-    it.skip('must support variable binding inside of nested expressions', () => {
+    it('must support variable binding inside of nested expressions', () => {
         expect(interpret('(let x 41 ((+ x) 1))')).toBe(42);
         expect(interpret('(let x 1 ((+ x) ((* x) 2)))')).toBe(3);
     });
@@ -201,7 +201,7 @@ describe('lambdas', () => {
         expect(interpret("((lambda x x) 1)")).toBe(1);
     });
 
-    it.skip('must evaluate lambda expressions with nested expressions', () => {
+    it('must evaluate lambda expressions with nested expressions', () => {
         expect(interpret("((lambda a ((+ 1) a)) 2)")).toBe(3);
     });
 
