@@ -30,8 +30,12 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         const current_token: undefined | number = expr.token;
         const target_id: "builtin" | number     = lookup(expr.name, scope);
         if (target_id === "builtin") {
-            const builtin: Flat_Builtin = { id: current_id, token: current_token, kind: "Flat_Builtin", name: expr.name };
-            ast[current_id]             = builtin;
+            if (builtins.includes(expr.name)) {
+                const builtin: Flat_Builtin = { id: current_id, token: current_token, kind: "Flat_Builtin", name: expr.name as Flat_Builtin["name"] };
+                ast[current_id] = builtin;
+            } else {
+                throw new Error(`'${expr.name}' is not a built-in function`);
+            }
         }
         else {
             const ref: Flat_Reference = { id: current_id, token: current_token, kind: "Flat_Reference", target: {id: target_id} };
