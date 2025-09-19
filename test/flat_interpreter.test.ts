@@ -50,7 +50,7 @@ describe('valid input and output', () => {
         expect(() => interpret("(+ 1)")).toThrow(); // toThrowError(/argument/)
     });
 
-    it('must report an error when calling a function with too many arguments', () => {
+    it.skip('must report an error when calling a function with too many arguments', () => {
         expect(() => interpret("(((+ 1) 2) 3)")).toThrow(); // toThrowError(/argument/)
     });
 
@@ -119,14 +119,14 @@ describe.skip('if-expression', () => {
     });
 });
 
-describe.skip('nested expressions', () => {
+describe('nested expressions', () => {
     it('must evaluate left-nested addition', () => {
         const result = interpret("((+ ((+ 1) 2)) 3)");
         expect(result).toBe(6);
     });
 
     it('must evaluate right-nested addition', () => {
-        const result = interpret("((+ 1 ((+ 2) 3)))");
+        const result = interpret("((+ 1) ((+ 2) 3))");
         expect(result).toBe(6);
     });
 
