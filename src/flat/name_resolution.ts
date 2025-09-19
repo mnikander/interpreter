@@ -2,6 +2,7 @@
 
 import { Item } from "../item";
 import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding } from "./flat_ast";
+import { builtins } from "./builtin";
 
 export type GlobalScope = {
     kind: "GlobalScope"
@@ -101,7 +102,6 @@ function is_global_scope(item: Item): item is GlobalScope { return item.kind ===
 function is_local_scope(item: Item): item is Scope { return item.kind === "Scope"; }
 function extend_scope(scope: GlobalScope | Scope): Scope { return { kind: "Scope", parent: scope, bindings: new Map<string, number>()}; }
 function make_global_scope(): GlobalScope {
-    const builtins = ["==" , "!=" , "<" , ">" , "<=" , ">=" , "+" , "-" , "*" , "/" , "%" , "~" , "&&" , "||" , "!"];
     let globals    = new Map<string, "builtin">();
     for (let b of builtins) {
         globals.set(b, "builtin");

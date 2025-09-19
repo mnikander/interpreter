@@ -3,6 +3,8 @@
 import { Flat_Builtin, Flat_AST, Value } from "./flat_ast";
 import { Environment } from "./lambda";
 
+export const builtins: readonly string[] = ["==" , "!=" , "<" , ">" , "<=" , ">=" , "+" , "-" , "*" , "/" , "%" , "~" , "&&" , "||" , "!"];
+
 export function evaluate_builtin(expr: Flat_Builtin, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
     if(is_builtin_unary(expr)) {
         return evaluate_unary(expr, ast, env, stacked_args);
