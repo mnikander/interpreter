@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "../item";
-import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus, is_binding } from "./flat_ast";
+import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding } from "./flat_ast";
 
 export type GlobalScope = {
     kind: "GlobalScope"

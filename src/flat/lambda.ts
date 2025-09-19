@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Id, Value, Flat_Literal, Flat_Identifier, Flat_Reference, Flat_Lambda, Flat_Let, Flat_Call, Flat_Plus,  Flat_Minus, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus, is_binding } from "./flat_ast";
+import { Value, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_plus, is_minus, is_binding } from "./flat_ast";
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {
