@@ -197,7 +197,7 @@ describe.skip('lambdas', () => {
         expect(interpret("((lambda a (+ 1 a)) 2)")).toBe(3);
     });
 
-    it('must evaluate nested lambda expressions of one argument', () => {
+    it('must evaluate nested lambda expressions', () => {
         expect(interpret("(((lambda a (lambda b a)) 1) 2)")).toBe(1);
     });
 
