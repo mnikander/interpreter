@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
-import { parse } from '../src/flat/parser_oo';
-import { Flat_Expression, Flat_AST } from "../src/flat/flat_ast";
-import { flatten } from '../src/flat/flatten';
+import { parse } from '../src/parser_oo';
+import { Flat_Expression, Flat_AST } from "../src/flat_ast";
+import { flatten } from '../src/flatten';
 
 describe('convert atoms', () => {
 

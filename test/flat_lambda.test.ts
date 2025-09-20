@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { evaluate, make_env } from '../src/flat/lambda'
-import { Flat_AST } from "../src/flat/flat_ast";
+import { evaluate, make_env } from '../src/lambda'
+import { Flat_AST } from "../src/flat_ast";
 
 describe('must evaluate basic expressions', () => {
     // 42

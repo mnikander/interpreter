@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Item } from "../item";
+import { Item } from "./item";
 import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_if } from "./flat_ast";
 import { builtins } from "./builtin";
 

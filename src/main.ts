@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { interpret } from "./flat/interpreter";
+import { interpret } from "./interpreter";
 
 function run_interpreter() {
     const inputEl = document.getElementById("input") as HTMLInputElement;

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Item } from "../item";
+import { Item } from "./item";
 import { Nested_Expression, is_boolean, is_call, is_identifier, is_binding, is_lambda, is_let, is_if, is_number, is_string } from "./parser_oo";
 import { Flat_Literal, Flat_Identifier, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_AST, Flat_Binding, Flat_If } from "./flat_ast";
 
