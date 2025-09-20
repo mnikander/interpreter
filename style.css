@@ -6,6 +6,12 @@ body {
     color: #333;
 }
 
+table th, table td {
+    font-family: monospace;
+    padding: 0em 1em;
+    text-align: left;
+}
+
 #output {
     background-color: #fff;
     border: 1px solid #ccc;
