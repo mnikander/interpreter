@@ -229,6 +229,9 @@ describe('let-bindings', () => {
     });
 
     it.skip('must support binding to built-in functions', () => {
+        // TODO: Implement higher-order functions to reactivate this test.
+        // This test-case is the only regression made by the new implementation.
+        // In all other aspects the flat interpreter can do more than the old interpreter.
         expect(interpret('(let add + ((add 1) 2))')).toBe(3);
     });
 

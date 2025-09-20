@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { interpret } from "./interpreter";
+import { interpret } from "./flat/interpreter";
 
 function run_interpreter() {
     const inputEl = document.getElementById("input") as HTMLInputElement;
@@ -14,10 +14,14 @@ function run_interpreter() {
     observer.observe(outputEl, { childList: true });
 }
     const input = inputEl.value;
-    const result = interpret(input);
-  
-    outputEl.textContent += `> ${input}\n${result}\n`;
-  }
+    try {
+        const result = interpret(input);
+        outputEl.textContent += `> ${input}\n${result}\n`;
+    } catch (error) {
+        const message = (error instanceof Error) ? error.message : String(error);
+        outputEl.textContent += `> ${input}\n${message}\n`;
+    }
+}
 
 document.addEventListener('DOMContentLoaded', () => {
 
