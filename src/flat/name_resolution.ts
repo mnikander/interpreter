@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "../item";
-import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding } from "./flat_ast";
+import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_if } from "./flat_ast";
 import { builtins } from "./builtin";
 
 export type GlobalScope = {
@@ -73,8 +73,17 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         ast = resolve(arg_node, ast, scope);
         return ast;
     }
+    else if (is_if(expr, ast)) {
+        const condition_node = ast[expr.condition.id];
+        const if_true_node = ast[expr.if_true.id];
+        const if_false_node = ast[expr.if_false.id];
+        ast = resolve(condition_node, ast, scope);
+        ast = resolve(if_true_node, ast, scope);
+        ast = resolve(if_false_node, ast, scope);
+        return ast;
+    }
     else {
-        throw Error(`Reference resolution not implemented for node ${expr.id} of kind ${expr.kind}`)
+        throw Error(`Name resolution not implemented for node ${expr.id} of kind ${expr.kind}`)
     }
 }
 
@@ -98,7 +107,7 @@ export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | nu
         }
     }
     else {
-        throw Error('Invalid kind of scope. Something is wrong with the reference resolution implementation.')
+        throw Error('Invalid kind of scope. Something is wrong with the name resolution implementation.')
     }
 }
 
