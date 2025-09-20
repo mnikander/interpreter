@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Value, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin } from "./flat_ast";
+import { Value, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if } from "./flat_ast";
 import { evaluate_builtin } from "./builtin";
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
@@ -60,6 +60,14 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
         let extended_env = extend_env(env);
         extended_env.bindings.set(expr.binding.id, evaluate(ast[expr.value.id], ast, env, stacked_args));
         return evaluate(ast[expr.body.id], ast, extended_env, stacked_args);
+    }
+    else if (is_if(expr, ast)) {
+        const condition = evaluate(ast[expr.condition.id], ast, env, stacked_args);
+        if (typeof condition === "boolean") {
+            return evaluate(ast[condition ? expr.if_true.id : expr.if_false.id], ast, env, stacked_args);
+        } else {
+            throw new Error(`Condition in 'if' expression did not evaluate to a boolean value`);
+        }
     }
     else if (is_call(expr, ast)) {
         // enqueue the provided argument
