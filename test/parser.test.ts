@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
 import { is_error, is_ok } from '../src/error';
-import { parse } from '../src/parser';
+import { parse } from '../src/deprecated/parser';
 import { Token } from '../src/token';
-import { is_boolean, is_number, is_identifier, is_call } from '../src/ast';
+import { is_boolean, is_number, is_identifier, is_call } from '../src/deprecated/ast';
 
 type OkLex = { ok: true, value: readonly Token[] };
 

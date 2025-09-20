@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { interpret } from '../src/interpreter'
+import { interpret } from '../src/deprecated/interpreter'
 
 describe('basic values', () => {
     it('must evaluate a single integer to itself', () => {

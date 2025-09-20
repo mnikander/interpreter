@@ -1,10 +1,10 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { lex } from "./lexer";
+import { lex } from "./../lexer";
 import { parse } from "./parser";
 import { Value, evaluate, builtin_functions } from "./evaluator";
-import { Result, is_error, error_to_string } from "./error";
-import { Token } from "./token";
+import { Result, is_error, error_to_string } from "./../error";
+import { Token } from "./../token";
 import { AST } from "./ast";
 import { check_identifiers, Identifiers } from "./check_identifiers";
 import { Environment } from "./evaluator";

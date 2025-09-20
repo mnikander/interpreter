@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Item } from "./item";
+import { Item } from "./../item";
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "./token";
 
 export type AST = Atom | Call;
