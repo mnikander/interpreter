@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
-import { parse } from '../src/parser_oo';
+import { parse } from '../src/parser';
 import { Flat_Expression, Flat_AST } from "../src/flat_ast";
 import { flatten } from '../src/flatten';
 

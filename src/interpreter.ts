@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { lex } from "./lexer";
-import { parse } from "./parser_oo";
+import { parse } from "./parser";
 import { Result, is_error, error_to_string } from "./error";
 import { Token } from "./token";
 import { Environment, make_env, evaluate } from "./lambda";
