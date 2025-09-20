@@ -13,6 +13,11 @@ describe('basic values', () => {
         expect(interpret("true")).toBe(true);
         expect(interpret("false")).toBe(false);
     });
+
+    it('must parse "hello world" to a string', () => {
+            expect(interpret("\"hello world\"")).toEqual('\"hello world\"');
+            expect(interpret("'hello world'")).toEqual('\'hello world\'');
+    });
 });
 
 describe('valid input and output', () => {
