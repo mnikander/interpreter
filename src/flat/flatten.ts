@@ -2,7 +2,7 @@
 
 import { Item } from "../item";
 import { Nested_Expression, is_boolean, is_call, is_identifier, is_binding, is_lambda, is_let, is_if, is_number, is_string } from "./parser_oo";
-import { Flat_Literal, Flat_Identifier, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_AST, Flat_Binding } from "./flat_ast";
+import { Flat_Literal, Flat_Identifier, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_AST, Flat_Binding, Flat_If } from "./flat_ast";
 
 export function flatten(ast: Nested_Expression, node_count: number): Flat_AST {
     const flat: Flat_Expression[] = Array(node_count);
@@ -31,8 +31,15 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
         flat_ast                  = flatten_nodes(nested_ast.body, flat_ast);
     }
     else if (is_if(nested_ast)) {
-        // TODO: implement if-node
-        throw Error('The flattening of if-expressions is not implemented yet');
+        const index               = nested_ast.id;
+        const condition           = { id: nested_ast.condition.id }; 
+        const if_true             = { id: nested_ast.if_true.id };
+        const if_false            = { id: nested_ast.if_false.id };
+        let node: Flat_If         = { id: index, token: nested_ast.token, kind: 'Flat_If', condition: condition, if_true: if_true, if_false: if_false };
+        flat_ast[index]           = node;
+        flat_ast                  = flatten_nodes(nested_ast.condition, flat_ast);
+        flat_ast                  = flatten_nodes(nested_ast.if_true, flat_ast);
+        flat_ast                  = flatten_nodes(nested_ast.if_false, flat_ast);
     }
     else if (is_call(nested_ast)) {
         const index               = nested_ast.id;

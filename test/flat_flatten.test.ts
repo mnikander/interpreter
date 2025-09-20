@@ -141,4 +141,22 @@ describe('expressions', () => {
         expect(flat_ast.length).toBe(12);
         expect(flat_ast).toStrictEqual(expected);
     });
+
+    it('must produce a valid AST for if-expressions', () => {
+        const text: string       = "(if true 42 0)";
+        const parsed             = parse(lex(text));
+        const node_count: number = parsed.node_count;
+        const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
+
+        const expected: Flat_Expression[] = [
+            {id: 0, token: 0, kind: 'Flat_If', condition: {id: 1}, if_true: {id: 2}, if_false: {id: 3}},
+            {id: 1, token: 3, kind: 'Flat_Literal', value: true},
+            {id: 2, token: 5, kind: 'Flat_Literal', value: 42},
+            {id: 3, token: 7, kind: 'Flat_Literal', value: 0},
+        ];
+
+        expect(node_count).toBe(4);
+        expect(flat_ast.length).toBe(4);
+        expect(flat_ast).toStrictEqual(expected);
+    });
 });
