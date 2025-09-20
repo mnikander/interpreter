@@ -18,11 +18,18 @@ describe('parse atoms', () => {
         expect((parsed.ast as Nested_Number).value).toEqual(-0.1);
     });
 
-    it.skip('must parse "hello world" to a string', () => {
+    it('must parse "hello world" to a string', () => {
         const text: string = '"hello world"';
         const parsed = parse(lex(text));
         expect(parsed.ast.kind).toBe("Nested_String");
-        expect((parsed.ast as Nested_String).value).toEqual("hello world");
+        expect((parsed.ast as Nested_String).value).toEqual('\"hello world\"');
+    });
+
+    it("must parse 'hello world' to a string", () => {
+        const text: string = "'hello world'";
+        const parsed = parse(lex(text));
+        expect(parsed.ast.kind).toBe("Nested_String");
+        expect((parsed.ast as Nested_String).value).toEqual('\'hello world\'');
     });
 
     it('must parse "+" to an identifier', () => {
