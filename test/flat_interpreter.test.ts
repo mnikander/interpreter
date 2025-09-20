@@ -56,43 +56,123 @@ describe('valid input and output', () => {
     });
 });
 
-describe('arithmetic and logical expressions', () => {
-    it('must add two integers together', () => {
-        const result = interpret("((+ 1) 2)");
-        expect(result).toBe(3);
+describe('must evaluate built-in functions', () => {
+    it('equality', () => {
+        expect(interpret("((== -1) -1)")).toBe(true);
+        expect(interpret("((== -1)  0)")).toBe(false);
+        expect(interpret("((== -1)  1)")).toBe(false);
+        expect(interpret("((==  0) -1)")).toBe(false);
+        expect(interpret("((==  0)  0)")).toBe(true);
+        expect(interpret("((==  0)  1)")).toBe(false);
+        expect(interpret("((==  1) -1)")).toBe(false);
+        expect(interpret("((==  1)  0)")).toBe(false);
+        expect(interpret("((==  1)  1)")).toBe(true);
     });
 
-    it("must evaluate logical 'not' expressions", () => {
-        expect(interpret("(! true)")).toBe(false);
+    it('inequality', () => {
+        expect(interpret("((!= -1) -1)")).toBe(false);
+        expect(interpret("((!= -1)  0)")).toBe(true);
+        expect(interpret("((!= -1)  1)")).toBe(true);
+        expect(interpret("((!=  0) -1)")).toBe(true);
+        expect(interpret("((!=  0)  0)")).toBe(false);
+        expect(interpret("((!=  0)  1)")).toBe(true);
+        expect(interpret("((!=  1) -1)")).toBe(true);
+        expect(interpret("((!=  1)  0)")).toBe(true);
+        expect(interpret("((!=  1)  1)")).toBe(false);
+    });
+
+    it('less than', () => {
+        expect(interpret("((< -1) -1)")).toBe(false);
+        expect(interpret("((< -1)  0)")).toBe(true);
+        expect(interpret("((< -1)  1)")).toBe(true);
+        expect(interpret("((<  0) -1)")).toBe(false);
+        expect(interpret("((<  0)  0)")).toBe(false);
+        expect(interpret("((<  0)  1)")).toBe(true);
+        expect(interpret("((<  1) -1)")).toBe(false);
+        expect(interpret("((<  1)  0)")).toBe(false);
+        expect(interpret("((<  1)  1)")).toBe(false);
+    });
+
+    it('greater than', () => {
+        expect(interpret("((> -1) -1)")).toBe(false);
+        expect(interpret("((> -1)  0)")).toBe(false);
+        expect(interpret("((> -1)  1)")).toBe(false);
+        expect(interpret("((>  0) -1)")).toBe(true);
+        expect(interpret("((>  0)  0)")).toBe(false);
+        expect(interpret("((>  0)  1)")).toBe(false);
+        expect(interpret("((>  1) -1)")).toBe(true);
+        expect(interpret("((>  1)  0)")).toBe(true);
+        expect(interpret("((>  1)  1)")).toBe(false);
+    });
+
+    it('less than or equal', () => {
+        expect(interpret("((<= -1) -1)")).toBe(true);
+        expect(interpret("((<= -1)  0)")).toBe(true);
+        expect(interpret("((<= -1)  1)")).toBe(true);
+        expect(interpret("((<=  0) -1)")).toBe(false);
+        expect(interpret("((<=  0)  0)")).toBe(true);
+        expect(interpret("((<=  0)  1)")).toBe(true);
+        expect(interpret("((<=  1) -1)")).toBe(false);
+        expect(interpret("((<=  1)  0)")).toBe(false);
+        expect(interpret("((<=  1)  1)")).toBe(true);
+    });
+
+    it('greater than or equal', () => {
+        expect(interpret("((>= -1) -1)")).toBe(true);
+        expect(interpret("((>= -1)  0)")).toBe(false);
+        expect(interpret("((>= -1)  1)")).toBe(false);
+        expect(interpret("((>=  0) -1)")).toBe(true);
+        expect(interpret("((>=  0)  0)")).toBe(true);
+        expect(interpret("((>=  0)  1)")).toBe(false);
+        expect(interpret("((>=  1) -1)")).toBe(true);
+        expect(interpret("((>=  1)  0)")).toBe(true);
+        expect(interpret("((>=  1)  1)")).toBe(true);
+    });
+
+    it('addition', () => {
+        expect(interpret("((+ 5) 2)")).toBe(7);
+    });
+
+    it('subtraction', () => {
+        expect(interpret("((- 5) 2)")).toBe(3);
+    });
+
+    it('multiplication', () => {
+        expect(interpret("((* 5) 2)")).toBe(10);
+    });
+
+    it('division', () => {
+        expect(interpret("((/ 5) 2)")).toBe(2.5);
+    });
+
+    it('remainder (i.e. modulo)', () => {
+        expect(interpret("((% 0) 2)")).toBe(0);
+        expect(interpret("((% 5) 2)")).toBe(1);
+        expect(interpret("((% 2) 2)")).toBe(0);
+    });
+
+    it('negative', () => {
+        expect(interpret("(~ 5)")).toBe(-5);
+        expect(interpret("(~ -5)")).toBe(5);
+    });
+
+    it('and', () => {
+        expect(interpret("((&& false) false)")).toBe(false);
+        expect(interpret("((&& false) true)")).toBe(false);
+        expect(interpret("((&& true) false)")).toBe(false);
+        expect(interpret("((&& true) true)")).toBe(true);
+    });
+
+    it('or', () => {
+        expect(interpret("((|| false) false)")).toBe(false);
+        expect(interpret("((|| false) true)")).toBe(true);
+        expect(interpret("((|| true) false)")).toBe(true);
+        expect(interpret("((|| true) true)")).toBe(true);
+    });
+
+    it('not', () => {
         expect(interpret("(! false)")).toBe(true);
-    });
-
-    it("must evaluate logical 'and' expressions", () => {
-        const ff = interpret("((&& false) false)");
-        expect(ff).toBe(false);
-
-        const ft = interpret("((&& false) true)");
-        expect(ft).toBe(false);
-
-        const tf = interpret("((&& true) false)");
-        expect(tf).toBe(false);
-
-        const tt = interpret("((&& true) true)");
-        expect(tt).toBe(true);
-    });
-
-    it("must evaluate logical 'or' expressions", () => {
-        const ff = interpret("((|| false) false)");
-        expect(ff).toBe(false);
-
-        const ft = interpret("((|| false) true)");
-        expect(ft).toBe(true);
-
-        const tf = interpret("((|| true) false)");
-        expect(tf).toBe(true);
-
-        const tt = interpret("((|| true) true)");
-        expect(tt).toBe(true);
+        expect(interpret("(! true)")).toBe(false);
     });
 });
 
