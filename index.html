@@ -5,11 +5,42 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8"/>
         <title>Symbolic Interpreter</title>
-      <script type="module" crossorigin src="/interpreter/assets/index-DGlEkz53.js"></script>
-      <link rel="stylesheet" crossorigin href="/interpreter/assets/index-B-n3J-WV.css">
+      <script type="module" crossorigin src="/interpreter/assets/index-DX9B5l7e.js"></script>
+      <link rel="stylesheet" crossorigin href="/interpreter/assets/index-BQYscjPq.css">
     </head>
     <body>
+        <button id="help-btn" style="margin-bottom: 1em;">Help</button>
+        <div id="help-box" style="display:none; border:1px solid #ccc; padding:1em; margin-bottom:1em; background:#f9f9f9;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Example</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr> <td>+</td>        <td>(+ 5 2)</td>               <td>addition</td> </tr>
+                    <tr> <td>-</td>        <td>(- 5 2)</td>               <td>subtraction</td> </tr>
+                    <tr> <td>*</td>        <td>(* 5 2)</td>               <td>multiplication</td> </tr>
+                    <tr> <td>/</td>        <td>(/ 5 2)</td>               <td>division</td> </tr>
+                    <tr> <td>%</td>        <td>(% 5 2)</td>               <td>remainder after division</td> </tr>
+                    <tr> <td>&lt;</td>     <td>(&lt; 5 2)</td>            <td>less than</td> </tr>
+                    <tr> <td>></td>        <td>(> 5 2)</td>               <td>greater than</td> </tr>
+                    <tr> <td>&lt;=</td>    <td>(&lt;= 5 2)</td>           <td>less than or equal to</td> </tr>
+                    <tr> <td>>=</td>       <td>(>= 5 2)</td>              <td>greater than or equal to</td> </tr>
+                    <tr> <td>==</td>       <td>(== 5 2)</td>              <td>equal to</td> </tr>
+                    <tr> <td>!=</td>       <td>(!= 5 2)</td>              <td>unequal to</td> </tr>
+                    <tr> <td>&amp;</td>    <td>(&amp; True False)</td>    <td>logical and</td> </tr>
+                    <tr> <td>|</td>        <td>(| True False)</td>        <td>logical or</td> </tr>
+                    <tr> <td>!</td>        <td>(! True)</td>              <td>logical negation</td> </tr>
+                    <tr> <td>if</td>       <td>(if True 4 8)</td>         <td>if-expression</td> </tr>
+                    <tr> <td>let</td>      <td>(let x 5 (* 2 x))</td>     <td>variables in expressions</td> </tr>
+                </tbody>
+            </table>
+            <pre>Note: you can write nested expressions, such as: <code>(+ 1 (* 2 4))</code></pre>
+        </div>
         <pre id="output"></pre>
-        <input type="text" id="input" value="(help)" autofocus/>
+        <input type="text" id="input" value="(+ 1 2)" autofocus/>
     </body>
 </html>
