@@ -39,6 +39,11 @@ describe('valid input and output', () => {
         expect(() => interpret("(+ 1)")).toThrow(); // toThrowError(/argument/)
     });
 
+    it('must report an error a function call is missing an expression', () => {
+        expect(() => interpret("( 41)")).toThrowError(/expression/)
+        expect(() => interpret("((lambda x ((+ 1) x)) )")).toThrowError(/expression/)
+    });
+
     it.skip('must report an error when calling a function with too many arguments', () => {
         expect(() => interpret("(((+ 1) 2) 3)")).toThrow(); // toThrowError(/argument/)
     });

@@ -117,6 +117,9 @@ class Parser {
                 return this.call();
             }
         }
+        else if (is_token.close(this.peek())) {
+            throw Error(`Expected an expression but got ')' instead (token ${this.index} of ${this.tokens.length})`);
+        }
         else {
             throw Error(`Unknown token kind '${this.peek()}' (token ${this.index} of ${this.tokens.length})`);
         }
@@ -220,7 +223,7 @@ class Parser {
                 this.consume();
             }
             else {
-                throw new Error(`Expected whitespace but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
+                throw new Error(`Expected a whitespace and another expression, but got a '${this.peek().subkind}' instead (token ${this.index} of ${this.tokens.length})`);
             }
         }
     }
@@ -234,7 +237,7 @@ class Parser {
                 this.consume();
             }
             else {
-                throw new Error(`Expected ')' but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
+                throw new Error(`Expected ')' but got a '${this.peek().subkind}' instead (token ${this.index} of ${this.tokens.length})`);
             }
         }
     }
