@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const inputField = document.getElementById("input") as HTMLInputElement;
 
-    // set the focus to the end of the input field, so the cursor is at end of the default text '(help)'
+    // set the focus to the end of the input field, so the cursor is at end of the default input text
     inputField?.focus();
     inputField?.setSelectionRange(inputField.value.length, inputField.value.length);
 
