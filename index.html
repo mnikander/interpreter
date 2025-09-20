@@ -19,28 +19,36 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr> <td>+</td>        <td>(+ 5 2)</td>               <td>addition</td> </tr>
-                    <tr> <td>-</td>        <td>(- 5 2)</td>               <td>subtraction</td> </tr>
-                    <tr> <td>*</td>        <td>(* 5 2)</td>               <td>multiplication</td> </tr>
-                    <tr> <td>/</td>        <td>(/ 5 2)</td>               <td>division</td> </tr>
-                    <tr> <td>%</td>        <td>(% 5 2)</td>               <td>remainder after division</td> </tr>
-                    <tr> <td>&lt;</td>     <td>(&lt; 5 2)</td>            <td>less than</td> </tr>
-                    <tr> <td>></td>        <td>(> 5 2)</td>               <td>greater than</td> </tr>
-                    <tr> <td>&lt;=</td>    <td>(&lt;= 5 2)</td>           <td>less than or equal to</td> </tr>
-                    <tr> <td>>=</td>       <td>(>= 5 2)</td>              <td>greater than or equal to</td> </tr>
-                    <tr> <td>==</td>       <td>(== 5 2)</td>              <td>equal to</td> </tr>
-                    <tr> <td>!=</td>       <td>(!= 5 2)</td>              <td>unequal to</td> </tr>
-                    <tr> <td>&amp;</td>    <td>(&amp; True False)</td>    <td>logical and</td> </tr>
-                    <tr> <td>|</td>        <td>(| True False)</td>        <td>logical or</td> </tr>
-                    <tr> <td>!</td>        <td>(! True)</td>              <td>logical negation</td> </tr>
-                    <tr> <td>if</td>       <td>(if True 4 8)</td>         <td>if-expression</td> </tr>
-                    <tr> <td>let</td>      <td>(let x 5 (* 2 x))</td>     <td>variables in expressions</td> </tr>
+                    <tr> <td>~</td>        <td>(~ 5)</td>                       <td>negative (note: tilde, not a minus sign)</td> </tr>
+                    <tr> <td>+</td>        <td>((+ 5) 2)</td>                   <td>addition</td> </tr>
+                    <tr> <td>-</td>        <td>((- 5) 2)</td>                   <td>subtraction</td> </tr>
+                    <tr> <td>*</td>        <td>((* 5) 2)</td>                   <td>multiplication</td> </tr>
+                    <tr> <td>/</td>        <td>((/ 5) 2)</td>                   <td>division</td> </tr>
+                    <tr> <td>%</td>        <td>((% 5) 2)</td>                   <td>remainder after division</td> </tr>
+                    <tr> <td>&lt;</td>     <td>((&lt; 5) 2)</td>                <td>less than</td> </tr>
+                    <tr> <td>></td>        <td>((> 5) 2)</td>                   <td>greater than</td> </tr>
+                    <tr> <td>&lt;=</td>    <td>((&lt;= 5) 2)</td>               <td>less than or equal to</td> </tr>
+                    <tr> <td>>=</td>       <td>((>= 5) 2)</td>                  <td>greater than or equal to</td> </tr>
+                    <tr> <td>==</td>       <td>((== 5) 2)</td>                  <td>equal to</td> </tr>
+                    <tr> <td>!=</td>       <td>((!= 5) 2)</td>                  <td>unequal to</td> </tr>
+                    <tr> <td>&amp;</td>    <td>((&amp;&amp; True) False)</td>   <td>logical and</td> </tr>
+                    <tr> <td>|</td>        <td>((|| True) False)</td>           <td>logical or</td> </tr>
+                    <tr> <td>!</td>        <td>(! True)</td>                    <td>logical negation</td> </tr>
+                    <tr> <td>lambda</td>   <td>((lambda x ((+ 1) x)) 41)</td>   <td>create a function of one variable</td> </tr>
+                    <tr> <td>let</td>      <td>(let x 5 ((* 2) x))</td>         <td>variables in expressions</td> </tr>
+                    <tr> <td>if</td>       <td>(if True 4 8)</td>               <td>if-expression</td> </tr>
                 </tbody>
             </table>
-            <pre>Note: you can write nested expressions, such as: <code>(+ 1 (* 2 4))</code></pre>
+            
+            <pre>Note: Expressions can be nested, for example: <code>((+ 1) ((* 2) 4))</code></pre>
+
+            <div>Note: Functions always take exactly one argument at a time.
+                If the function needs a second argument, you need to do another function application '<code>(func arg)</code>'.
+                This is why it is necessary to write <code>((+ 1) 2)</code>.
+                The special forms, 'lambda', 'let', and 'if', are not functions and are free from this restriction.</div>
         </div>
         <pre id="output"></pre>
-        <input type="text" id="input" value="(+ 1 2)" autofocus/>
+        <input type="text" id="input" value="((+ 1) 2)" autofocus/>
         <script type="module" src="./src/main.ts"></script>
     </body>
 </html>
