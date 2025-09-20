@@ -1,22 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { interpret } from '../src/interpreter'
 
-describe('help dialog', () => {
-    it('must print help', () => {
-        const result = interpret("(help)");
-        expect(result).toContain("help");
-        expect(result).toContain("+");
-        expect(result).toContain("-");
-        expect(result).toContain("*");
-        expect(result).toContain("/");
-    });
-
-    it.skip('should report an error when forgetting parenthesis for the "help" command', () => {
-        const result = interpret("help");
-        expect(result).toContain("error");
-    });
-});
-
 describe('basic values', () => {
     it('must evaluate a single integer to itself', () => {
         expect(interpret("-1")).toBe(-1);
@@ -245,7 +229,7 @@ describe.skip('type system', () => {
     });
 
     it('must report an error when implicitly converting to a string', () => {
-        expect(interpret("(+ 1 (help))")).toContain("error");
+        expect(interpret("((+ 1) ('foobar'))")).toContain("error");
         expect(interpret("(+ - -)")).toContain("error");
     });
 

@@ -68,8 +68,6 @@ export const builtin_functions: Environment = {
     ['|',    function ( args: Primitive[] ): Primitive { return (args[0] as boolean) || (args[1] as boolean); }],
     ['!',    function ( args: Primitive[] ): Primitive { return !(args[0] as boolean); }],
     ['if',   function ( args: Primitive[] ): Primitive { return (args[0] as boolean) ? args[1] : args[2]; }],
-    ['help', function ( args: Primitive[] )            { return help(); }],
-    ['Help', function ( args: Primitive[] )            { return help(); }],
 ])};
 
 export function lookup(identifier: string, env: Environment): undefined | Value {
@@ -90,38 +88,4 @@ export function lookup(identifier: string, env: Environment): undefined | Value 
 
 function extend(env: Environment): Environment {
     return { parent: env, symbols: new Map<string, Value>()};
-}
-
-type Description = { op: string, example: string, about: string };
-const help_text: Description[] = [
-    {op: 'help', example: "(help)\t\t",        about: "prints this dialog" },
-    {op: 'Help', example: "(Help)\t\t",        about: "prints this dialog" },
-    {op: '+',    example: "(+ 5 2)\t\t",       about: "addition" },
-    {op: '-',    example: "(- 5 2)\t\t",       about: "subtraction" },
-    {op: '*',    example: "(* 5 2)\t\t",       about: "multiplication" },
-    {op: '/',    example: "(/ 5 2)\t\t",       about: "division" },
-    {op: '%',    example: "(% 5 2)\t\t",       about: "remainder after division" },
-    {op: '<',    example: "(< 5 2)\t\t",       about: "less than" },
-    {op: '>',    example: "(> 5 2)\t\t",       about: "greater than" },
-    {op: '<=',   example: "(<= 5 2)\t",        about: "less than or equal to" },
-    {op: '>=',   example: "(>= 5 2)\t",        about: "greater than or equal to" },
-    {op: '==',   example: "(== 5 2)\t",        about: "equal to" },
-    {op: '!=',   example: "(!= 5 2)\t",        about: "unequal to" },
-    {op: '&',    example: "(& True False)\t",  about: "logical and" },
-    {op: '|',    example: "(| True False)\t",  about: "logical or" },
-    {op: '!',    example: "(! True)\t",        about: "logical negation" },
-    {op: 'if',   example: "(if True 4 8)\t",   about: "if-expression" },
-    {op: 'let',  example: "(let x 5 (* 2 x))", about: "variables in expressions"},
-];
-
-function help(): string {
-    const line: string = "--------------------------------------------------------\n";
-    let message: string = "\nSymbol\tUsage\t\t\tName\n" + line;
-    for (const description of help_text) {
-        message += `${description.op}\t${description.example}\t${description.about}\n`;
-    }
-    message += line;
-    message += "You can write nested expressions, such as:\n\n(+ 1 (* 2 4))\n"
-    message += line;
-    return message;
 }
