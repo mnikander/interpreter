@@ -233,14 +233,23 @@ describe('let-bindings', () => {
         expect(interpret('(let x 1 ((+ x) ((* x) 2)))')).toBe(3);
     });
 
-    it.skip('must support binding to built-in functions', () => {
+    it('must evaluate functions with bound literals even if the functions escape the scope of the literal', () => {
+        expect(interpret("((let bias 2 (* bias)) 21)")).toBe(42);
+        expect(interpret("(((lambda bias (* bias)) 2) 21)")).toBe(42);
+    });
+
+    it.skip('must bind to built-in functions', () => {
         // TODO: Implement higher-order functions to reactivate this test.
         // This test-case is the only regression made by the new implementation.
         // In all other aspects the flat interpreter can do more than the old interpreter.
         expect(interpret('(let add + ((add 1) 2))')).toBe(3);
     });
 
-    it.skip('must support binding to lambda functions', () => {
+    it.skip('must bind to partially applied built-in functions', () => {
+        expect(interpret("(let increment (+ 1) (increment 41))")).toBe(42);
+    });
+
+    it.skip('must bind to lambda functions', () => {
         expect(interpret("(let increment (lambda x ((+ 1) x)) (increment 41))")).toBe(42);
     });
 
@@ -284,6 +293,29 @@ describe('lambdas', () => {
 
     it('must evaluate nested lambda expressions', () => {
         expect(interpret("(((lambda a (lambda b a)) 1) 2)")).toBe(1);
+    });
+
+    it('must allow passing built-in functions as arguments', () => {
+        expect(interpret("(((lambda a a) ~) 5)")).toBe(-5);
+        expect(interpret("((((lambda a a) +) 2) 3)")).toBe(5);
+        expect(interpret("(((lambda a a) (+ 2)) 3)")).toBe(5);
+        expect(interpret("((lambda a a) ((+ 2) 3))")).toBe(5); // this is actually just passing a the result number 5
+    });
+
+    it('must allow passing lambda functions as arguments', () => {
+        expect(interpret("((((lambda a a) (lambda a (lambda b a))) 2) 5)")).toBe(2);
+    });
+
+    it.skip('must bind to built-in functions', () => {
+        expect(interpret('((lambda add ((add 1) 2)) +)')).toBe(3);
+    });
+
+    it.skip('must bind to partially applied built-in functions', () => {
+        expect(interpret("((lambda increment (increment 41)) (+ 1))")).toBe(42);
+    });
+
+    it.skip('must bind to lambda functions', () => {
+        expect(interpret("((lambda increment (increment 41)) (lambda x ((+ 1) x)))")).toBe(42);
     });
 
     it.skip('may evaluate lambda expressions with multiple arguments', () => {
