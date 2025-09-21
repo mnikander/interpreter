@@ -250,6 +250,10 @@ describe('let-bindings', () => {
     });
 
     it.skip('must bind to lambda functions', () => {
+        expect(interpret("(let f (lambda x x) (f 42))")).toBe(42);
+    });
+
+    it.skip('must bind to lambda functions with built-ins', () => {
         expect(interpret("(let increment (lambda x ((+ 1) x)) (increment 41))")).toBe(42);
     });
 
@@ -315,6 +319,10 @@ describe('lambdas', () => {
     });
 
     it.skip('must bind to lambda functions', () => {
+        expect(interpret("((lambda f (f 42)) (lambda x x))")).toBe(42);
+    });
+
+    it.skip('must bind to lambda functions with built-ins', () => {
         expect(interpret("((lambda increment (increment 41)) (lambda x ((+ 1) x)))")).toBe(42);
     });
 
