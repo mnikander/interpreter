@@ -325,10 +325,6 @@ describe('lambdas', () => {
     it.skip('must bind to lambda functions with built-ins', () => {
         expect(interpret("((lambda increment (increment 41)) (lambda x ((+ 1) x)))")).toBe(42);
     });
-
-    it.skip('may evaluate lambda expressions with multiple arguments', () => {
-        expect(interpret("((lambda [a b] a) [1 2])")).toBe(1);
-    });
 });
 
 describe.skip('references', () => {
@@ -341,6 +337,11 @@ describe.skip('references', () => {
     });
 });
 
+describe.skip('arrays', () => {
+    it.skip('should evaluate lambda expressions with array-literals as arguments', () => {
+        expect(interpret("((lambda a a) [1 2])")).toBe(1);
+    });
+});
 
 describe.skip('type system', () => {
     it('must report an error when implicitly converting to a boolean', () => {
