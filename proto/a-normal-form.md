@@ -18,12 +18,19 @@ parse each sub-tree of the if-expression one after the other.
 `(if (< 2 5) (+ 2 (* 3 4)) (- 2 3))`
 
 ```
+let r0 = if
+    (let r1 = < 2 5 in
+     r1)
+    (let r3 = * 3 4 in
+     let r2 = + 2 r3 in
+     r2)
+    (let r4 = - 2 3 in
+     r4) in
 r0
-let r0 = if r1 r2 r3
-let r1 = < 2 5
-let r2 = + 2 r3
-let r3 = * 3 4
 ```
+
+Note that an if-expression has conditional execution.
+The condition must always be executed, but both the 'then' and 'else' case are in their own block.
 
 ## What do I want?
 - to try a single-pass, syntax directed translation from Lisp to ANF
@@ -36,6 +43,7 @@ let r3 = * 3 4
 ## What do I need, to do this?
 - input tokens: string
 - output array store the resulting ANF
+- a way to store blocks and subblocks in the array, perhaps via a label and and end-of-block terminal (or use the tail-expression as the marker)
 - single pass over the code
 - tokenization, parsing, creation of intermediate variables, and storage in the array, in one go
 - a counter, for the variables
