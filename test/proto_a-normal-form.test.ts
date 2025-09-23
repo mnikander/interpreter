@@ -44,4 +44,20 @@ describe('parse atoms', () => {
         expect(parsed[0].tag).toBe("Identifier");
         expect((parsed[0] as _Identifier).name).toEqual("+");
     });
+
+    it.skip('must parse an arithmetic expression', () => {
+        const input: string = "(+ 2 3)";
+        const parsed = parse(input);
+        expect(parsed.length).toBe(4);
+        expect(parsed[0].tag).toBe("Call");
+        expect(parsed[1].tag).toBe("Identifier");
+        expect((parsed[1] as _Identifier).name).toEqual("+");
+    });
+
+    it.skip('must parse a lambda function', () => {
+        const input: string = "(lambda a a)";
+        const parsed = parse(input);
+        expect(parsed[0].tag).toBe("Lambda");
+        expect((parsed[0] as _Identifier).name).toEqual("+");
+    });
 });
