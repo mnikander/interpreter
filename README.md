@@ -38,3 +38,6 @@ npm install  # install project dependencies
 npm test     # build and run the unit tests
 npm run dev  # host the HTML page locally for development, automatically reloads when source files are changed
 ```
+
+---
+**Copyright (c) 2025 Marco Nikander**
