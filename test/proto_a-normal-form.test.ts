@@ -47,9 +47,28 @@ describe('parse atoms', () => {
 
     it('must tolerate extra whitespace characters during parsing', () => {
         const input: string = ' \n true ';
+        expect(() => parse(input)).toThrow();
+    });
+
+    it('must parse unary function call', () => {
+        const input: string = "(~ 1)";
         const parsed = parse(input);
-        expect(parsed[0].tag).toBe("Boolean");
-        expect((parsed[0] as _Boolean).value).toBe(true);
+        expect(parsed[0].tag).toBe("Identifier");
+        expect(parsed[1].tag).toBe("Number");
+        expect((parsed[0] as _Identifier).name).toEqual("~");
+        expect((parsed[1] as _Number).value).toEqual(1);
+    });
+
+    it('must parse binary function call', () => {
+        const input: string = "(+ 1 2)";
+        const parsed = parse(input);
+        // expect(parsed.length).toBe(4);
+        expect(parsed[0].tag).toBe("Identifier");
+        expect(parsed[1].tag).toBe("Number");
+        expect(parsed[2].tag).toBe("Number");
+        expect((parsed[0] as _Identifier).name).toEqual("+");
+        expect((parsed[1] as _Number).value).toEqual(1);
+        expect((parsed[2] as _Number).value).toEqual(2);
     });
 
     it.skip('must parse an arithmetic expression', () => {
