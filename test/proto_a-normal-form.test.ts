@@ -45,6 +45,13 @@ describe('parse atoms', () => {
         expect((parsed[0] as _Identifier).name).toEqual("+");
     });
 
+    it('must tolerate extra whitespace characters during parsing', () => {
+        const input: string = ' \n true ';
+        const parsed = parse(input);
+        expect(parsed[0].tag).toBe("Boolean");
+        expect((parsed[0] as _Boolean).value).toBe(true);
+    });
+
     it.skip('must parse an arithmetic expression', () => {
         const input: string = "(+ 2 3)";
         const parsed = parse(input);

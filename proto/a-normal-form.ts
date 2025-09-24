@@ -35,6 +35,12 @@ export function parse(input: string): _Node[] {
 
     while (!is_at_end(state)) { //  -- should I do this recursively or iteratively?
 
+        const leading_whitespace = check(state, "SPACE");
+        if (leading_whitespace) {
+            state = consume(state, leading_whitespace.word);
+            if (is_at_end(state)) break;
+        }
+
         const token = check(state, "BOOL") 
                     ?? check(state, "FLOAT")
                     ?? check(state, "INT")
