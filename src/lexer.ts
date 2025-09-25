@@ -10,8 +10,7 @@ export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, 
 export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' }
 export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' }
 export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string }
-
-export type Lexeme = 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER';
+export type Lexeme          = 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER';
 
 const lexemes: Record<Lexeme, RegExp> = {
     'WHITESPACE': /^\s+/,
@@ -21,15 +20,6 @@ const lexemes: Record<Lexeme, RegExp> = {
     'NUMBER':     /^[-+]?(?:\d*\.\d+|\d+\.\d*|\d+)/,
     'STRING':     /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
     'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
-};
-
-type Match = { lexeme: Lexeme, word: string };
-
-interface State extends Item {
-    tag: 'State',
-    offset: number,
-    line: string,
-    tokens: Token[]
 };
 
 export function lex(line: string): Token[] {
@@ -76,6 +66,15 @@ export function lex(line: string): Token[] {
     return state.tokens;
 }
 
+interface State extends Item {
+    tag: 'State',
+    offset: number,
+    line: string,
+    tokens: Token[]
+};
+
+type Match = { lexeme: Lexeme, word: string };
+
 function check(state: State, expected: Lexeme): undefined | Match {
     const remaining: string = state.line.slice(state.offset);
     const match = lexemes[expected].exec(remaining)
@@ -92,6 +91,7 @@ function push(state: State, token: Token): State {
     return state;
 }
 
+// constructors
 function make_boolean (state: State, match: Match): TokenBoolean {
     const value = match.word !== 'false';
     return { tag: 'Token', lexeme: 'BOOLEAN', id: state.tokens.length, offset: state.offset, value: value };
@@ -121,6 +121,7 @@ function make_whitespace(state: State, match: Match): TokenWhitespace {
     return { tag: 'Token', lexeme: 'WHITESPACE', id: state.tokens.length, offset: state.offset, value: match.word };
 }
 
+// type predicates
 export function is_token(item: Item): item is Token {
     return item.tag === 'Token';
 }
