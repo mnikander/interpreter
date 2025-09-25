@@ -20,14 +20,14 @@ describe('individual tokens', () => {
     it('must tokenize "true" to a boolean', () => {
         const tokens = lex('true');
         expect(tokens.length).toBe(1);
-        expect(tokens[0].lexeme).toBe("BOOL");
+        expect(tokens[0].lexeme).toBe("BOOLEAN");
         expect(tokens[0].value).toBe(true);
     });
 
     it('must tokenize "false" to a boolean', () => {
         const tokens = lex('false');
         expect(tokens.length).toBe(1);
-        expect(tokens[0].lexeme).toBe("BOOL");
+        expect(tokens[0].lexeme).toBe("BOOLEAN");
         expect(tokens[0].value).toBe(false);
     });
 

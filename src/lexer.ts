@@ -3,7 +3,7 @@
 import { Item } from './item'
 
 export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenOpen | TokenClose | TokenWhitespace;
-export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOL', id: number, offset: number, value: boolean }
+export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', id: number, offset: number, value: boolean }
 export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number }
 export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string }
 export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string }
@@ -11,13 +11,13 @@ export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset
 export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' }
 export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string }
 
-export type Lexeme = 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'BOOL' | 'NUMBER' | 'STRING' | 'IDENTIFIER';
+export type Lexeme = 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER';
 
 const lexemes: Record<Lexeme, RegExp> = {
     'WHITESPACE': /^\s+/,
     'OPEN':       /^\(/,
     'CLOSE':      /^\)/,
-    'BOOL':       /^(true|false)/,
+    'BOOLEAN':    /^(true|false)/,
     'NUMBER':     /^[-+]?(?:\d*\.\d+|\d+\.\d*|\d+)/,
     'STRING':     /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
     'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
@@ -37,7 +37,7 @@ export function lex(line: string): Token[] {
     
     while(state.offset < state.line.length) {
         const match: undefined | Match =
-        check(state, 'BOOL') 
+        check(state, 'BOOLEAN') 
         ?? check(state, 'NUMBER')
         ?? check(state, 'STRING')
         ?? check(state, 'IDENTIFIER')
@@ -46,7 +46,7 @@ export function lex(line: string): Token[] {
         ?? check(state, 'CLOSE');
 
         if (match) {
-            if (match.lexeme === 'BOOL') {
+            if (match.lexeme === 'BOOLEAN') {
                 state = push(state, make_boolean(state, match));
             }
             else if (match.lexeme === 'NUMBER') {
@@ -94,7 +94,7 @@ function push(state: State, token: Token): State {
 
 function make_boolean (state: State, match: Match): TokenBoolean {
     const value = match.word !== 'false';
-    return { tag: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: value };
+    return { tag: 'Token', lexeme: 'BOOLEAN', id: state.tokens.length, offset: state.offset, value: value };
 }
 
 function make_number(state: State, match: Match): TokenNumber {
@@ -126,7 +126,7 @@ export function is_token(item: Item): item is Token {
 }
 
 export function is_token_boolean(item: Item): item is TokenBoolean {
-    return is_token(item) && item.lexeme === 'BOOL';
+    return is_token(item) && item.lexeme === 'BOOLEAN';
 }
 
 export function is_token_number(item: Item): item is TokenNumber {
