@@ -12,7 +12,9 @@ export function evaluate_builtin(expr: Flat_Builtin, ast: Flat_AST, env: Environ
     else if (is_builtin_binary(expr)) {
         return evaluate_binary(expr, ast, env, stacked_args);
     }
-    throw Error(`The evaluation of the built-in function '${expr.name} has not been implemented.`);
+    else {
+        throw Error(`The evaluation of the built-in function '${expr.name} has not been implemented.`);
+    }
 }
 
 function evaluate_unary(expr: Flat_Builtin, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {

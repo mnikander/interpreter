@@ -40,11 +40,11 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
     else if (is_binding(expr, ast)) {
         return lookup(expr.id, env);
     }
-    else if (is_builtin(expr, ast)) {
-        return evaluate_builtin(expr, ast, env, stacked_args);
-    }
     else if (is_reference(expr, ast)) {
         return evaluate(ast[expr.target.id], ast, env, stacked_args);
+    }
+    else if (is_builtin(expr, ast)) {
+        return evaluate_builtin(expr, ast, env, stacked_args);
     }
     else if (is_lambda(expr, ast)) {
         // dequeue an argument and store it in the environment instead
