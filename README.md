@@ -2,8 +2,6 @@
 
 A simple interpreter for symbolic expressions which runs in the browser.
 The goal is to implement the core of a [lambda language](https://github.com/mnikander/lambda).
-The current implementation in `src/` will soon be replaced by a more capable implementation in `src/flat/`.
-The 'flat' implementation uses an array-based AST and aims to implement unary lambda calculus.
 
 ## [Try it online](https://mnikander.github.io/interpreter/)
 
@@ -11,21 +9,20 @@ Just visit the GitHub page for this interpreter, using the link above, and start
 You can compute `1 + 2` with:
 
 ```lisp
-> (+ 1 2)
+> ((+ 1) 2)
 3
 ```
 
 and `1 + (2 * 3)` with:
 ```lisp
-> (+ 1 (* 2 3))
+> ((+ 1) ((* 2) 3))
 7
 ```
 
-You can get a full list of available commands with:
-```lisp
-(help)
-```
+Currently, all functions are only available in curried form, so they take only one function argument at a time.
+Applying a function to two arguments requires two, nested, function applications, hence the extra parentheses.
 
+You can get the full list of available commands in the 'help' menu of the interpreter.
 You can also take a look at this brief [introduction to symbolic expressions](https://github.com/mnikander/lambda/blob/main/resources/symbolic_expression_intro.md).
 
 ## Development setup
