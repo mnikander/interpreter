@@ -21,7 +21,7 @@ describe('parse atoms', () => {
                 if(ast !== undefined) {
                     expect(is_boolean(ast)).toBe(true);
                     if (is_boolean(ast)) {
-                        expect(ast.kind).toBe("Boolean   ");
+                        expect(ast.tag).toBe("Boolean   ");
                         expect(ast.token).toBe(0);
                         expect(ast.value).toBe(true);
                     }
@@ -42,7 +42,7 @@ describe('parse atoms', () => {
                 if(ast !== undefined) {
                     expect(is_number(ast)).toBe(true);
                     if (is_number(ast)) {
-                        expect(ast.kind).toBe("Number    ");
+                        expect(ast.tag).toBe("Number    ");
                         expect(ast.token).toBe(0);
                         expect(ast.value).toBe(-0.1);
                     }
@@ -164,7 +164,7 @@ describe('expressions', () => {
             if (is_ok(parsed)) {
                 if(is_call(parsed.value)) {
                     const ast = parsed.value;
-                    expect(ast.kind).toBe("Call      ");
+                    expect(ast.tag).toBe("Call      ");
                     expect(ast.data.length).toBe(3);
                     expect(is_identifier(ast.data[0])).toBe(true);
                     expect(is_number(ast.data[1])).toBe(true);

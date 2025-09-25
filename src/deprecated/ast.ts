@@ -8,41 +8,41 @@ export type AST = Atom | Call;
 // types for function calls, special forms, and atoms
 
 export interface Call extends Item {
-    kind: string,
+    tag: string,
     token: number,
     id: number,
     data: AST[]
 };
 
 export interface Lambda extends Call {
-    kind: "Call      ",
+    tag: "Call      ",
     token: number,
     id: number,
     data: [AST, AST, AST]
 };
 
 export interface Let extends Call {
-    kind: "Call      ",
+    tag: "Call      ",
     token: number,
     id: number,
     data: [AST, AST, AST, AST]
 };
 
 export interface Atom extends Item {
-    kind: string,
+    tag: string,
     token: number,
     id: number,
     value: boolean | number | string,
 }
 
-export interface AtomBoolean    extends Atom { kind: "Boolean   ", token: number, id: number, value: boolean };
-export interface AtomNumber     extends Atom { kind: "Number    ", token: number, id: number, value: number };
-export interface AtomString     extends Atom { kind: "String    ", token: number, id: number, value: string };
-export interface AtomIdentifier extends Atom { kind: "Identifier", token: number, id: number, value: string };
+export interface AtomBoolean    extends Atom { tag: "Boolean   ", token: number, id: number, value: boolean };
+export interface AtomNumber     extends Atom { tag: "Number    ", token: number, id: number, value: number };
+export interface AtomString     extends Atom { tag: "String    ", token: number, id: number, value: string };
+export interface AtomIdentifier extends Atom { tag: "Identifier", token: number, id: number, value: string };
 
 // type predicates
 
-export function is_call(item: Item): item is Call { return item.kind === "Call      "; }
+export function is_call(item: Item): item is Call { return item.tag === "Call      "; }
 
 export function is_let(item: Item): item is Let {
     return is_call(item)
@@ -60,17 +60,17 @@ export function is_lambda(item: Item): item is Lambda {
     && is_identifier(item.data[1]);
 }
 
-export function is_boolean(item: Item): item is AtomBoolean { return item.kind === "Boolean   "; }
-export function is_number(item: Item): item is AtomNumber { return item.kind === "Number    "; }
-export function is_string(item: Item): item is AtomString { return item.kind === "String    "; }
-export function is_identifier(item: Item): item is AtomIdentifier { return item.kind === "Identifier"; }
+export function is_boolean(item: Item): item is AtomBoolean { return item.tag === "Boolean   "; }
+export function is_number(item: Item): item is AtomNumber { return item.tag === "Number    "; }
+export function is_string(item: Item): item is AtomString { return item.tag === "String    "; }
+export function is_identifier(item: Item): item is AtomIdentifier { return item.tag === "Identifier"; }
 
 // constructors
 
 export function make_call(node_counter: number, token: Token, data: AST[]): Call {
-    return { kind: "Call      ", token: token.id, id: node_counter, data: data };
+    return { tag: "Call      ", token: token.id, id: node_counter, data: data };
 }
 
 export function make_atom(node_counter: number, token: TokenBoolean | TokenNumber | TokenString | TokenIdentifier): Atom {
-    return {kind: token.subkind, token: token.id, id: node_counter, value: token.value}
+    return {tag: token.subtag, token: token.id, id: node_counter, value: token.value}
 }

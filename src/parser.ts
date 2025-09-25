@@ -4,28 +4,28 @@ import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_toke
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
 export type Nested_Atom       = Nested_Identifier | Nested_Binding | Nested_Boolean | Nested_Number | Nested_String;
-export type Nested_Boolean    = {id: number, token: number, kind: 'Nested_Boolean', value: boolean};
-export type Nested_Number     = {id: number, token: number, kind: 'Nested_Number', value: number};
-export type Nested_String     = {id: number, token: number, kind: 'Nested_String', value: string};
-export type Nested_Identifier = {id: number, token: number, kind: 'Nested_Identifier', name: string};
-export type Nested_Binding    = {id: number, token: number, kind: 'Nested_Binding', name: string};
-export type Nested_Reference  = {id: number, token: number, kind: 'Nested_Reference', target: string};
-export type Nested_Lambda     = {id: number, token: number, kind: 'Nested_Lambda', binding: Nested_Binding, body: Nested_Expression};
-export type Nested_Let        = {id: number, token: number, kind: 'Nested_Let', binding: Nested_Binding, value: Nested_Expression, body: Nested_Expression};
-export type Nested_If         = {id: number, token: number, kind: 'Nested_If', condition: Nested_Expression, if_true: Nested_Expression, if_false: Nested_Expression};
-export type Nested_Call       = {id: number, token: number, kind: 'Nested_Call', fn: Nested_Expression, arg: Nested_Expression};
+export type Nested_Boolean    = {id: number, token: number, tag: 'Nested_Boolean', value: boolean};
+export type Nested_Number     = {id: number, token: number, tag: 'Nested_Number', value: number};
+export type Nested_String     = {id: number, token: number, tag: 'Nested_String', value: string};
+export type Nested_Identifier = {id: number, token: number, tag: 'Nested_Identifier', name: string};
+export type Nested_Binding    = {id: number, token: number, tag: 'Nested_Binding', name: string};
+export type Nested_Reference  = {id: number, token: number, tag: 'Nested_Reference', target: string};
+export type Nested_Lambda     = {id: number, token: number, tag: 'Nested_Lambda', binding: Nested_Binding, body: Nested_Expression};
+export type Nested_Let        = {id: number, token: number, tag: 'Nested_Let', binding: Nested_Binding, value: Nested_Expression, body: Nested_Expression};
+export type Nested_If         = {id: number, token: number, tag: 'Nested_If', condition: Nested_Expression, if_true: Nested_Expression, if_false: Nested_Expression};
+export type Nested_Call       = {id: number, token: number, tag: 'Nested_Call', fn: Nested_Expression, arg: Nested_Expression};
 
 export function is_expression(expr: Nested_Expression): expr is Nested_Expression { return is_atom(expr) || is_lambda(expr) || is_let(expr) || is_call(expr); }
 export function is_atom(expr: Nested_Expression): expr is Nested_Atom { return is_identifier(expr) || is_boolean(expr) || is_number(expr) || is_string(expr); }
-export function is_boolean(expr: Nested_Expression): expr is Nested_Boolean { return expr.kind === 'Nested_Boolean'; }
-export function is_number(expr: Nested_Expression): expr is Nested_Number { return expr.kind === 'Nested_Number'; }
-export function is_string(expr: Nested_Expression): expr is Nested_String { return expr.kind === 'Nested_String'; }
-export function is_identifier(expr: Nested_Expression): expr is Nested_Identifier { return expr.kind === 'Nested_Identifier'; }
-export function is_binding(expr: Nested_Expression): expr is Nested_Binding { return expr.kind === 'Nested_Binding'; }
-export function is_lambda(expr: Nested_Expression): expr is Nested_Lambda { return expr.kind === 'Nested_Lambda'; }
-export function is_let(expr: Nested_Expression): expr is Nested_Let { return expr.kind === 'Nested_Let'; }
-export function is_if(expr: Nested_Expression): expr is Nested_If { return expr.kind === 'Nested_If'; }
-export function is_call(expr: Nested_Expression): expr is Nested_Call { return expr.kind === 'Nested_Call'; }
+export function is_boolean(expr: Nested_Expression): expr is Nested_Boolean { return expr.tag === 'Nested_Boolean'; }
+export function is_number(expr: Nested_Expression): expr is Nested_Number { return expr.tag === 'Nested_Number'; }
+export function is_string(expr: Nested_Expression): expr is Nested_String { return expr.tag === 'Nested_String'; }
+export function is_identifier(expr: Nested_Expression): expr is Nested_Identifier { return expr.tag === 'Nested_Identifier'; }
+export function is_binding(expr: Nested_Expression): expr is Nested_Binding { return expr.tag === 'Nested_Binding'; }
+export function is_lambda(expr: Nested_Expression): expr is Nested_Lambda { return expr.tag === 'Nested_Lambda'; }
+export function is_let(expr: Nested_Expression): expr is Nested_Let { return expr.tag === 'Nested_Let'; }
+export function is_if(expr: Nested_Expression): expr is Nested_If { return expr.tag === 'Nested_If'; }
+export function is_call(expr: Nested_Expression): expr is Nested_Call { return expr.tag === 'Nested_Call'; }
 
 class Parser {
     index: number;
@@ -81,22 +81,22 @@ class Parser {
         if (is_token_boolean(this.peek())) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, kind: "Nested_Boolean", value: (this.previous() as TokenBoolean).value };
+            return { id: id, token: this.index-1, tag: "Nested_Boolean", value: (this.previous() as TokenBoolean).value };
         }
         else if (is_token_number(this.peek())) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, kind: "Nested_Number", value: (this.previous() as TokenNumber).value };
+            return { id: id, token: this.index-1, tag: "Nested_Number", value: (this.previous() as TokenNumber).value };
         }
         else if (is_token_string(this.peek())) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, kind: "Nested_String", value: (this.previous() as TokenString).value };
+            return { id: id, token: this.index-1, tag: "Nested_String", value: (this.previous() as TokenString).value };
         }
         else if (is_token_identifier(this.peek())) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, kind: "Nested_Identifier", name: (this.previous() as TokenIdentifier).value };
+            return { id: id, token: this.index-1, tag: "Nested_Identifier", name: (this.previous() as TokenIdentifier).value };
         }
         else if (is_token_open(this.peek())) {
             this.consume();
@@ -120,7 +120,7 @@ class Parser {
             throw Error(`Expected an expression but got ')' instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
-            throw Error(`Unknown token kind '${this.peek()}' (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Unknown token tag '${this.peek()}' (token ${this.index} of ${this.tokens.length})`);
         }
     }
 
@@ -142,7 +142,7 @@ class Parser {
             const body: Nested_Expression = this.expr();
             this.skip_whitespace();
             this.expect_closing();
-            return { id: id, token: potential_keyword.id-1, kind: "Nested_Lambda", binding: variable, body: body };
+            return { id: id, token: potential_keyword.id-1, tag: "Nested_Lambda", binding: variable, body: body };
         }
     }
 
@@ -165,7 +165,7 @@ class Parser {
             const body: Nested_Expression = this.expr();
             this.skip_whitespace();
             this.expect_closing();
-            return { id: id, token: potential_keyword.id-1, kind: "Nested_Let", binding: variable, value: value, body: body };
+            return { id: id, token: potential_keyword.id-1, tag: "Nested_Let", binding: variable, value: value, body: body };
         }
     }
 
@@ -184,7 +184,7 @@ class Parser {
         const if_false: Nested_Expression = this.expr();
         this.skip_whitespace();
         this.expect_closing();
-        return { id: id, token: potential_keyword.id-1, kind: "Nested_If", condition: condition, if_true: if_true, if_false: if_false };
+        return { id: id, token: potential_keyword.id-1, tag: "Nested_If", condition: condition, if_true: if_true, if_false: if_false };
     }
 
     // (expr expr)
@@ -197,14 +197,14 @@ class Parser {
         const arg: Nested_Expression = this.expr();
         this.skip_whitespace();
         this.expect_closing();
-        return { id: id, token: fn.token-1, kind: "Nested_Call", fn: fn, arg: arg };
+        return { id: id, token: fn.token-1, tag: "Nested_Call", fn: fn, arg: arg };
     }
 
     binding(): Nested_Binding {
         const id = this.emit();
         const token = (this.peek() as TokenIdentifier);
         this.consume();
-        return { id: id, token: token.id, kind: "Nested_Binding", name: token.value };
+        return { id: id, token: token.id, tag: "Nested_Binding", name: token.value };
     }
 
     skip_whitespace() {

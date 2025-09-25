@@ -3,13 +3,13 @@
 import { Item } from './item'
 
 export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenOpen | TokenClose | TokenWhitespace;
-export type TokenBoolean    = { kind: 'Token', lexeme: 'BOOL', id: number, offset: number, value: boolean }
-export type TokenNumber     = { kind: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number }
-export type TokenString     = { kind: 'Token', lexeme: 'STRING', id: number, offset: number, value: string }
-export type TokenIdentifier = { kind: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string }
-export type TokenOpen       = { kind: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' }
-export type TokenClose      = { kind: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' }
-export type TokenWhitespace = { kind: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string }
+export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOL', id: number, offset: number, value: boolean }
+export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number }
+export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string }
+export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string }
+export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' }
+export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' }
+export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string }
 
 export type Lexeme = 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'BOOL' | 'NUMBER' | 'STRING' | 'IDENTIFIER';
 
@@ -26,14 +26,14 @@ const lexemes: Record<Lexeme, RegExp> = {
 type Match = { lexeme: Lexeme, word: string };
 
 interface State extends Item {
-    kind: 'State',
+    tag: 'State',
     offset: number,
     line: string,
     tokens: Token[]
 };
 
 export function lex(line: string): Token[] {
-    let state: State = { kind: 'State', offset: 0, line: line, tokens: []};
+    let state: State = { tag: 'State', offset: 0, line: line, tokens: []};
     
     while(state.offset < state.line.length) {
         const match: undefined | Match =
@@ -94,10 +94,10 @@ function push(state: State, token: Token): State {
 
 function make_boolean (state: State, match: Match): TokenBoolean {
     if (match.word === 'false' || match.word === 'False') {
-        return { kind: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: false };
+        return { tag: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: false };
     }
     else if (match.word === 'true' || match.word === 'True') {
-        return { kind: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: true };
+        return { tag: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: true };
     }
     else {
         throw Error(`Expected boolean token to be either true or false but got '${match.word}'`);
@@ -105,31 +105,31 @@ function make_boolean (state: State, match: Match): TokenBoolean {
 }
 
 function make_number(state: State, match: Match): TokenNumber {
-    return { kind: 'Token', lexeme: 'NUMBER', id: state.tokens.length, offset: state.offset, value: Number(match.word) };
+    return { tag: 'Token', lexeme: 'NUMBER', id: state.tokens.length, offset: state.offset, value: Number(match.word) };
 }
 
 function make_string(state: State, match: Match): TokenString {
-    return { kind: 'Token', lexeme: 'STRING', id: state.tokens.length, offset: state.offset, value: match.word };
+    return { tag: 'Token', lexeme: 'STRING', id: state.tokens.length, offset: state.offset, value: match.word };
 }
 
 function make_identifier (state: State, match: Match): TokenIdentifier {
-    return { kind: 'Token', lexeme: 'IDENTIFIER', id: state.tokens.length, offset: state.offset, value: match.word };
+    return { tag: 'Token', lexeme: 'IDENTIFIER', id: state.tokens.length, offset: state.offset, value: match.word };
 }
 
 function make_open(state: State, match: Match): TokenOpen {
-    return { kind: 'Token', lexeme: 'OPEN', id: state.tokens.length, offset: state.offset, value: '(' };
+    return { tag: 'Token', lexeme: 'OPEN', id: state.tokens.length, offset: state.offset, value: '(' };
 }
 
 function make_close(state: State, match: Match): TokenClose {
-    return { kind: 'Token', lexeme: 'CLOSE', id: state.tokens.length, offset: state.offset, value: ')' };
+    return { tag: 'Token', lexeme: 'CLOSE', id: state.tokens.length, offset: state.offset, value: ')' };
 }
 
 function make_whitespace(state: State, match: Match): TokenWhitespace {
-    return { kind: 'Token', lexeme: 'WHITESPACE', id: state.tokens.length, offset: state.offset, value: match.word };
+    return { tag: 'Token', lexeme: 'WHITESPACE', id: state.tokens.length, offset: state.offset, value: match.word };
 }
 
 export function is_token(item: Item): item is Token {
-    return item.kind === 'Token';
+    return item.tag === 'Token';
 }
 
 export function is_token_boolean(item: Item): item is TokenBoolean {

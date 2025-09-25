@@ -17,14 +17,14 @@ const rule = {
 };
 
 interface State extends Item {
-    kind: "State",
+    tag: "State",
     offset: number,
     line: string,
     tokens: Token[]
 };
 
 export function lex(line: string): Result<Token[]> {
-    let result: Result<State> = { ok: true, value: { kind: "State", offset: 0, line: line, tokens: []}};
+    let result: Result<State> = { ok: true, value: { tag: "State", offset: 0, line: line, tokens: []}};
     while(is_ok(result)) {
         if (result.value.line.length > 0) {
             result = next_token(result.value);

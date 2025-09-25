@@ -5,12 +5,12 @@ import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, 
 import { builtins } from "./builtin";
 
 export type GlobalScope = {
-    kind: "GlobalScope"
+    tag: "GlobalScope"
     bindings: Map<string, ("builtin")>;
 };
 
 export type Scope = {
-    kind: "Scope"
+    tag: "Scope"
     parent: Scope | GlobalScope,
     bindings: Map<string, number>,
 };
@@ -31,14 +31,14 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         const target_id: "builtin" | number     = lookup(expr.name, scope);
         if (target_id === "builtin") {
             if (builtins.includes(expr.name)) {
-                const builtin: Flat_Builtin = { id: current_id, token: current_token, kind: "Flat_Builtin", name: expr.name as Flat_Builtin["name"] };
+                const builtin: Flat_Builtin = { id: current_id, token: current_token, tag: "Flat_Builtin", name: expr.name as Flat_Builtin["name"] };
                 ast[current_id] = builtin;
             } else {
                 throw new Error(`'${expr.name}' is not a built-in function`);
             }
         }
         else {
-            const ref: Flat_Reference = { id: current_id, token: current_token, kind: "Flat_Reference", target: {id: target_id} };
+            const ref: Flat_Reference = { id: current_id, token: current_token, tag: "Flat_Reference", target: {id: target_id} };
             ast[current_id]           = ref;
         }
         return ast;
@@ -83,7 +83,7 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         return ast;
     }
     else {
-        throw Error(`Name resolution not implemented for node ${expr.id} of kind ${expr.kind}`)
+        throw Error(`Name resolution not implemented for node ${expr.id} of tag ${expr.tag}`)
     }
 }
 
@@ -107,17 +107,17 @@ export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | nu
         }
     }
     else {
-        throw Error('Invalid kind of scope. Something is wrong with the name resolution implementation.')
+        throw Error('Invalid tag of scope. Something is wrong with the name resolution implementation.')
     }
 }
 
-function is_global_scope(item: Item): item is GlobalScope { return item.kind === "GlobalScope"; }
-function is_local_scope(item: Item): item is Scope { return item.kind === "Scope"; }
-function extend_scope(scope: GlobalScope | Scope): Scope { return { kind: "Scope", parent: scope, bindings: new Map<string, number>()}; }
+function is_global_scope(item: Item): item is GlobalScope { return item.tag === "GlobalScope"; }
+function is_local_scope(item: Item): item is Scope { return item.tag === "Scope"; }
+function extend_scope(scope: GlobalScope | Scope): Scope { return { tag: "Scope", parent: scope, bindings: new Map<string, number>()}; }
 function make_global_scope(): GlobalScope {
     let globals    = new Map<string, "builtin">();
     for (let b of builtins) {
         globals.set(b, "builtin");
     }
-    return { kind: "GlobalScope", bindings: globals};
+    return { tag: "GlobalScope", bindings: globals};
 }

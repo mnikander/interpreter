@@ -4,18 +4,18 @@ import { Item } from "./item";
 import { Token } from "./deprecated/token";
 
 export interface Error extends Item {
-    kind: "Error",
-    subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation",
+    tag: "Error",
+    subtag: "Lexing" | "Parsing" | "Semantic" | "Evaluation",
     token_id: number,
     message: string,
 }
 
-export function make_error(subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Error {
-    return { kind: "Error", subkind: subkind, token_id: token_number, message: message };
+export function make_error(subtag: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Error {
+    return { tag: "Error", subtag: subtag, token_id: token_number, message: message };
 }
 
 export function error_to_string(error: Error, tokens: Token[]): string {
-    return `${error.subkind} error: ${error.message} at token number ${error.token_id} '${tokens[error.token_id].value}'`;
+    return `${error.subtag} error: ${error.message} at token number ${error.token_id} '${tokens[error.token_id].value}'`;
 }
 
 export type Result<T> = { ok: true, value: T } | { ok: false, error: Error };
@@ -32,6 +32,6 @@ export function pass<T> (value: T): Result<T> {
     return { ok: true, value: value };
 }
 
-export function fail<T> (subkind: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Result<T> {
-    return { ok: false, error: make_error(subkind, message, token_number) };
+export function fail<T> (subtag: "Lexing" | "Parsing" | "Semantic" | "Evaluation", message: string, token_number: number): Result<T> {
+    return { ok: false, error: make_error(subtag, message, token_number) };
 }

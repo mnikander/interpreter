@@ -46,7 +46,7 @@ export function check_identifiers(ast: AST, env: Identifiers): Result<undefined>
         return { ok: true, value: undefined };
     }
     else {
-        return { ok: false, error: make_error("Semantic", "unknown kind of AST entry", ast.token) };
+        return { ok: false, error: make_error("Semantic", "unknown tag of AST entry", ast.token) };
     }
 }
 
