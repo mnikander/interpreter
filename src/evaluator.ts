@@ -3,7 +3,7 @@
 import { Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if } from "./flat_ast";
 import { evaluate_builtin } from "./builtin";
 
-export type Value = boolean | number | string;
+export type Value = { tag: 'Primitive', value: boolean | number | string };
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {
@@ -32,7 +32,7 @@ export function lookup(id: number, env: Environment): Value {
 
 export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
     if (is_literal(expr, ast)) {
-        return expr.value;
+        return { tag: 'Primitive', value: expr.value };
     }
     else if (is_identifier(expr, ast)) {
         throw Error(`Cannot evaluate unresolved reference to '${expr.name}' at token ${expr.token}`)
@@ -65,8 +65,8 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
     }
     else if (is_if(expr, ast)) {
         const condition = evaluate(ast[expr.condition.id], ast, env, stacked_args);
-        if (typeof condition === "boolean") {
-            return evaluate(ast[condition ? expr.if_true.id : expr.if_false.id], ast, env, stacked_args);
+        if (typeof (condition.value) === "boolean") {
+            return evaluate(ast[condition.value ? expr.if_true.id : expr.if_false.id], ast, env, stacked_args);
         } else {
             throw new Error(`Condition in 'if' expression did not evaluate to a boolean value`);
         }

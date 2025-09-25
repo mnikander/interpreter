@@ -8,7 +8,7 @@ describe('must evaluate basic expressions', () => {
         const ast: Flat_AST = [
             { id: 0, tag: 'Flat_Literal', value: 42}
         ];
-        expect(evaluate(ast[0], ast, make_env(), [])).toStrictEqual(42);
+        expect(evaluate(ast[0], ast, make_env(), []).value).toStrictEqual(42);
     });
 
     it('constant function', () => {
@@ -21,7 +21,7 @@ describe('must evaluate basic expressions', () => {
             {id: 4, tag: 'Flat_Literal', value: 1}
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env,[])).toStrictEqual(42);
+        expect(evaluate(ast[0], ast, env,[]).value).toStrictEqual(42);
     });
 
     it('identity function', () => {
@@ -34,7 +34,7 @@ describe('must evaluate basic expressions', () => {
             {id: 4, tag: 'Flat_Literal', value: 1}
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(1);
     });
 });
 
@@ -54,7 +54,7 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 8, tag: 'Flat_Literal', value: 2}
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(1);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(1);
     });
 
     it('second', () => {
@@ -72,7 +72,7 @@ describe('must evaluate nested lambda expressions', () => {
             {id: 8, tag: 'Flat_Literal', value: 2}
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(2);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(2);
     });
 });
 
@@ -86,7 +86,7 @@ describe('must evaluate let-bindings', () => {
             {id: 3, tag: 'Flat_Reference', target: {id: 1}},
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(42);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(42);
     });
 
     it.skip('binding a function', () => {
@@ -108,7 +108,7 @@ describe('must evaluate let-bindings', () => {
         ];
 
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(42);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(42);
     });
 
 });
@@ -125,7 +125,7 @@ describe('must evaluate arithmetic expressions', () => {
             {id: 4, tag: 'Flat_Literal', value: 2},
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(3);
     });
 
     it('nested addition', () => {
@@ -142,7 +142,7 @@ describe('must evaluate arithmetic expressions', () => {
             {id: 8, tag: 'Flat_Literal', value: 3},
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(6);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(6);
     });
 
     it('lambda which uses plus', () => {
@@ -163,7 +163,7 @@ describe('must evaluate arithmetic expressions', () => {
             {id: 12, tag: 'Flat_Literal', value: 2}
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(3);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(3);
     });
 
     it('subtraction via partial application', () => {
@@ -177,6 +177,6 @@ describe('must evaluate arithmetic expressions', () => {
             {id: 4, tag: 'Flat_Literal', value: 1},
         ];
         let env = make_env();
-        expect(evaluate(ast[0], ast, env, [])).toStrictEqual(2);
+        expect(evaluate(ast[0], ast, env, []).value).toStrictEqual(2);
     });
 });

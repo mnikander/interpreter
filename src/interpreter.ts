@@ -7,7 +7,7 @@ import { Flat_AST } from "./flat_ast";
 import { flatten } from "./flatten";
 import { resolve_names } from "./name_resolution";
 
-export function interpret(prompt: string) {
+export function interpret(prompt: string): boolean | number | string {
     const lexed: readonly Token[] = lex(prompt);
     const parsed = parse(lexed);
     const ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
@@ -16,5 +16,5 @@ export function interpret(prompt: string) {
     let env: Environment = make_env();
     const evaluated: Value = evaluate(linked_ast[0], linked_ast, env, []);
 
-    return evaluated;
+    return evaluated.value;
 }

@@ -21,22 +21,26 @@ function evaluate_unary(expr: Flat_Builtin, ast: Flat_AST, env: Environment, sta
     }
     const first = stacked_args.pop();
     
+    if (first === undefined) {
+        throw Error(`The argument of ${expr.name} is undefined`);
+    }
+
     if(is_builtin_negative(expr)) {
         // do a dynamic type-check, just in case
-        if (typeof first !== "number") {
+        if (typeof first.value !== "number") {
             throw Error("Built-in negative operation only supports numbers");
         }
         else {
-            return -first;
+            return { tag: 'Primitive', value: -first.value };
         }
     }
     else if (is_builtin_not(expr)) {
         // do a dynamic type-check, just in case
-        if (typeof first !== "boolean") {
+        if (typeof first.value !== "boolean") {
             throw Error("Built-in logical not operation only supports booleans");
         }
         else {
-            return !first;
+            return { tag: 'Primitive', value: !first.value };
         }
     }
     else {
@@ -61,49 +65,49 @@ function evaluate_binary(expr: Flat_Builtin, ast: Flat_AST, env: Environment, st
     if (is_builtin_equality(expr)) {
         switch (expr.name) {
             case '==':
-                return first == second;
+                return { tag: 'Primitive', value: first.value == second.value };
             case '!=':
-                return first != second;
+                return { tag: 'Primitive', value: first.value != second.value };
             default:
                 throw Error(`Cannot evaluate binary operation '${expr.name}' at token ${expr.token}`);
         }
     }
     else if (is_builtin_comparison(expr) || is_builtin_arithmetic(expr)) {
-        if (typeof first !== "number" || typeof second !== "number") {
+        if (typeof first.value !== "number" || typeof second.value !== "number") {
             throw Error("Built-in comparison/arithmetic operations only support numbers");
         }
         switch (expr.name) {
             case '<':
-                return first < second;
+                return { tag: 'Primitive', value: first.value < second.value };
             case '>':
-                return first > second;
+                return { tag: 'Primitive', value: first.value > second.value };
             case '<=':
-                return first <= second;
+                return { tag: 'Primitive', value: first.value <= second.value };
             case '>=':
-                return first >= second;
+                return { tag: 'Primitive', value: first.value >= second.value };
             case '+':
-                return first + second;
+                return { tag: 'Primitive', value: first.value + second.value };
             case '-':
-                return first - second;
+                return { tag: 'Primitive', value: first.value - second.value };
             case '*':
-                return first * second;
+                return { tag: 'Primitive', value: first.value * second.value };
             case '/':
-                return first / second;
+                return { tag: 'Primitive', value: first.value / second.value };
             case '%':
-                return first % second;
+                return { tag: 'Primitive', value: first.value % second.value };
             default:
                 throw Error(`Cannot evaluate binary operation '${expr.name}' at token ${expr.token}`);
         }
     }
     else if (is_builtin_logical(expr)) {
-        if (typeof first !== "boolean" || typeof second !== "boolean") {
+        if (typeof first.value !== "boolean" || typeof second.value !== "boolean") {
             throw Error("Built-in logical operations only support booleans");
         }
         switch (expr.name) {
             case '&&':
-                return first && second; 
+                return { tag: 'Primitive', value: first.value && second.value }; 
             case '||':
-                return first || second;
+                return { tag: 'Primitive', value: first.value || second.value };
             default:
                 throw Error(`Cannot evaluate binary operation '${expr.name}' at token ${expr.token}`);
         }
