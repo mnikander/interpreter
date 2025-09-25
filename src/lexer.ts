@@ -93,15 +93,8 @@ function push(state: State, token: Token): State {
 }
 
 function make_boolean (state: State, match: Match): TokenBoolean {
-    if (match.word === 'false' || match.word === 'False') {
-        return { tag: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: false };
-    }
-    else if (match.word === 'true' || match.word === 'True') {
-        return { tag: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: true };
-    }
-    else {
-        throw Error(`Expected boolean token to be either true or false but got '${match.word}'`);
-    }
+    const value = match.word !== 'false';
+    return { tag: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: value };
 }
 
 function make_number(state: State, match: Match): TokenNumber {
