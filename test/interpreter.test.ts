@@ -307,6 +307,10 @@ describe('lambdas', () => {
     });
 
     it('must allow passing lambda functions as arguments', () => {
+        expect(interpret("((((lambda a (lambda b a)) (lambda a a)) 2) 5)")).toBe(2);
+    });
+
+    it('must allow passing nested lambda functions as arguments', () => {
         expect(interpret("((((lambda a a) (lambda a (lambda b a))) 2) 5)")).toBe(2);
     });
 
