@@ -2,5 +2,4 @@
 
 export interface Item {
     tag: string,
-    subtag?: string,
 }
