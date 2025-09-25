@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let } from "./ast";
-import { make_error, Result } from "./../error";
+import { make_error, Result } from "./error";
 
 export type Identifiers = {
     parent: undefined | Identifiers;

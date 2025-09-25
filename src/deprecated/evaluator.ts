@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { AST, is_boolean, is_identifier, is_number, is_string, is_call, is_let, AtomIdentifier } from "./ast";
-import { Result, make_error, is_error } from "./../error";
+import { Result, make_error, is_error } from "./error";
 
 export type Primitive        = boolean | number | string;
 export type Value            = Primitive | ((args: Primitive[]) => Primitive)

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Item } from "./item";
+import { Item } from "../item";
 
 export type Token =
     | TokenWhitespace

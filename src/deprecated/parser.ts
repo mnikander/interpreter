@@ -1,8 +1,8 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { AST, Atom, Call, make_atom, make_call } from "./ast";
-import { make_error, is_error, is_ok, Result } from "./../error";
-import { is_token, Token } from "./../token";
+import { make_error, is_error, is_ok, Result } from "./error";
+import { is_token, Token } from "./token";
 
 type ParserState = { token_index: number, node_counter: number, tokens: readonly Token[]};
 

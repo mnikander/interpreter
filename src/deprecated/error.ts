@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "./item";
-import { Token } from "./token";
+import { Token } from "./deprecated/token";
 
 export interface Error extends Item {
     kind: "Error",

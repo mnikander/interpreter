@@ -1,86 +1,161 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { make_token, Token } from './token'
-import { Result, is_ok, pass, fail } from './error'
 import { Item } from './item'
 
-const rule = {
-    whitespace:  { description: "one or more whitespace characters", regex: /^\s+/},
-    open:        { description: "(",                                 regex: /\(/},
-    close:       { description: ")",                                 regex: /\)/},
-    bool:        { description: "a boolean",                         regex: /^(true|false)/},
-    int:         { description: "an integer",                        regex: /^[-+]?[0-9]+/},
-    float:       { description: "a float",                           regex: /^[-+]?((\d+\.\d*)|(\d*\.\d+))/},
-    string:      { description: "a string",                          regex: /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/},
-    id_alphanum: { description: "an alphanumeric identifier",        regex: /^[_a-zA-Z][_a-zA-Z0-9]*/},
-    id_special:  { description: "an operation identifier",           regex: /^[.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+/},
+export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenOpen | TokenClose | TokenWhitespace;
+export type TokenBoolean    = { kind: 'Token', lexeme: 'BOOL', id: number, offset: number, value: boolean }
+export type TokenNumber     = { kind: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number }
+export type TokenString     = { kind: 'Token', lexeme: 'STRING', id: number, offset: number, value: string }
+export type TokenIdentifier = { kind: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string }
+export type TokenOpen       = { kind: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' }
+export type TokenClose      = { kind: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' }
+export type TokenWhitespace = { kind: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string }
+
+export type Lexeme = 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'BOOL' | 'NUMBER' | 'STRING' | 'IDENTIFIER';
+
+const lexemes: Record<Lexeme, RegExp> = {
+    'WHITESPACE': /^\s+/,
+    'OPEN':       /^\(/,
+    'CLOSE':      /^\)/,
+    'BOOL':       /^(true|false)/,
+    'NUMBER':     /^[-+]?(?:\d*\.\d+|\d+\.\d*|\d+)/,
+    'STRING':     /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
+    'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
 };
 
+type Match = { lexeme: Lexeme, word: string };
+
 interface State extends Item {
-    kind: "State",
+    kind: 'State',
     offset: number,
     line: string,
     tokens: Token[]
 };
 
-export function lex(line: string): Result<Token[]> {
-    let result: Result<State> = { ok: true, value: { kind: "State", offset: 0, line: line, tokens: []}};
-    while(is_ok(result)) {
-        if (result.value.line.length > 0) {
-            result = next_token(result.value);
+export function lex(line: string): Token[] {
+    let state: State = { kind: 'State', offset: 0, line: line, tokens: []};
+    
+    while(state.offset < state.line.length) {
+        const match: undefined | Match =
+        check(state, 'BOOL') 
+        ?? check(state, 'NUMBER')
+        ?? check(state, 'STRING')
+        ?? check(state, 'IDENTIFIER')
+        ?? check(state, 'WHITESPACE')
+        ?? check(state, 'OPEN')
+        ?? check(state, 'CLOSE');
+
+        if (match) {
+            if (match.lexeme === 'BOOL') {
+                state = push(state, make_boolean(state, match));
+            }
+            else if (match.lexeme === 'NUMBER') {
+                state = push(state, make_number(state, match));
+            }
+            else if (match.lexeme === 'STRING' ) {
+                state = push(state, make_string(state, match));
+            }
+            else if (match.lexeme === 'IDENTIFIER') {
+                state = push(state, make_identifier(state, match));
+            }
+            else if (match.lexeme === 'OPEN') { 
+                state = push(state, make_open(state, match));
+            }
+            else if (match.lexeme === 'CLOSE') { 
+                state = push(state, make_close(state, match));
+            }
+            else if (match.lexeme === 'WHITESPACE') { 
+                state = push(state, make_whitespace(state, match));
+            }
+            state.offset += match.word.length;
         }
         else {
-            return pass(result.value.tokens);
+            throw Error(`Could not lex '${state.line[state.offset]}'.`);
         }
     }
-    return result;
+    return state.tokens;
 }
 
-function next_token(state: State): Result<State> {
-    let result: Result<State> = { ok: true, value: state };
-
-    result = try_token(rule.whitespace, make_token.whitespace, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.open, make_token.open, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.close, make_token.close, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.bool, make_token.boolean, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.float, make_token.number, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.int, make_token.number, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.string, make_token.string, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.id_alphanum, make_token.identifier, state);
-    if (is_ok(result)) return result;
-
-    result = try_token(rule.id_special, make_token.identifier, state);
-    if (is_ok(result)) return result;
-
-    return fail("Lexing", "invalid token, expected an atom", state.tokens.length);
-}
-
-function try_token(rule: { description: string, regex: RegExp }, make_token: undefined | Function, state: State): Result<State> {
-    const match = rule.regex.exec(state.line);
-    if (match && match.index === 0) { // verify the match starts at the beginning
-        const word = match[0];
-        state.offset += word.length;
-        state.line = state.line.slice(word.length);
-        if (make_token !== undefined) {
-            state.tokens.push(make_token(state.tokens.length, state.offset, word)); // TODO: it might be possible to construct a raw AST by appending into a data field here, instead of into a flat list of tokens
-        }
-        return pass(state);
+function check(state: State, expected: Lexeme): undefined | Match {
+    const remaining: string = state.line.slice(state.offset);
+    const match = lexemes[expected].exec(remaining)
+    if (match) {
+        return { lexeme: expected, word: match[0] };
     }
     else {
-        return fail("Lexing", `invalid token, expected ${rule.description}`, state.tokens.length);
+        return undefined;
     }
+}
+
+function push(state: State, token: Token): State {
+    state.tokens.push(token);
+    return state;
+}
+
+function make_boolean (state: State, match: Match): TokenBoolean {
+    if (match.word === 'false' || match.word === 'False') {
+        return { kind: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: false };
+    }
+    else if (match.word === 'true' || match.word === 'True') {
+        return { kind: 'Token', lexeme: 'BOOL', id: state.tokens.length, offset: state.offset, value: true };
+    }
+    else {
+        throw Error(`Expected boolean token to be either true or false but got '${match.word}'`);
+    }
+}
+
+function make_number(state: State, match: Match): TokenNumber {
+    return { kind: 'Token', lexeme: 'NUMBER', id: state.tokens.length, offset: state.offset, value: Number(match.word) };
+}
+
+function make_string(state: State, match: Match): TokenString {
+    return { kind: 'Token', lexeme: 'STRING', id: state.tokens.length, offset: state.offset, value: match.word };
+}
+
+function make_identifier (state: State, match: Match): TokenIdentifier {
+    return { kind: 'Token', lexeme: 'IDENTIFIER', id: state.tokens.length, offset: state.offset, value: match.word };
+}
+
+function make_open(state: State, match: Match): TokenOpen {
+    return { kind: 'Token', lexeme: 'OPEN', id: state.tokens.length, offset: state.offset, value: '(' };
+}
+
+function make_close(state: State, match: Match): TokenClose {
+    return { kind: 'Token', lexeme: 'CLOSE', id: state.tokens.length, offset: state.offset, value: ')' };
+}
+
+function make_whitespace(state: State, match: Match): TokenWhitespace {
+    return { kind: 'Token', lexeme: 'WHITESPACE', id: state.tokens.length, offset: state.offset, value: match.word };
+}
+
+export function is_token(item: Item): item is Token {
+    return item.kind === 'Token';
+}
+
+export function is_token_boolean(item: Item): item is TokenBoolean {
+    return is_token(item) && item.lexeme === 'BOOL';
+}
+
+export function is_token_number(item: Item): item is TokenNumber {
+    return is_token(item) && item.lexeme === 'NUMBER';
+}
+
+export function is_token_string(item: Item): item is TokenString {
+    return is_token(item) && item.lexeme === 'STRING';
+}
+
+export function is_token_identifier(item: Item): item is TokenIdentifier {
+    return is_token(item) && item.lexeme === 'IDENTIFIER';
+}
+
+export function is_token_open(item: Item): item is TokenOpen {
+    return is_token(item) && item.lexeme === 'OPEN';
+}
+
+export function is_token_close(item: Item): item is TokenClose {
+    return is_token(item) && item.lexeme === 'CLOSE';
+}
+
+export function is_token_whitespace(item: Item): item is TokenWhitespace {
+    return is_token(item) && item.lexeme === 'WHITESPACE';
 }

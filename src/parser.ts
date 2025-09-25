@@ -1,7 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_error, Result } from "./error";
-import { is_token, Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier } from "./token";
+import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token_boolean, is_token_number, is_token_string, is_token_identifier, is_token_open, is_token_close, is_token_whitespace } from "./lexer";
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
 export type Nested_Atom       = Nested_Identifier | Nested_Binding | Nested_Boolean | Nested_Number | Nested_String;
@@ -79,45 +78,45 @@ class Parser {
 
         this.skip_whitespace();
 
-        if (is_token.boolean(this.peek())) {
+        if (is_token_boolean(this.peek())) {
             this.consume();
             const id = this.emit();
             return { id: id, token: this.index-1, kind: "Nested_Boolean", value: (this.previous() as TokenBoolean).value };
         }
-        else if (is_token.number(this.peek())) {
+        else if (is_token_number(this.peek())) {
             this.consume();
             const id = this.emit();
             return { id: id, token: this.index-1, kind: "Nested_Number", value: (this.previous() as TokenNumber).value };
         }
-        else if (is_token.string(this.peek())) {
+        else if (is_token_string(this.peek())) {
             this.consume();
             const id = this.emit();
             return { id: id, token: this.index-1, kind: "Nested_String", value: (this.previous() as TokenString).value };
         }
-        else if (is_token.identifier(this.peek())) {
+        else if (is_token_identifier(this.peek())) {
             this.consume();
             const id = this.emit();
             return { id: id, token: this.index-1, kind: "Nested_Identifier", name: (this.previous() as TokenIdentifier).value };
         }
-        else if (is_token.open(this.peek())) {
+        else if (is_token_open(this.peek())) {
             this.consume();
             this.skip_whitespace();
             
             const potential_keyword: Token = this.peek();
-            if (is_token.identifier(potential_keyword) && potential_keyword.value === "lambda") {
+            if (is_token_identifier(potential_keyword) && potential_keyword.value === "lambda") {
                 return this.lambda();
             }
-            else if (is_token.identifier(potential_keyword) && potential_keyword.value === "let") {
+            else if (is_token_identifier(potential_keyword) && potential_keyword.value === "let") {
                 return this.letbind();
             }
-            else if (is_token.identifier(potential_keyword) && potential_keyword.value === "if") {
+            else if (is_token_identifier(potential_keyword) && potential_keyword.value === "if") {
                 return this.iff();
             }
             else {
                 return this.call();
             }
         }
-        else if (is_token.close(this.peek())) {
+        else if (is_token_close(this.peek())) {
             throw Error(`Expected an expression but got ')' instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
@@ -133,8 +132,8 @@ class Parser {
         this.consume();
         this.expect_whitespace();
 
-        if (!is_token.identifier(this.peek())) {
-            throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
+        if (!is_token_identifier(this.peek())) {
+            throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().lexeme} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
             const variable: Nested_Binding = this.binding();
@@ -155,8 +154,8 @@ class Parser {
         this.consume();
         this.expect_whitespace();
 
-        if (!is_token.identifier(this.peek())) {
-            throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().subkind} instead (token ${this.index} of ${this.tokens.length})`);
+        if (!is_token_identifier(this.peek())) {
+            throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().lexeme} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
             const variable: Nested_Binding = this.binding();
@@ -209,7 +208,7 @@ class Parser {
     }
 
     skip_whitespace() {
-        while (!this.is_at_end() && is_token.whitespace(this.peek())) {
+        while (!this.is_at_end() && is_token_whitespace(this.peek())) {
             this.consume();
         }
     }
@@ -219,11 +218,11 @@ class Parser {
             throw Error(`Parser::expect_whitespace() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
         }
         else {
-            if (is_token.whitespace(this.peek())) {
+            if (is_token_whitespace(this.peek())) {
                 this.consume();
             }
             else {
-                throw new Error(`Expected a whitespace and another expression, but got a '${this.peek().subkind}' instead (token ${this.index} of ${this.tokens.length})`);
+                throw new Error(`Expected a whitespace and another expression, but got a '${this.peek().lexeme}' instead (token ${this.index} of ${this.tokens.length})`);
             }
         }
     }
@@ -233,31 +232,26 @@ class Parser {
             throw Error(`Parser::expect_closing() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
         }
         else {
-            if (is_token.close(this.peek())) {
+            if (is_token_close(this.peek())) {
                 this.consume();
             }
             else {
-                throw new Error(`Expected ')' but got a '${this.peek().subkind}' instead (token ${this.index} of ${this.tokens.length})`);
+                throw new Error(`Expected ')' but got a '${this.peek().lexeme}' instead (token ${this.index} of ${this.tokens.length})`);
             }
         }
     }
 }
 
-export function parse(tokens: Result<readonly Token[]>) : { ast: Nested_Expression, node_count: number } {
-    if (is_error(tokens)) {
-        throw Error('Lexing failed');
+export function parse(tokens: readonly Token[]) : { ast: Nested_Expression, node_count: number } {
+    let parser = new Parser(tokens);
+    parser.skip_whitespace();
+    const expression: Nested_Expression = parser.expr();
+    parser.skip_whitespace();
+
+    if (parser.is_at_end()) {
+        return { ast: expression, node_count: parser.node_count };
     }
     else {
-        let parser = new Parser(tokens.value);
-        parser.skip_whitespace();
-        const expression: Nested_Expression = parser.expr();
-        parser.skip_whitespace();
-
-        if (parser.is_at_end()) {
-            return { ast: expression, node_count: parser.node_count };
-        }
-        else {
-            throw Error(`Expected a single expression, failed to fully parse input (token ${parser.index} of ${parser.tokens.length})`);
-        }
+        throw Error(`Expected a single expression, failed to fully parse input (token ${parser.index} of ${parser.tokens.length})`);
     }
 }
