@@ -1,7 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
 export type Id              = {id: number};
-export type Value           = boolean | number | string;
 export type Flat_AST        = Flat_Expression[];
 export type Flat_Expression = Flat_Literal | Flat_Identifier | Flat_Binding | Flat_Reference | Flat_Builtin | Flat_Lambda | Flat_Let | Flat_If | Flat_Call;
 export type Flat_Literal    = {id: number, token?: number, tag: 'Flat_Literal', value: (boolean | number | string)};

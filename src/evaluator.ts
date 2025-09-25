@@ -1,7 +1,9 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Value, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if } from "./flat_ast";
+import { Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if } from "./flat_ast";
 import { evaluate_builtin } from "./builtin";
+
+export type Value = boolean | number | string;
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {

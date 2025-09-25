@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Flat_Builtin, Flat_AST, Value } from "./flat_ast";
-import { Environment } from "./evaluator";
+import { Flat_Builtin, Flat_AST } from "./flat_ast";
+import { Environment, Value } from "./evaluator";
 
 export const builtins: readonly string[] = ["==" , "!=" , "<" , ">" , "<=" , ">=" , "+" , "-" , "*" , "/" , "%" , "~" , "&&" , "||" , "!"];
 

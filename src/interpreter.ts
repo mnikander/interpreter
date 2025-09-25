@@ -2,8 +2,8 @@
 
 import { lex, Token } from "./lexer";
 import { parse } from "./parser";
-import { Environment, make_env, evaluate } from "./evaluator";
-import { Flat_AST, Value } from "./flat_ast";
+import { Environment, Value, evaluate, make_env } from "./evaluator";
+import { Flat_AST } from "./flat_ast";
 import { flatten } from "./flatten";
 import { resolve_names } from "./name_resolution";
 
