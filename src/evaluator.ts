@@ -1,9 +1,12 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if } from "./flat_ast";
-import { evaluate_builtin } from "./builtin";
+import { Id, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if, Flat_Builtin } from "./flat_ast";
+import { Item } from "./item";
 
-export type Value = { tag: 'Primitive', value: boolean | number | string };
+export type Value          = PrimitiveValue | ClosureValue | BuiltinValue;
+export type PrimitiveValue = { tag: 'Primitive', value: boolean | number | string}
+export type ClosureValue   = { tag: 'Closure', binding: Id, body: Id, env:  Environment };
+export type BuiltinValue   = { tag: 'Builtin', name: string, arity: number, impl: ((args: PrimitiveValue[]) => PrimitiveValue), args: PrimitiveValue[] };
 
 // note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {
@@ -30,7 +33,7 @@ export function lookup(id: number, env: Environment): Value {
     }
 }
 
-export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
+export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment): Value {
     if (is_literal(expr, ast)) {
         return { tag: 'Primitive', value: expr.value };
     }
@@ -41,42 +44,106 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
         return lookup(expr.id, env);
     }
     else if (is_reference(expr, ast)) {
-        return evaluate(ast[expr.target.id], ast, env, stacked_args);
+        return evaluate(ast[expr.target.id], ast, env); // could/should this be replaced with a direct lookup?
     }
     else if (is_builtin(expr, ast)) {
-        return evaluate_builtin(expr, ast, env, stacked_args);
+        return make_builtin(expr, ast);
     }
     else if (is_lambda(expr, ast)) {
-        // dequeue an argument and store it in the environment instead
-        let first = stacked_args.pop();
-        if (first !== undefined) {
-            let extended_env = extend_env(env);
-            extended_env.bindings.set(expr.binding.id, first);
-            return evaluate(ast[expr.body.id], ast, extended_env, stacked_args)
-        }
-        else {
-            throw new Error("No arguments to bind to variable");
-        }
+        return { tag: 'Closure', binding: expr.binding, body: expr.body, env: env };
     }
     else if (is_let(expr, ast)) {
         let extended_env = extend_env(env);
-        extended_env.bindings.set(expr.binding.id, evaluate(ast[expr.value.id], ast, env, stacked_args));
-        return evaluate(ast[expr.body.id], ast, extended_env, stacked_args);
+        extended_env.bindings.set(expr.binding.id, evaluate(ast[expr.value.id], ast, env));
+        return evaluate(ast[expr.body.id], ast, extended_env);
     }
     else if (is_if(expr, ast)) {
-        const condition = evaluate(ast[expr.condition.id], ast, env, stacked_args);
-        if (typeof (condition.value) === "boolean") {
-            return evaluate(ast[condition.value ? expr.if_true.id : expr.if_false.id], ast, env, stacked_args);
+        const condition = evaluate(ast[expr.condition.id], ast, env);
+        if (is_primitive_value(condition) && typeof (condition.value) === "boolean") {
+            return evaluate(ast[condition.value ? expr.if_true.id : expr.if_false.id], ast, env);
         } else {
-            throw new Error(`Condition in 'if' expression did not evaluate to a boolean value`);
+            throw new Error(`Expect condition in 'if' expression to evaluate to a boolean value, evaluated to ${condition.tag} instead`);
         }
     }
     else if (is_call(expr, ast)) {
         // enqueue the provided argument
-        const evaluated_arg = evaluate(ast[expr.arg.id], ast, env, stacked_args);
-        return evaluate(ast[expr.body.id], ast, env, [...stacked_args, evaluated_arg]);
+        const evaluated_fn  = evaluate(ast[expr.body.id], ast, env);
+        const evaluated_arg = evaluate(ast[expr.arg.id], ast, env);
+        return apply(evaluated_fn, evaluated_arg, ast);
     }
     else {
         throw new Error("unhandled case in evaluation control flow");
+    }
+}
+
+function apply(fn: Value, arg: Value, ast: Flat_AST): Value {
+    if (is_closure_value(fn)) {
+        let extended_env = extend_env(fn.env);
+        extended_env.bindings.set(fn.binding.id, arg);
+        return evaluate(ast[fn.body.id], ast, extended_env);
+    }
+    else if (is_builtin_value(fn)) {
+        if (!is_primitive_value(arg)) {
+            throw Error(`Tried calling builtin function '${fn.name}' with non-primitive argument of type '${arg.tag}'`);
+        }
+        else {
+            fn.args.push(arg);
+            if (fn.args.length == fn.arity) {
+                return fn.impl(fn.args);
+            }
+            else {
+                return fn;
+            }
+        }
+    }
+    else {
+        throw(`Attempted to call a non-function value ${fn.value} of type ${fn.tag}`);
+    }
+}
+
+export function is_primitive_value(item: Item): item is PrimitiveValue {
+    return item.tag === 'Primitive';
+}
+
+function is_closure_value(item: Item): item is ClosureValue {
+    return item.tag === 'Closure';
+}
+
+function is_builtin_value(item: Item): item is BuiltinValue {
+    return item.tag === 'Builtin';
+}
+
+function make_builtin(expr: Flat_Builtin, ast:  Flat_AST): BuiltinValue {
+    switch (expr.name) {
+        case '~':
+            return { tag: 'Builtin', name: expr.name, arity: 1, impl: args => { return { tag: 'Primitive', value: -args[0].value }}, args: [] }
+        case '!':
+            return { tag: 'Builtin', name: expr.name, arity: 1, impl: args => { return { tag: 'Primitive', value: !args[0].value }}, args: [] }
+        case '==':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value == args[1].value }}, args: [] }
+        case '!=':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value != args[1].value }}, args: [] }
+        case '<':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value < args[1].value }}, args: [] }
+        case '>':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value > args[1].value }}, args: [] }
+        case '<=':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value <= args[1].value }}, args: [] }
+        case '>=':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value >= args[1].value }}, args: [] }
+        case '+':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value + args[1].value }}, args: [] }
+        case '-':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value - args[1].value }}, args: [] }
+        case '*':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value * args[1].value }}, args: [] }
+        case '/':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value / args[1].value }}, args: [] }
+        case '%':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value % args[1].value }}, args: [] }
+        case '&&':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value && args[1].value }}, args: [] } 
+        case '||':
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value || args[1].value }}, args: [] }
     }
 }

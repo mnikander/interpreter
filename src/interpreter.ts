@@ -2,7 +2,7 @@
 
 import { lex, Token } from "./lexer";
 import { parse } from "./parser";
-import { Environment, Value, evaluate, make_env } from "./evaluator";
+import { Environment, Value, evaluate, is_primitive_value, make_env } from "./evaluator";
 import { Flat_AST } from "./flat_ast";
 import { flatten } from "./flatten";
 import { resolve_names } from "./name_resolution";
@@ -14,7 +14,12 @@ export function interpret(prompt: string): boolean | number | string {
     const linked_ast: Flat_AST = resolve_names(ast);
 
     let env: Environment = make_env();
-    const evaluated: Value = evaluate(linked_ast[0], linked_ast, env, []);
+    const result: Value = evaluate(linked_ast[0], linked_ast, env);
 
-    return evaluated.value;
+    if (is_primitive_value(result)) {
+        return result.value;
+    }
+    else {
+        throw Error(`Interpreter expected a boolean, number, or string result, but got a '${result.tag}' instead.`);
+    }
 }

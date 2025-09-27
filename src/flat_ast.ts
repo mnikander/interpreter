@@ -13,6 +13,8 @@ export type Flat_If         = {id: number, token?: number, tag: 'Flat_If', condi
 export type Flat_Call       = {id: number, token?: number, tag: 'Flat_Call', body: Id, arg: Id};
 export type Flat_Builtin    = {id: number, token?: number, tag: 'Flat_Builtin', name: "==" | "!=" | "<" | ">" | "<=" | ">=" | "+" | "-" | "*" | "/" | "%" | "~" | "&&" | "||" | "!"};
 
+export const builtins: readonly string[] = ["==" , "!=" , "<" , ">" , "<=" , ">=" , "+" , "-" , "*" , "/" , "%" , "~" , "&&" , "||" , "!"];
+
 export function is_literal(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Literal { return expr.tag === 'Flat_Literal'; }
 export function is_identifier(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Identifier { return expr.tag === 'Flat_Identifier'; }
 export function is_binding(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Binding { return expr.tag === 'Flat_Binding'; }
