@@ -328,16 +328,6 @@ describe('lambdas', () => {
     });
 });
 
-describe.skip('references', () => {
-    it('must support creation of explicit references', () => {
-        expect(interpret("(let x 40 (let y (ref x) ((+ y) 2)))")).toBe(42);
-    });
-
-    it('must report an an error when a reference is created implicitly', () => {
-        expect(interpret("(let x 40 (let y x ((+ y) 2)))")).toContain("error");
-    });
-});
-
 describe.skip('arrays', () => {
     it.skip('should evaluate lambda expressions with array-literals as arguments', () => {
         expect(interpret("((lambda a a) [1 2])")).toBe(1);
