@@ -19,7 +19,7 @@ export function evaluate_builtin(expr: Flat_Builtin, ast: Flat_AST, env: Environ
 
 function evaluate_unary(expr: Flat_Builtin, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
     if (stacked_args.length < 1) {
-        throw Error(`Stack contains ${stacked_args.length} arguments, but expected 1 for the unary operation ${expr.name}.`)
+        throw Error(`Stack contains ${stacked_args.length} arguments, but expected 1 for the unary operation ${expr.name}.`);
     }
     const first = stacked_args.pop();
     
@@ -52,7 +52,7 @@ function evaluate_unary(expr: Flat_Builtin, ast: Flat_AST, env: Environment, sta
 
 function evaluate_binary(expr: Flat_Builtin, ast: Flat_AST, env: Environment, stacked_args: Value[]): Value {
     if (stacked_args.length < 2) {
-        throw Error(`Stack contains ${stacked_args.length} arguments, but expected 2 for the binary operation ${expr.name}.`)
+        throw Error(`Stack contains ${stacked_args.length} arguments, but expected 2 for the binary operation ${expr.name}.`);
     }
     const first = stacked_args.pop();
     const second = stacked_args.pop();

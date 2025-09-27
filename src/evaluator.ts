@@ -25,7 +25,7 @@ export function lookup(id: number, env: Environment): Value {
             return lookup(id, env.parent);
         }
         else {
-            throw new Error(`variable with id ${id} is undefined`)
+            throw new Error(`variable with id ${id} is undefined`);
         }
     }
 }
@@ -35,7 +35,7 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
         return { tag: 'Primitive', value: expr.value };
     }
     else if (is_identifier(expr, ast)) {
-        throw Error(`Cannot evaluate unresolved reference to '${expr.name}' at token ${expr.token}`)
+        throw Error(`Cannot evaluate unresolved reference to '${expr.name}' at token ${expr.token}`);
     }
     else if (is_binding(expr, ast)) {
         return lookup(expr.id, env);
@@ -55,7 +55,7 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment,
             return evaluate(ast[expr.body.id], ast, extended_env, stacked_args)
         }
         else {
-            throw new Error("No arguments to bind to variable")
+            throw new Error("No arguments to bind to variable");
         }
     }
     else if (is_let(expr, ast)) {

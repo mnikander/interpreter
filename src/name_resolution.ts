@@ -83,7 +83,7 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         return ast;
     }
     else {
-        throw Error(`Name resolution not implemented for node ${expr.id} of tag ${expr.tag}`)
+        throw Error(`Name resolution not implemented for node ${expr.id} of tag ${expr.tag}`);
     }
 }
 
@@ -94,7 +94,7 @@ export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | nu
             return entry;
         }
         else {
-            throw new Error(`variable with name ${name} is undefined`)
+            throw new Error(`variable with name ${name} is undefined`);
         }
     }
     else if (is_local_scope(scope)) {
@@ -107,7 +107,7 @@ export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | nu
         }
     }
     else {
-        throw Error('Invalid tag of scope. Something is wrong with the name resolution implementation.')
+        throw Error('Invalid tag of scope. Something is wrong with the name resolution implementation.');
     }
 }
 
