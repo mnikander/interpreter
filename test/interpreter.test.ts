@@ -328,6 +328,24 @@ describe('lambdas', () => {
     });
 });
 
+describe('recursion', () => {
+    it('must be able to call functions with themselves', () => {
+        expect(interpret("(let I (lambda x x) ((I I) 42))")).toBe(42);
+    });
+
+    it('must allow computing the factorial', () => {
+        expect(interpret(
+            "(let " 
+            + "Factorial "
+            + "(lambda f (lambda n (lambda acc "
+            + "    (if ((== 1) n) acc ( ( (f f) ((- n) 1) ) ((* acc) n) )) "
+            + "))) "
+            + "(((Factorial Factorial) 5) 1) "
+            + ")")
+        ).toBe(120);
+    });
+});
+
 describe.skip('arrays', () => {
     it.skip('should evaluate lambda expressions with array-literals as arguments', () => {
         expect(interpret("((lambda a a) [1 2])")).toBe(1);
