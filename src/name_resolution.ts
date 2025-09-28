@@ -75,11 +75,11 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
     }
     else if (is_if(expr, ast)) {
         const condition_node = ast[expr.condition.id];
-        const if_true_node = ast[expr.if_true.id];
-        const if_false_node = ast[expr.if_false.id];
+        const then_branch_node = ast[expr.then_branch.id];
+        const else_branch_node = ast[expr.else_branch.id];
         ast = resolve(condition_node, ast, scope);
-        ast = resolve(if_true_node, ast, scope);
-        ast = resolve(if_false_node, ast, scope);
+        ast = resolve(then_branch_node, ast, scope);
+        ast = resolve(else_branch_node, ast, scope);
         return ast;
     }
     else {

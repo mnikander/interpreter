@@ -149,7 +149,7 @@ describe('expressions', () => {
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
         const expected: Flat_Expression[] = [
-            {id: 0, token: 0, tag: 'Flat_If', condition: {id: 1}, if_true: {id: 2}, if_false: {id: 3}},
+            {id: 0, token: 0, tag: 'Flat_If', condition: {id: 1}, then_branch: {id: 2}, else_branch: {id: 3}},
             {id: 1, token: 3, tag: 'Flat_Literal', value: true},
             {id: 2, token: 5, tag: 'Flat_Literal', value: 42},
             {id: 3, token: 7, tag: 'Flat_Literal', value: 0},

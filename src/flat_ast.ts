@@ -9,7 +9,7 @@ export type Flat_Binding    = {id: number, token?: number, tag: 'Flat_Binding', 
 export type Flat_Reference  = {id: number, token?: number, tag: 'Flat_Reference', target: Id};
 export type Flat_Lambda     = {id: number, token?: number, tag: 'Flat_Lambda', binding: Id, body: Id};
 export type Flat_Let        = {id: number, token?: number, tag: 'Flat_Let', binding: Id, value: Id, body: Id};
-export type Flat_If         = {id: number, token?: number, tag: 'Flat_If', condition: Id, if_true: Id, if_false: Id};
+export type Flat_If         = {id: number, token?: number, tag: 'Flat_If', condition: Id, then_branch: Id, else_branch: Id};
 export type Flat_Call       = {id: number, token?: number, tag: 'Flat_Call', body: Id, arg: Id};
 export type Flat_Builtin    = {id: number, token?: number, tag: 'Flat_Builtin', name: "==" | "!=" | "<" | ">" | "<=" | ">=" | "+" | "-" | "*" | "/" | "%" | "~" | "&&" | "||" | "!"};
 

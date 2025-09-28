@@ -59,7 +59,7 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment)
     else if (is_if(expr, ast)) {
         const condition = evaluate(ast[expr.condition.id], ast, env);
         if (is_primitive_value(condition) && typeof (condition.value) === "boolean") {
-            return evaluate(ast[condition.value ? expr.if_true.id : expr.if_false.id], ast, env);
+            return evaluate(ast[condition.value ? expr.then_branch.id : expr.else_branch.id], ast, env);
         } else {
             throw new Error(`Expect condition in 'if' expression to evaluate to a boolean value, evaluated to ${condition.tag} instead`);
         }

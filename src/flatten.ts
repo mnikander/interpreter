@@ -33,13 +33,13 @@ function flatten_nodes(nested_ast: Nested_Expression, flat_ast: Flat_AST): Flat_
     else if (is_if(nested_ast)) {
         const index               = nested_ast.id;
         const condition           = { id: nested_ast.condition.id }; 
-        const if_true             = { id: nested_ast.if_true.id };
-        const if_false            = { id: nested_ast.if_false.id };
-        let node: Flat_If         = { id: index, token: nested_ast.token, tag: 'Flat_If', condition: condition, if_true: if_true, if_false: if_false };
+        const then_branch             = { id: nested_ast.then_branch.id };
+        const else_branch            = { id: nested_ast.else_branch.id };
+        let node: Flat_If         = { id: index, token: nested_ast.token, tag: 'Flat_If', condition: condition, then_branch: then_branch, else_branch: else_branch };
         flat_ast[index]           = node;
         flat_ast                  = flatten_nodes(nested_ast.condition, flat_ast);
-        flat_ast                  = flatten_nodes(nested_ast.if_true, flat_ast);
-        flat_ast                  = flatten_nodes(nested_ast.if_false, flat_ast);
+        flat_ast                  = flatten_nodes(nested_ast.then_branch, flat_ast);
+        flat_ast                  = flatten_nodes(nested_ast.else_branch, flat_ast);
     }
     else if (is_call(nested_ast)) {
         const index               = nested_ast.id;

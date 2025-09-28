@@ -12,7 +12,7 @@ export type Nested_Binding    = {id: number, token: number, tag: 'Nested_Binding
 export type Nested_Reference  = {id: number, token: number, tag: 'Nested_Reference', target: string};
 export type Nested_Lambda     = {id: number, token: number, tag: 'Nested_Lambda', binding: Nested_Binding, body: Nested_Expression};
 export type Nested_Let        = {id: number, token: number, tag: 'Nested_Let', binding: Nested_Binding, value: Nested_Expression, body: Nested_Expression};
-export type Nested_If         = {id: number, token: number, tag: 'Nested_If', condition: Nested_Expression, if_true: Nested_Expression, if_false: Nested_Expression};
+export type Nested_If         = {id: number, token: number, tag: 'Nested_If', condition: Nested_Expression, then_branch: Nested_Expression, else_branch: Nested_Expression};
 export type Nested_Call       = {id: number, token: number, tag: 'Nested_Call', fn: Nested_Expression, arg: Nested_Expression};
 
 export function is_expression(expr: Nested_Expression): expr is Nested_Expression { return is_atom(expr) || is_lambda(expr) || is_let(expr) || is_call(expr); }
@@ -179,12 +179,12 @@ class Parser {
         this.expect_whitespace();
         const condition: Nested_Expression = this.expr();
         this.expect_whitespace();
-        const if_true: Nested_Expression = this.expr();
+        const then_branch: Nested_Expression = this.expr();
         this.expect_whitespace();
-        const if_false: Nested_Expression = this.expr();
+        const else_branch: Nested_Expression = this.expr();
         this.skip_whitespace();
         this.expect_closing();
-        return { id: id, token: potential_keyword.id-1, tag: "Nested_If", condition: condition, if_true: if_true, if_false: if_false };
+        return { id: id, token: potential_keyword.id-1, tag: "Nested_If", condition: condition, then_branch: then_branch, else_branch: else_branch };
     }
 
     // (expr expr)
