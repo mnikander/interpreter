@@ -338,7 +338,7 @@ describe('recursion', () => {
             "(let " 
             + "Factorial "
             + "(lambda f (lambda n (lambda acc "
-            + "    (if ((== 1) n) acc ( ( (f f) ((- n) 1) ) ((* acc) n) )) "
+            + "    (if ((<= n) 1) acc ( ( (f f) ((- n) 1) ) ((* acc) n) )) "
             + "))) "
             + "(((Factorial Factorial) 5) 1) "
             + ")")
