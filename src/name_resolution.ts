@@ -30,7 +30,8 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
         const target_id: "builtin" | number     = lookup(expr.name, scope);
         if (target_id === "builtin") {
             if (builtins.includes(expr.name)) {
-                const builtin: Flat_Builtin = { id: current_id, token: current_token, tag: "Flat_Builtin", name: expr.name as Flat_Builtin["name"] };
+                const builtin: Flat_Builtin =
+                    { id: current_id, token: current_token, tag: "Flat_Builtin", name: expr.name as Flat_Builtin["name"] };
                 ast[current_id] = builtin;
             } else {
                 throw new Error(`'${expr.name}' is not a built-in function`);
@@ -112,7 +113,11 @@ export function lookup(name: string, scope: GlobalScope | Scope): "builtin" | nu
 
 function is_global_scope(item: Item): item is GlobalScope { return item.tag === "GlobalScope"; }
 function is_local_scope(item: Item): item is Scope { return item.tag === "Scope"; }
-function extend_scope(scope: GlobalScope | Scope): Scope { return { tag: "Scope", parent: scope, bindings: new Map<string, number>()}; }
+
+function extend_scope(scope: GlobalScope | Scope): Scope {
+    return { tag: "Scope", parent: scope, bindings: new Map<string, number>()};
+}
+
 function make_global_scope(): GlobalScope {
     let globals    = new Map<string, "builtin">();
     for (let b of builtins) {

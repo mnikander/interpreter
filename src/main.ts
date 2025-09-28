@@ -43,7 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const output = document.getElementById("output");
     if (output) {
-        output.textContent = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nWelcome! Try typing:\n\n((+ 1) 2)\n\nand press Enter. For more info, click on the help button in the top corner.\n\n";
+        output.textContent = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+            + "Welcome! Try typing:\n\n"
+            + "((+ 1) 2)\n\n"
+            + "and press Enter.\n\n"
+            + "For more info, click on the 'Help'\nbutton in the top-left corner.\n\n";
     }
 
     const inputField = document.getElementById("input") as HTMLInputElement;

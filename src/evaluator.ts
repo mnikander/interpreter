@@ -8,7 +8,6 @@ export type PrimitiveValue = { tag: 'Primitive', value: boolean | number | strin
 export type ClosureValue   = { tag: 'Closure', binding: Id, body: Id, env:  Environment };
 export type BuiltinValue   = { tag: 'Builtin', name: string, arity: number, impl: ((args: PrimitiveValue[]) => PrimitiveValue), args: PrimitiveValue[] };
 
-// note that the environment stores everything as dynamic (i.e. runtime) values, even the constants from the Flat_AST, so that everything can be evaluated directly
 export type Environment = {
     parent: undefined | Environment,
     bindings: Map<number, Value>,
@@ -66,7 +65,6 @@ export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment)
         }
     }
     else if (is_call(expr, ast)) {
-        // enqueue the provided argument
         const evaluated_fn  = evaluate(ast[expr.body.id], ast, env);
         const evaluated_arg = evaluate(ast[expr.arg.id], ast, env);
         return apply(evaluated_fn, evaluated_arg, ast);
