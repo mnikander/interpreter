@@ -26,6 +26,9 @@ Welcome! Try typing:
 
 ((+ 1) 2)
 
-and press Enter. For more info, click on the help button in the top corner.
+and press Enter.
+
+For more info, click on the 'Help'
+button in the top-left corner.
 
 `);const i=document.getElementById("input");i==null||i.focus(),i==null||i.setSelectionRange(i.value.length,i.value.length),i==null||i.addEventListener("keydown",o=>{o.key==="Enter"&&(o.preventDefault(),fe())})});
