@@ -50,6 +50,23 @@ export function check_whitespace(tokens: readonly Token[]): boolean {
     return true;
 }
 
+export function remove_whitespace(tokens: readonly Token[]): Token[] {
+    let output: Token[] = [];
+
+    let new_i: number = 0;
+    for (let i = 0; i < tokens.length; i++) {
+        const tk = tokens[i];
+        if (!is_token_whitespace(tk)) {
+            let temp = tk;
+            temp.id = new_i;
+            output.push(temp);
+            new_i++;
+        }
+    }
+
+    return output;
+}
+
 function make_whitespace(token_number: number, character_offset: number): TokenWhitespace {
     return { tag: 'Token', lexeme: 'WHITESPACE', id: token_number, offset: character_offset, value: ' ' };
 }

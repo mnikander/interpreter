@@ -1,6 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token_boolean, is_token_number, is_token_string, is_token_identifier, is_token_open, is_token_close, is_token_whitespace } from "./lexer";
+import { remove_whitespace } from "./whitespace";
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
 export type Nested_Atom       = Nested_Identifier | Nested_Binding | Nested_Boolean | Nested_Number | Nested_String;
@@ -35,7 +36,7 @@ class Parser {
     constructor(tokens: readonly Token[]) {
         this.index = 0;
         this.node_count = 0;
-        this.tokens = tokens;
+        this.tokens = remove_whitespace(tokens);
     }
 
     peek(): Token {
@@ -76,8 +77,6 @@ class Parser {
             throw Error(`Parser::expr() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
         }
 
-        this.skip_whitespace();
-
         if (is_token_boolean(this.peek())) {
             this.consume();
             const id = this.emit();
@@ -100,7 +99,6 @@ class Parser {
         }
         else if (is_token_open(this.peek())) {
             this.consume();
-            this.skip_whitespace();
             
             const potential_keyword: Token = this.peek();
             if (is_token_identifier(potential_keyword) && potential_keyword.value === "lambda") {
@@ -130,17 +128,13 @@ class Parser {
         const id = this.emit();
         const potential_keyword: Token = this.peek();
         this.consume();
-        this.expect_whitespace();
 
         if (!is_token_identifier(this.peek())) {
             throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().lexeme} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
             const variable: Nested_Binding = this.binding();
-            this.expect_whitespace();
-
             const body: Nested_Expression = this.expr();
-            this.skip_whitespace();
             this.expect_closing();
             return { id: id, token: potential_keyword.id-1, tag: "Nested_Lambda", binding: variable, body: body };
         }
@@ -152,18 +146,14 @@ class Parser {
         const id = this.emit();
         const potential_keyword: Token = this.peek();
         this.consume();
-        this.expect_whitespace();
 
         if (!is_token_identifier(this.peek())) {
             throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().lexeme} instead (token ${this.index} of ${this.tokens.length})`);
         }
         else {
             const variable: Nested_Binding = this.binding();
-            this.expect_whitespace();
             const value: Nested_Expression = this.expr();
-            this.expect_whitespace();
             const body: Nested_Expression = this.expr();
-            this.skip_whitespace();
             this.expect_closing();
             return { id: id, token: potential_keyword.id-1, tag: "Nested_Let", binding: variable, value: value, body: body };
         }
@@ -176,13 +166,9 @@ class Parser {
         const potential_keyword: Token = this.peek();
         this.consume();
 
-        this.expect_whitespace();
         const condition: Nested_Expression = this.expr();
-        this.expect_whitespace();
         const then_branch: Nested_Expression = this.expr();
-        this.expect_whitespace();
         const else_branch: Nested_Expression = this.expr();
-        this.skip_whitespace();
         this.expect_closing();
         return { id: id, token: potential_keyword.id-1, tag: "Nested_If", condition: condition, then_branch: then_branch, else_branch: else_branch };
     }
@@ -193,9 +179,7 @@ class Parser {
         const id = this.emit();
 
         const fn: Nested_Expression = this.expr();
-        this.expect_whitespace();
         const arg: Nested_Expression = this.expr();
-        this.skip_whitespace();
         this.expect_closing();
         return { id: id, token: fn.token-1, tag: "Nested_Call", fn: fn, arg: arg };
     }
@@ -205,26 +189,6 @@ class Parser {
         const token = (this.peek() as TokenIdentifier);
         this.consume();
         return { id: id, token: token.id, tag: "Nested_Binding", name: token.value };
-    }
-
-    skip_whitespace() {
-        while (!this.is_at_end() && is_token_whitespace(this.peek())) {
-            this.consume();
-        }
-    }
-
-    expect_whitespace() {
-        if (this.is_at_end()) {
-            throw Error(`Parser::expect_whitespace() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
-        }
-        else {
-            if (is_token_whitespace(this.peek())) {
-                this.consume();
-            }
-            else {
-                throw new Error(`Expected a whitespace and another expression, but got a '${this.peek().lexeme}' instead (token ${this.index} of ${this.tokens.length})`);
-            }
-        }
     }
 
     expect_closing() {
@@ -244,9 +208,7 @@ class Parser {
 
 export function parse(tokens: readonly Token[]) : { ast: Nested_Expression, node_count: number } {
     let parser = new Parser(tokens);
-    parser.skip_whitespace();
     const expression: Nested_Expression = parser.expr();
-    parser.skip_whitespace();
 
     if (parser.is_at_end()) {
         return { ast: expression, node_count: parser.node_count };
