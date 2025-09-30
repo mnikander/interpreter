@@ -6,8 +6,10 @@ import { Environment, Value, evaluate, is_primitive_value, make_env } from "./ev
 import { Flat_AST } from "./flat_ast";
 import { flatten } from "./flatten";
 import { resolve_names } from "./resolver";
+import { check_parentheses } from "./parentheses";
 
 export function interpret(prompt: string): boolean | number | string {
+    const check = check_parentheses(prompt);
     const lexed: readonly Token[] = lex(prompt);
     const parsed = parse(lexed);
     const unresolved_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
