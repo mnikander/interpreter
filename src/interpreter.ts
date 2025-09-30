@@ -5,7 +5,7 @@ import { parse } from "./parser";
 import { Environment, Value, evaluate, is_primitive_value, make_env } from "./evaluator";
 import { Flat_AST } from "./flat_ast";
 import { flatten } from "./flatten";
-import { resolve_names } from "./name_resolution";
+import { resolve_names } from "./resolver";
 
 export function interpret(prompt: string): boolean | number | string {
     const lexed: readonly Token[] = lex(prompt);
