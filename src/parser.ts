@@ -200,7 +200,7 @@ class Parser {
                 this.consume();
             }
             else {
-                throw new Error(`Expected ')' but got a '${this.peek().lexeme}' instead`);
+                throw new Error(`Expected ')' but got '${this.peek().value}' of type '${this.peek().lexeme}' instead`);
             }
         }
     }
