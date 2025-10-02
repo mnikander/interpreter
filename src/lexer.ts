@@ -2,15 +2,16 @@
 
 import { Item } from './item'
 
-export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenOpen | TokenClose | TokenWhitespace;
+export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenKeyword | TokenOpen | TokenClose | TokenWhitespace;
 export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', id: number, offset: number, value: boolean };
 export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number };
 export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string };
 export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string };
+export type TokenKeyword    = { tag: 'Token', lexeme: 'KEYWORD', id: number, offset: number, value: 'lambda' | 'let' | 'if' };
 export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' };
 export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' };
 export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string };
-export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'WHITESPACE' | 'OPEN' | 'CLOSE';
+export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'KEYWORD' | 'WHITESPACE' | 'OPEN' | 'CLOSE';
 
 const lexemes: Record<Lexeme, RegExp> = {
     'WHITESPACE': /^\s+/,
@@ -20,6 +21,7 @@ const lexemes: Record<Lexeme, RegExp> = {
     'NUMBER':     /^[-+]?(?:\d*\.\d+|\d+\.\d*|\d+)/,
     'STRING':     /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
     'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
+    'KEYWORD':    /^(lambda|let|if)/,
 };
 
 export function lex(line: string): Token[] {
@@ -30,6 +32,7 @@ export function lex(line: string): Token[] {
         check(state, 'BOOLEAN') 
         ?? check(state, 'NUMBER')
         ?? check(state, 'STRING')
+        ?? check(state, 'KEYWORD')
         ?? check(state, 'IDENTIFIER')
         ?? check(state, 'WHITESPACE')
         ?? check(state, 'OPEN')
@@ -44,6 +47,9 @@ export function lex(line: string): Token[] {
             }
             else if (match.lexeme === 'STRING' ) {
                 state = push(state, make_string(state, match));
+            }
+            else if (match.lexeme === 'KEYWORD') {
+                state = push(state, make_keyword(state, match));
             }
             else if (match.lexeme === 'IDENTIFIER') {
                 state = push(state, make_identifier(state, match));
@@ -109,6 +115,10 @@ function make_identifier (state: State, match: Match): TokenIdentifier {
     return { tag: 'Token', lexeme: 'IDENTIFIER', id: state.tokens.length, offset: state.offset, value: match.word };
 }
 
+function make_keyword (state: State, match: Match): TokenKeyword {
+    return { tag: 'Token', lexeme: 'KEYWORD', id: state.tokens.length, offset: state.offset, value: match.word };
+}
+
 function make_open(state: State, match: Match): TokenOpen {
     return { tag: 'Token', lexeme: 'OPEN', id: state.tokens.length, offset: state.offset, value: '(' };
 }
@@ -140,6 +150,10 @@ export function is_token_string(item: Item): item is TokenString {
 
 export function is_token_identifier(item: Item): item is TokenIdentifier {
     return is_token(item) && item.lexeme === 'IDENTIFIER';
+}
+
+export function is_token_keyword(item: Item): item is TokenKeyword {
+    return is_token(item) && item.lexeme === 'KEYWORD';
 }
 
 export function is_token_open(item: Item): item is TokenOpen {

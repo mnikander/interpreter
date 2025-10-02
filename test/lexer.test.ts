@@ -59,6 +59,13 @@ describe('individual tokens', () => {
         expect(tokens[0].value).toBe(-0.1);
     });
 
+    it('must tokenize a keyword token', () => {
+        const tokens = lex('lambda');
+        expect(tokens.length).toBe(1);
+        expect(tokens[0].lexeme).toBe("KEYWORD");
+        expect(tokens[0].value).toBe('lambda');
+    });
+
     it('must tokenize single letter names to an identifier', () => {
         const tokens = lex('x');
         expect(tokens.length).toBe(1);
