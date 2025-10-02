@@ -25,6 +25,6 @@ export function interpret(prompt: string): boolean | number | string {
         return result.value;
     }
     else {
-        throw Error(`Interpreter expected a boolean, number, or string result, but got a '${result.tag}' instead.`);
+        throw Error(`Expected final result to be a boolean, number, or string, got a '${result.tag}' instead`);
     }
 }

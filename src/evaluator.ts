@@ -95,7 +95,7 @@ function apply(fn: Value, arg: Value, ast: Flat_AST): Value {
         }
     }
     else {
-        throw(`Attempted to call a non-function value ${fn.value} of type ${fn.tag}`);
+        throw(`Expected a function, but got '${fn.value}' of type '${fn.tag}'`);
     }
 }
 
