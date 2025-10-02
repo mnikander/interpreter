@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_token_open, Token, TokenWhitespace, TokenOpen, TokenClose, is_token_close, is_token_whitespace } from "./lexer";
+import { is_token_open, Token, TokenWhitespace, TokenOpen, TokenClose, is_token_close, is_token_whitespace, is_token_eof } from "./lexer";
 
 export function add_whitespace_to_parentheses(tokens: readonly Token[]): Token[] {
     let output: Token[] = [];
@@ -36,7 +36,7 @@ export function check_whitespace(tokens: readonly Token[]): boolean {
         const tk = tokens[i];
         
         if (expect_whitespace) {
-            if (is_token_whitespace(tk)) {
+            if (is_token_whitespace(tk) || is_token_eof(tk)) {
                 expect_whitespace = false; // we got what we were looking for -> all good
             }
             else {

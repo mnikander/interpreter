@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token_boolean, is_token_number, is_token_string, is_token_identifier, is_token_open, is_token_close, is_token_whitespace, is_token_keyword, is_token_lambda, is_token_let, is_token_if } from "./lexer";
+import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token_boolean, is_token_number, is_token_string, is_token_identifier, is_token_open, is_token_close, is_token_whitespace, is_token_keyword, is_token_lambda, is_token_let, is_token_if, is_token_eof } from "./lexer";
 import { remove_whitespace } from "./whitespace";
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
@@ -68,7 +68,7 @@ class Parser {
     }
 
     is_at_end(): boolean {
-        return this.index === this.tokens.length;
+        return is_token_eof(this.peek());
     }
 
     expr(): Nested_Expression {
