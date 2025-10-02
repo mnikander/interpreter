@@ -3,14 +3,14 @@
 import { Item } from './item'
 
 export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenOpen | TokenClose | TokenWhitespace;
-export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', id: number, offset: number, value: boolean }
-export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number }
-export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string }
-export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string }
-export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' }
-export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' }
-export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string }
-export type Lexeme          = 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER';
+export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', id: number, offset: number, value: boolean };
+export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number };
+export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string };
+export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string };
+export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' };
+export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' };
+export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string };
+export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'WHITESPACE' | 'OPEN' | 'CLOSE';
 
 const lexemes: Record<Lexeme, RegExp> = {
     'WHITESPACE': /^\s+/,

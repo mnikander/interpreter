@@ -4,7 +4,7 @@ import { Id, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference,
 import { Item } from "./item";
 
 export type Value          = PrimitiveValue | ClosureValue | BuiltinValue;
-export type PrimitiveValue = { tag: 'Primitive', value: boolean | number | string}
+export type PrimitiveValue = { tag: 'Primitive', value: boolean | number | string};
 export type ClosureValue   = { tag: 'Closure', binding: Id, body: Id, env:  Environment };
 export type BuiltinValue   = { tag: 'Builtin', name: string, arity: number, impl: ((args: PrimitiveValue[]) => PrimitiveValue), args: PrimitiveValue[] };
 
