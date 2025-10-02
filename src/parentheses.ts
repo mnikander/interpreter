@@ -11,7 +11,7 @@ export function check_parentheses(line: string): boolean {
             count--;
         }
         if (count < 0) {
-            throw Error(`Unbalanced parentheses. Unexpected ')' at character ${i}. Perhaps it should not be there, or a '(' is missing before it.`);
+            throw Error(`Unbalanced parentheses. Expected '(' before character ${i}.`);
         }
     }
 
