@@ -44,7 +44,7 @@ class Parser {
             return this.tokens[this.index];
         }
         else {
-            throw Error(`Parser::peek() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Parser::peek() is out-of-bounds`);
         }
     }
     
@@ -53,7 +53,7 @@ class Parser {
             return this.tokens[this.index-1];
         }
         else {
-            throw Error(`Parser::previous() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Parser::previous() is out-of-bounds`);
         }
     }
 
@@ -74,7 +74,7 @@ class Parser {
     expr(): Nested_Expression {
 
         if(this.is_at_end()) {
-            throw Error(`Parser::expr() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Parser::expr() is out-of-bounds`);
         }
 
         if (is_token_boolean(this.peek())) {
@@ -115,10 +115,10 @@ class Parser {
             }
         }
         else if (is_token_close(this.peek())) {
-            throw Error(`Expected an expression but got ')' instead (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Expected an expression but got ')' instead`);
         }
         else {
-            throw Error(`Unknown token tag '${this.peek()}' (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Unknown token tag '${this.peek()}'`);
         }
     }
 
@@ -130,7 +130,7 @@ class Parser {
         this.consume();
 
         if (!is_token_identifier(this.peek())) {
-            throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().lexeme} instead (token ${this.index} of ${this.tokens.length})`);
+            throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().lexeme} instead`);
         }
         else {
             const variable: Nested_Binding = this.binding();
@@ -148,7 +148,7 @@ class Parser {
         this.consume();
 
         if (!is_token_identifier(this.peek())) {
-            throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().lexeme} instead (token ${this.index} of ${this.tokens.length})`);
+            throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().lexeme} instead`);
         }
         else {
             const variable: Nested_Binding = this.binding();
@@ -193,14 +193,14 @@ class Parser {
 
     expect_closing() {
         if (this.is_at_end()) {
-            throw Error(`Parser::expect_closing() is out-of-bounds (token ${this.index} of ${this.tokens.length})`);
+            throw Error(`Expected ')' but went out-of-bounds`);
         }
         else {
             if (is_token_close(this.peek())) {
                 this.consume();
             }
             else {
-                throw new Error(`Expected ')' but got a '${this.peek().lexeme}' instead (token ${this.index} of ${this.tokens.length})`);
+                throw new Error(`Expected ')' but got a '${this.peek().lexeme}' instead`);
             }
         }
     }
@@ -214,6 +214,6 @@ export function parse(tokens: readonly Token[]) : { ast: Nested_Expression, node
         return { ast: expression, node_count: parser.node_count };
     }
     else {
-        throw Error(`Expected a single expression, failed to fully parse input (token ${parser.index} of ${parser.tokens.length})`);
+        throw Error(`Expected a single expression, failed to fully parse input`);
     }
 }
