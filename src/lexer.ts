@@ -2,16 +2,18 @@
 
 import { Item } from './item'
 
-export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenKeyword | TokenOpen | TokenClose | TokenWhitespace;
+export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenLambda | TokenLet | TokenIf | TokenOpen | TokenClose | TokenWhitespace;
 export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', id: number, offset: number, value: boolean };
 export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number };
 export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string };
 export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string };
-export type TokenKeyword    = { tag: 'Token', lexeme: 'KEYWORD', id: number, offset: number, value: 'lambda' | 'let' | 'if' };
+export type TokenLambda     = { tag: 'Token', lexeme: 'LAMBDA', id: number, offset: number, value: 'lambda' };
+export type TokenLet        = { tag: 'Token', lexeme: 'LET', id: number, offset: number, value: 'let' };
+export type TokenIf         = { tag: 'Token', lexeme: 'IF', id: number, offset: number, value: 'if' };
 export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' };
 export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' };
 export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string };
-export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'KEYWORD' | 'WHITESPACE' | 'OPEN' | 'CLOSE';
+export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'LAMBDA' | 'LET' | 'IF' | 'WHITESPACE' | 'OPEN' | 'CLOSE';
 
 const lexemes: Record<Lexeme, RegExp> = {
     'WHITESPACE': /^\s+/,
@@ -21,7 +23,9 @@ const lexemes: Record<Lexeme, RegExp> = {
     'NUMBER':     /^[-+]?(?:\d*\.\d+|\d+\.\d*|\d+)/,
     'STRING':     /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
     'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
-    'KEYWORD':    /^(lambda|let|if)/,
+    'LAMBDA':     /^lambda/,
+    'LET':        /^let/,
+    'IF':         /^if/,
 };
 
 export function lex(line: string): Token[] {
@@ -32,7 +36,9 @@ export function lex(line: string): Token[] {
         check(state, 'BOOLEAN') 
         ?? check(state, 'NUMBER')
         ?? check(state, 'STRING')
-        ?? check(state, 'KEYWORD')
+        ?? check(state, 'LAMBDA')
+        ?? check(state, 'LET')
+        ?? check(state, 'IF')
         ?? check(state, 'IDENTIFIER')
         ?? check(state, 'WHITESPACE')
         ?? check(state, 'OPEN')
@@ -48,8 +54,14 @@ export function lex(line: string): Token[] {
             else if (match.lexeme === 'STRING' ) {
                 state = push(state, make_string(state, match));
             }
-            else if (match.lexeme === 'KEYWORD') {
-                state = push(state, make_keyword(state, match));
+            else if (match.lexeme === 'LAMBDA') {
+                state = push(state, make_lambda(state, match));
+            }
+            else if (match.lexeme === 'LET') {
+                state = push(state, make_let(state, match));
+            }
+            else if (match.lexeme === 'IF') {
+                state = push(state, make_if(state, match));
             }
             else if (match.lexeme === 'IDENTIFIER') {
                 state = push(state, make_identifier(state, match));
@@ -115,8 +127,16 @@ function make_identifier (state: State, match: Match): TokenIdentifier {
     return { tag: 'Token', lexeme: 'IDENTIFIER', id: state.tokens.length, offset: state.offset, value: match.word };
 }
 
-function make_keyword (state: State, match: Match): TokenKeyword {
-    return { tag: 'Token', lexeme: 'KEYWORD', id: state.tokens.length, offset: state.offset, value: match.word };
+function make_lambda (state: State, match: Match): TokenLambda {
+    return { tag: 'Token', lexeme: 'LAMBDA', id: state.tokens.length, offset: state.offset, value: 'lambda' };
+}
+
+function make_let (state: State, match: Match): TokenLet {
+    return { tag: 'Token', lexeme: 'LET', id: state.tokens.length, offset: state.offset, value: 'let' };
+}
+
+function make_if (state: State, match: Match): TokenIf {
+    return { tag: 'Token', lexeme: 'IF', id: state.tokens.length, offset: state.offset, value: 'if' };
 }
 
 function make_open(state: State, match: Match): TokenOpen {
@@ -152,8 +172,16 @@ export function is_token_identifier(item: Item): item is TokenIdentifier {
     return is_token(item) && item.lexeme === 'IDENTIFIER';
 }
 
-export function is_token_keyword(item: Item): item is TokenKeyword {
-    return is_token(item) && item.lexeme === 'KEYWORD';
+export function is_token_lambda(item: Item): item is TokenLambda {
+    return is_token(item) && item.lexeme === 'LAMBDA';
+}
+
+export function is_token_let(item: Item): item is TokenLet {
+    return is_token(item) && item.lexeme === 'LET';
+}
+
+export function is_token_if(item: Item): item is TokenIf {
+    return is_token(item) && item.lexeme === 'IF';
 }
 
 export function is_token_open(item: Item): item is TokenOpen {

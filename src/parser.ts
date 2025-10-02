@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token_boolean, is_token_number, is_token_string, is_token_identifier, is_token_open, is_token_close, is_token_whitespace, is_token_keyword } from "./lexer";
+import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token_boolean, is_token_number, is_token_string, is_token_identifier, is_token_open, is_token_close, is_token_whitespace, is_token_keyword, is_token_lambda, is_token_let, is_token_if } from "./lexer";
 import { remove_whitespace } from "./whitespace";
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
@@ -101,13 +101,13 @@ class Parser {
             this.consume();
             
             const potential_keyword: Token = this.peek();
-            if (is_token_keyword(potential_keyword) && potential_keyword.value === "lambda") {
+            if (is_token_lambda(potential_keyword)) {
                 return this.lambda();
             }
-            else if (is_token_keyword(potential_keyword) && potential_keyword.value === "let") {
+            else if (is_token_let(potential_keyword)) {
                 return this.letbind();
             }
-            else if (is_token_keyword(potential_keyword) && potential_keyword.value === "if") {
+            else if (is_token_if(potential_keyword)) {
                 return this.iff();
             }
             else {
