@@ -123,7 +123,7 @@ describe('expressions', () => {
     });
 
     it('must produce a valid AST when let-binding to a function', () => {
-        const text: string       = "(let increment (lambda x ((+ 1) x)) (increment 41))";
+        const text: string       = "(let successor (lambda x ((+ 1) x)) (successor 41))";
         const lexed: Token[]     = lex(text);
         const parsed             = parse(lexed);
         const node_count: number = parsed.node_count;
@@ -131,7 +131,7 @@ describe('expressions', () => {
 
         const expected: Flat_Expression[] = [
             {id:  0, token:  0, tag: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 9}},
-            {id:  1, token:  2, tag: 'Flat_Binding', name: 'increment'},
+            {id:  1, token:  2, tag: 'Flat_Binding', name: 'successor'},
             {id:  2, token:  3, tag: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
             {id:  3, token:  5, tag: 'Flat_Binding', name: 'x'},
             {id:  4, token:  6, tag: 'Flat_Call', body: {id: 5}, arg: {id: 8}}, // 8 is large
@@ -140,7 +140,7 @@ describe('expressions', () => {
             {id:  7, token:  9, tag: 'Flat_Literal', value: 1},
             {id:  8, token: 11, tag: 'Flat_Identifier', name: 'x'},
             {id:  9, token: 14, tag: 'Flat_Call', body: {id: 10}, arg: {id: 11}},
-            {id: 10, token: 15, tag: 'Flat_Identifier', name: 'increment'},
+            {id: 10, token: 15, tag: 'Flat_Identifier', name: 'successor'},
             {id: 11, token: 16, tag: 'Flat_Literal', value: 41},
         ];
 

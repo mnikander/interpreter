@@ -243,7 +243,7 @@ describe('let-bindings', () => {
     });
 
     it('must bind to partially applied built-in functions', () => {
-        expect(interpret("(let increment (+ 1) (increment 41))")).toBe(42);
+        expect(interpret("(let successor (+ 1) (successor 41))")).toBe(42);
     });
 
     it('must bind to lambda functions', () => {
@@ -251,7 +251,7 @@ describe('let-bindings', () => {
     });
 
     it('must bind to lambda functions with built-ins', () => {
-        expect(interpret("(let increment (lambda x ((+ 1) x)) (increment 41))")).toBe(42);
+        expect(interpret("(let successor (lambda x ((+ 1) x)) (successor 41))")).toBe(42);
     });
 
     it('must resolve shadowed variables correctly', () => {
@@ -316,7 +316,7 @@ describe('lambdas', () => {
     });
 
     it('must bind to partially applied built-in functions', () => {
-        expect(interpret("((lambda increment (increment 41)) (+ 1))")).toBe(42);
+        expect(interpret("((lambda successor (successor 41)) (+ 1))")).toBe(42);
     });
 
     it('must bind to lambda functions', () => {
@@ -324,7 +324,7 @@ describe('lambdas', () => {
     });
 
     it('must bind to lambda functions with built-ins', () => {
-        expect(interpret("((lambda increment (increment 41)) (lambda x ((+ 1) x)))")).toBe(42);
+        expect(interpret("((lambda successor (successor 41)) (lambda x ((+ 1) x)))")).toBe(42);
     });
 });
 
