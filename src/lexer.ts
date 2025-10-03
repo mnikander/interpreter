@@ -2,19 +2,27 @@
 
 import { Item } from './item'
 
-export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenLambda | TokenLet | TokenIf | TokenOpen | TokenClose | TokenWhitespace | TokenEOF;
+export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenLambda
+                            | TokenLet | TokenAssign | TokenIn | TokenIf | TokenElse | TokenThen
+                            | TokenOpen | TokenClose | TokenWhitespace | TokenEOF;
 export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', id: number, offset: number, value: boolean };
 export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number };
 export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string };
 export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string };
 export type TokenLambda     = { tag: 'Token', lexeme: 'LAMBDA', id: number, offset: number, value: 'lambda' };
 export type TokenLet        = { tag: 'Token', lexeme: 'LET', id: number, offset: number, value: 'let' };
+export type TokenAssign     = { tag: 'Token', lexeme: 'ASSIGN', id: number, offset: number, value: '=' };
+export type TokenIn         = { tag: 'Token', lexeme: 'IN', id: number, offset: number, value: 'in' };
 export type TokenIf         = { tag: 'Token', lexeme: 'IF', id: number, offset: number, value: 'if' };
+export type TokenThen       = { tag: 'Token', lexeme: 'THEN', id: number, offset: number, value: 'then' };
+export type TokenElse       = { tag: 'Token', lexeme: 'ELSE', id: number, offset: number, value: 'else' };
 export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' };
 export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' };
 export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string };
 export type TokenEOF        = { tag: 'Token', lexeme: 'EOF', id: number, offset: number, value: 'EOF' };
-export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'LAMBDA' | 'LET' | 'IF' | 'WHITESPACE' | 'OPEN' | 'CLOSE';
+export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'LAMBDA' 
+                            | 'LET' | 'ASSIGN'  | 'IN' | 'IF' | 'THEN' | 'ELSE' 
+                            | 'WHITESPACE' | 'OPEN' | 'CLOSE';
 
 const lexemes: Record<Lexeme, RegExp> = {
     'BOOLEAN':    /^(true|false)/,
@@ -23,7 +31,11 @@ const lexemes: Record<Lexeme, RegExp> = {
     'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
     'LAMBDA':     /^lambda/,
     'LET':        /^let/,
+    'ASSIGN':     /^assign/,
+    'IN':         /^in/,
     'IF':         /^if/,
+    'THEN':       /^then/,
+    'ELSE':       /^else/,
     'WHITESPACE': /^\s+/,
     'OPEN':       /^\(/,
     'CLOSE':      /^\)/,
@@ -39,7 +51,11 @@ export function lex(line: string): Token[] {
         ?? check(state, 'STRING')
         ?? check(state, 'LAMBDA')
         ?? check(state, 'LET')
+        ?? check(state, 'ASSIGN')
+        ?? check(state, 'IN')
         ?? check(state, 'IF')
+        ?? check(state, 'THEN')
+        ?? check(state, 'ELSE')
         ?? check(state, 'IDENTIFIER')
         ?? check(state, 'WHITESPACE')
         ?? check(state, 'OPEN')
@@ -61,8 +77,20 @@ export function lex(line: string): Token[] {
             else if (match.lexeme === 'LET') {
                 state = push(state, make_let(state, match));
             }
+            else if (match.lexeme === 'ASSIGN') {
+                state = push(state, make_assign(state, match));
+            }
+            else if (match.lexeme === 'IN') {
+                state = push(state, make_in(state, match));
+            }
             else if (match.lexeme === 'IF') {
                 state = push(state, make_if(state, match));
+            }
+            else if (match.lexeme === 'THEN') {
+                state = push(state, make_then(state, match));
+            }
+            else if (match.lexeme === 'ELSE') {
+                state = push(state, make_else(state, match));
             }
             else if (match.lexeme === 'IDENTIFIER') {
                 state = push(state, make_identifier(state, match));
@@ -137,8 +165,24 @@ function make_let (state: State, match: Match): TokenLet {
     return { tag: 'Token', lexeme: 'LET', id: state.tokens.length, offset: state.offset, value: 'let' };
 }
 
+function make_assign (state: State, match: Match): TokenAssign {
+    return { tag: 'Token', lexeme: 'ASSIGN', id: state.tokens.length, offset: state.offset, value: '=' };
+}
+
+function make_in (state: State, match: Match): TokenIn {
+    return { tag: 'Token', lexeme: 'IN', id: state.tokens.length, offset: state.offset, value: 'in' };
+}
+
 function make_if (state: State, match: Match): TokenIf {
     return { tag: 'Token', lexeme: 'IF', id: state.tokens.length, offset: state.offset, value: 'if' };
+}
+
+function make_then (state: State, match: Match): TokenThen {
+    return { tag: 'Token', lexeme: 'THEN', id: state.tokens.length, offset: state.offset, value: 'then' };
+}
+
+function make_else (state: State, match: Match): TokenElse {
+    return { tag: 'Token', lexeme: 'ELSE', id: state.tokens.length, offset: state.offset, value: 'else' };
 }
 
 function make_open(state: State, match: Match): TokenOpen {
@@ -187,8 +231,24 @@ export function is_token_let(item: Item): item is TokenLet {
     return is_token(item) && item.lexeme === 'LET';
 }
 
+export function is_token_assign(item: Item): item is TokenAssign {
+    return is_token(item) && item.lexeme === 'ASSIGN';
+}
+
+export function is_token_in(item: Item): item is TokenIn {
+    return is_token(item) && item.lexeme === 'IN';
+}
+
 export function is_token_if(item: Item): item is TokenIf {
     return is_token(item) && item.lexeme === 'IF';
+}
+
+export function is_token_then(item: Item): item is TokenThen {
+    return is_token(item) && item.lexeme === 'THEN';
+}
+
+export function is_token_else(item: Item): item is TokenElse {
+    return is_token(item) && item.lexeme === 'ELSE';
 }
 
 export function is_token_open(item: Item): item is TokenOpen {
