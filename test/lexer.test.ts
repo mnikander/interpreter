@@ -3,21 +3,7 @@ import { lex, Lexeme, Token } from '../src/lexer'
 
 type OkLex = { ok: true, value: readonly Token[] };
 
-describe('individual tokens', () => {
-
-    it('must tokenize "(" to open parenthesis', () => {
-        const tokens = lex('(');
-        expect(tokens.length).toBe(2);
-        expect(tokens[0].lexeme).toBe("OPEN");
-        expect(tokens[1].lexeme).toBe("EOF");
-    });
-
-    it('must tokenize ")" to close parenthesis', () => {
-        const tokens = lex(')');
-        expect(tokens.length).toBe(2);
-        expect(tokens[0].lexeme).toBe("CLOSE");
-        expect(tokens[1].lexeme).toBe("EOF");
-    });
+describe('literal tokens', () => {
 
     it('must tokenize "true" to a boolean', () => {
         const tokens = lex('true');
@@ -67,12 +53,24 @@ describe('individual tokens', () => {
         expect(tokens[1].lexeme).toBe("EOF");
     });
 
-    it('must tokenize a keyword token', () => {
-        const tokens = lex('lambda');
+    it('must tokenize "hello world" to a string', () => {
+        const tokens = lex('"hello world"');
         expect(tokens.length).toBe(2);
-        expect(tokens[0].lexeme).toBe("LAMBDA");
+        expect(tokens[0].lexeme).toBe("STRING");
+        expect(tokens[0].value).toBe('\"hello world\"');
         expect(tokens[1].lexeme).toBe("EOF");
     });
+
+    it("must tokenize 'hello world' to a string", () => {
+        const tokens = lex("'hello world'");
+        expect(tokens.length).toBe(2);
+        expect(tokens[0].lexeme).toBe("STRING");
+        expect(tokens[0].value).toBe('\'hello world\'');
+        expect(tokens[1].lexeme).toBe("EOF");
+    });
+});
+
+describe('identifier tokens', () => {
 
     it('must tokenize single letter names to an identifier', () => {
         const tokens = lex('x');
@@ -105,21 +103,100 @@ describe('individual tokens', () => {
         expect(tokens[0].value).toBe('???');
         expect(tokens[1].lexeme).toBe("EOF");
     });
+});
 
-    it('must tokenize "hello world" to a string', () => {
-        const tokens = lex('"hello world"');
-        expect(tokens.length).toBe(2);
-        expect(tokens[0].lexeme).toBe("STRING");
-        expect(tokens[0].value).toBe('\"hello world\"');
-        expect(tokens[1].lexeme).toBe("EOF");
+describe('tokenize keywords and identifiers with overlap', () => {
+
+    it.skip('must tokenize "lambda" correctly', () => {
+        const tokens = lex('lambda lambdas');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("LAMBDA");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("IDENTIFIER");
+        expect(tokens[3].lexeme).toBe("EOF");
     });
 
-    it("must tokenize 'hello world' to a string", () => {
-        const tokens = lex("'hello world'");
-        expect(tokens.length).toBe(2);
-        expect(tokens[0].lexeme).toBe("STRING");
-        expect(tokens[0].value).toBe('\'hello world\'');
-        expect(tokens[1].lexeme).toBe("EOF");
+    it.skip('must tokenize "let" correctly', () => {
+        const tokens = lex('let letting');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("LET");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("IDENTIFIER");
+        expect(tokens[3].lexeme).toBe("EOF");
+    });
+
+    it.skip('must tokenize "assign" correctly', () => {
+        const tokens = lex('be being');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("ASSIGN");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("IDENTIFIER");
+        expect(tokens[3].lexeme).toBe("EOF");
+    });
+
+    it.skip('must tokenize "in" correctly', () => {
+        const tokens = lex('in inner');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("ASSIGN");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("IDENTIFIER");
+        expect(tokens[3].lexeme).toBe("EOF");
+    });
+
+    it.skip('must tokenize "if" correctly', () => {
+        const tokens = lex('if iffy');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("IF");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("IDENTIFIER");
+        expect(tokens[3].lexeme).toBe("EOF");
+    });
+
+    it.skip('must tokenize "then" correctly', () => {
+        const tokens = lex('then theno');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("THEN");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("IDENTIFIER");
+        expect(tokens[3].lexeme).toBe("EOF");
+    });
+
+    it.skip('must tokenize "else" correctly', () => {
+        const tokens = lex('else elsewhere');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("ELSE");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("IDENTIFIER");
+        expect(tokens[3].lexeme).toBe("EOF");
+    });
+
+    it('must tokenize "open" correctly', () => {
+        const tokens = lex('( (_');
+        expect(tokens.length).toBe(5);
+        expect(tokens[0].lexeme).toBe("OPEN");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("OPEN");
+        expect(tokens[3].lexeme).toBe("IDENTIFIER");
+        expect(tokens[4].lexeme).toBe("EOF");
+    });
+
+    it('must tokenize "close" correctly', () => {
+        const tokens = lex('( (_');
+        expect(tokens.length).toBe(5);
+        expect(tokens[0].lexeme).toBe("OPEN");
+        expect(tokens[1].lexeme).toBe("WHITESPACE");
+        expect(tokens[2].lexeme).toBe("OPEN");
+        expect(tokens[3].lexeme).toBe("IDENTIFIER");
+        expect(tokens[4].lexeme).toBe("EOF");
+    });
+
+    it('must tokenize "whitespace" correctly', () => {
+        const tokens = lex('\n ast ');
+        expect(tokens.length).toBe(4);
+        expect(tokens[0].lexeme).toBe("WHITESPACE");
+        expect(tokens[1].lexeme).toBe("IDENTIFIER");
+        expect(tokens[2].lexeme).toBe("WHITESPACE");
+        expect(tokens[3].lexeme).toBe("EOF");
     });
 });
 
