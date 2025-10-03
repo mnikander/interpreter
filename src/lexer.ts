@@ -49,13 +49,13 @@ export function lex(line: string): Token[] {
         check(state, 'BOOLEAN') 
         ?? check(state, 'NUMBER')
         ?? check(state, 'STRING')
-        ?? check(state, 'LAMBDA')
-        ?? check(state, 'LET')
-        ?? check(state, 'ASSIGN')
-        ?? check(state, 'IN')
-        ?? check(state, 'IF')
-        ?? check(state, 'THEN')
-        ?? check(state, 'ELSE')
+        ?? check_keyword(state, 'LAMBDA')
+        ?? check_keyword(state, 'LET')
+        ?? check_keyword(state, 'ASSIGN')
+        ?? check_keyword(state, 'IN')
+        ?? check_keyword(state, 'IF')
+        ?? check_keyword(state, 'THEN')
+        ?? check_keyword(state, 'ELSE')
         ?? check(state, 'IDENTIFIER')
         ?? check(state, 'WHITESPACE')
         ?? check(state, 'OPEN')
@@ -128,6 +128,26 @@ function check(state: State, expected: Lexeme): undefined | Match {
     const match = lexemes[expected].exec(remaining)
     if (match) {
         return { lexeme: expected, word: match[0] };
+    }
+    else {
+        return undefined;
+    }
+}
+
+function check_keyword(state: State, expected: Lexeme): undefined | Match {
+    const remaining: string = state.line.slice(state.offset);
+    const match = lexemes[expected].exec(remaining)
+    if (match) {
+        const suffix: string = remaining.slice(match[0].length);
+        const temporary_state: State = {tag: 'State', offset: state.offset+match[0].length, line: state.line, tokens: state.tokens};
+        if (check(temporary_state, 'OPEN') ?? check(temporary_state, 'CLOSE') ?? check(temporary_state, 'WHITESPACE')) {
+            return { lexeme: expected, word: match[0] };
+        }
+        else {
+            // it's actually an identifier which just has the requested keyword as a prefix
+            // for example 'iffy' which starts with 'if'
+            return undefined;
+        }
     }
     else {
         return undefined;

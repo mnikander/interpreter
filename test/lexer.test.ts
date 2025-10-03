@@ -107,7 +107,7 @@ describe('identifier tokens', () => {
 
 describe('tokenize keywords and identifiers with overlap', () => {
 
-    it.skip('must tokenize "lambda" correctly', () => {
+    it('must tokenize "lambda" correctly', () => {
         const tokens = lex('lambda lambdas');
         expect(tokens.length).toBe(4);
         expect(tokens[0].lexeme).toBe("LAMBDA");
@@ -116,7 +116,7 @@ describe('tokenize keywords and identifiers with overlap', () => {
         expect(tokens[3].lexeme).toBe("EOF");
     });
 
-    it.skip('must tokenize "let" correctly', () => {
+    it('must tokenize "let" correctly', () => {
         const tokens = lex('let letting');
         expect(tokens.length).toBe(4);
         expect(tokens[0].lexeme).toBe("LET");
@@ -125,7 +125,7 @@ describe('tokenize keywords and identifiers with overlap', () => {
         expect(tokens[3].lexeme).toBe("EOF");
     });
 
-    it.skip('must tokenize "assign" correctly', () => {
+    it('must tokenize "assign" correctly', () => {
         const tokens = lex('be being');
         expect(tokens.length).toBe(4);
         expect(tokens[0].lexeme).toBe("ASSIGN");
@@ -134,16 +134,16 @@ describe('tokenize keywords and identifiers with overlap', () => {
         expect(tokens[3].lexeme).toBe("EOF");
     });
 
-    it.skip('must tokenize "in" correctly', () => {
+    it('must tokenize "in" correctly', () => {
         const tokens = lex('in inner');
         expect(tokens.length).toBe(4);
-        expect(tokens[0].lexeme).toBe("ASSIGN");
+        expect(tokens[0].lexeme).toBe("IN");
         expect(tokens[1].lexeme).toBe("WHITESPACE");
         expect(tokens[2].lexeme).toBe("IDENTIFIER");
         expect(tokens[3].lexeme).toBe("EOF");
     });
 
-    it.skip('must tokenize "if" correctly', () => {
+    it('must tokenize "if" correctly', () => {
         const tokens = lex('if iffy');
         expect(tokens.length).toBe(4);
         expect(tokens[0].lexeme).toBe("IF");
@@ -152,7 +152,7 @@ describe('tokenize keywords and identifiers with overlap', () => {
         expect(tokens[3].lexeme).toBe("EOF");
     });
 
-    it.skip('must tokenize "then" correctly', () => {
+    it('must tokenize "then" correctly', () => {
         const tokens = lex('then theno');
         expect(tokens.length).toBe(4);
         expect(tokens[0].lexeme).toBe("THEN");
@@ -161,7 +161,7 @@ describe('tokenize keywords and identifiers with overlap', () => {
         expect(tokens[3].lexeme).toBe("EOF");
     });
 
-    it.skip('must tokenize "else" correctly', () => {
+    it('must tokenize "else" correctly', () => {
         const tokens = lex('else elsewhere');
         expect(tokens.length).toBe(4);
         expect(tokens[0].lexeme).toBe("ELSE");
