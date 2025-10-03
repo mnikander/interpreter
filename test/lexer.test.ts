@@ -126,7 +126,7 @@ describe('tokenize keywords and identifiers with overlap', () => {
     });
 
     it('must tokenize "assign" correctly', () => {
-        const tokens = lex('be being');
+        const tokens = lex('= ==');
         expect(tokens.length).toBe(4);
         expect(tokens[0].lexeme).toBe("ASSIGN");
         expect(tokens[1].lexeme).toBe("WHITESPACE");

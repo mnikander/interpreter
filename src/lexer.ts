@@ -11,7 +11,7 @@ export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offs
 export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string };
 export type TokenLambda     = { tag: 'Token', lexeme: 'LAMBDA', id: number, offset: number, value: 'lambda' };
 export type TokenLet        = { tag: 'Token', lexeme: 'LET', id: number, offset: number, value: 'let' };
-export type TokenAssign     = { tag: 'Token', lexeme: 'ASSIGN', id: number, offset: number, value: 'be' };
+export type TokenAssign     = { tag: 'Token', lexeme: 'ASSIGN', id: number, offset: number, value: '=' };
 export type TokenIn         = { tag: 'Token', lexeme: 'IN', id: number, offset: number, value: 'in' };
 export type TokenIf         = { tag: 'Token', lexeme: 'IF', id: number, offset: number, value: 'if' };
 export type TokenThen       = { tag: 'Token', lexeme: 'THEN', id: number, offset: number, value: 'then' };
@@ -31,7 +31,7 @@ const lexemes: Record<Lexeme, RegExp> = {
     'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
     'LAMBDA':     /^lambda/,
     'LET':        /^let/,
-    'ASSIGN':     /^be/,
+    'ASSIGN':     /^=/,
     'IN':         /^in/,
     'IF':         /^if/,
     'THEN':       /^then/,
@@ -186,7 +186,7 @@ function make_let (state: State, match: Match): TokenLet {
 }
 
 function make_assign (state: State, match: Match): TokenAssign {
-    return { tag: 'Token', lexeme: 'ASSIGN', id: state.tokens.length, offset: state.offset, value: 'be' };
+    return { tag: 'Token', lexeme: 'ASSIGN', id: state.tokens.length, offset: state.offset, value: '=' };
 }
 
 function make_in (state: State, match: Match): TokenIn {
