@@ -17,9 +17,6 @@ export type TokenEOF        = { tag: 'Token', lexeme: 'EOF', id: number, offset:
 export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'LAMBDA' | 'LET' | 'IF' | 'WHITESPACE' | 'OPEN' | 'CLOSE';
 
 const lexemes: Record<Lexeme, RegExp> = {
-    'WHITESPACE': /^\s+/,
-    'OPEN':       /^\(/,
-    'CLOSE':      /^\)/,
     'BOOLEAN':    /^(true|false)/,
     'NUMBER':     /^[-+]?(?:\d*\.\d+|\d+\.\d*|\d+)/,
     'STRING':     /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
@@ -27,6 +24,9 @@ const lexemes: Record<Lexeme, RegExp> = {
     'LAMBDA':     /^lambda/,
     'LET':        /^let/,
     'IF':         /^if/,
+    'WHITESPACE': /^\s+/,
+    'OPEN':       /^\(/,
+    'CLOSE':      /^\)/,
 };
 
 export function lex(line: string): Token[] {
