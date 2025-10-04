@@ -22,7 +22,7 @@ export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, 
 export type TokenEOF        = { tag: 'Token', lexeme: 'EOF', id: number, offset: number, value: 'EOF' };
 export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'LAMBDA' 
                             | 'LET' | 'ASSIGN'  | 'IN' | 'IF' | 'THEN' | 'ELSE' 
-                            | 'WHITESPACE' | 'OPEN' | 'CLOSE';
+                            | 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'EOF';
 
 const lexemes: Record<Lexeme, RegExp> = {
     'BOOLEAN':    /^(true|false)/,
@@ -39,6 +39,7 @@ const lexemes: Record<Lexeme, RegExp> = {
     'WHITESPACE': /^\s+/,
     'OPEN':       /^\(/,
     'CLOSE':      /^\)/,
+    'EOF':        /^/,
 };
 
 export function lex(line: string): Token[] {
@@ -223,66 +224,10 @@ function make_eof(state: State): TokenEOF {
 }
 
 // type predicates
-export function is_token(item: Item): item is Token {
+export function is_token(item: Item, lexeme: Lexeme) {
+    return is_token_type(item) && item.lexeme === lexeme;
+}
+
+function is_token_type(item: Item): item is Token {
     return item.tag === 'Token';
-}
-
-export function is_token_boolean(item: Item): item is TokenBoolean {
-    return is_token(item) && item.lexeme === 'BOOLEAN';
-}
-
-export function is_token_number(item: Item): item is TokenNumber {
-    return is_token(item) && item.lexeme === 'NUMBER';
-}
-
-export function is_token_string(item: Item): item is TokenString {
-    return is_token(item) && item.lexeme === 'STRING';
-}
-
-export function is_token_identifier(item: Item): item is TokenIdentifier {
-    return is_token(item) && item.lexeme === 'IDENTIFIER';
-}
-
-export function is_token_lambda(item: Item): item is TokenLambda {
-    return is_token(item) && item.lexeme === 'LAMBDA';
-}
-
-export function is_token_let(item: Item): item is TokenLet {
-    return is_token(item) && item.lexeme === 'LET';
-}
-
-export function is_token_assign(item: Item): item is TokenAssign {
-    return is_token(item) && item.lexeme === 'ASSIGN';
-}
-
-export function is_token_in(item: Item): item is TokenIn {
-    return is_token(item) && item.lexeme === 'IN';
-}
-
-export function is_token_if(item: Item): item is TokenIf {
-    return is_token(item) && item.lexeme === 'IF';
-}
-
-export function is_token_then(item: Item): item is TokenThen {
-    return is_token(item) && item.lexeme === 'THEN';
-}
-
-export function is_token_else(item: Item): item is TokenElse {
-    return is_token(item) && item.lexeme === 'ELSE';
-}
-
-export function is_token_open(item: Item): item is TokenOpen {
-    return is_token(item) && item.lexeme === 'OPEN';
-}
-
-export function is_token_close(item: Item): item is TokenClose {
-    return is_token(item) && item.lexeme === 'CLOSE';
-}
-
-export function is_token_whitespace(item: Item): item is TokenWhitespace {
-    return is_token(item) && item.lexeme === 'WHITESPACE';
-}
-
-export function is_token_eof(item: Item): item is TokenEOF {
-    return is_token(item) && item.lexeme === 'EOF';
 }

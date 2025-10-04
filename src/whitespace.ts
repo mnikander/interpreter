@@ -1,19 +1,19 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { is_token_open, Token, TokenWhitespace, TokenOpen, TokenClose, is_token_close, is_token_whitespace, is_token_eof } from "./lexer";
+import { Lexeme, Token, TokenWhitespace, TokenOpen, TokenClose, is_token } from "./lexer";
 
 export function add_whitespace_to_parentheses(tokens: readonly Token[]): Token[] {
     let output: Token[] = [];
     let new_i: number = 0;
     for (let i = 0; i < tokens.length; i++) {
         const tk = tokens[i];
-        if (is_token_open(tk)) {
+        if (is_token(tk, 'OPEN')) {
             output.push(make_open(new_i, tk.offset));
             new_i++;
             output.push(make_whitespace(new_i, tk.offset));
             new_i++;
         }
-        else if(is_token_close(tk)) {
+        else if (is_token(tk, 'CLOSE')) {
             output.push(make_whitespace(new_i, tk.offset));
             new_i++;
             output.push(make_close(new_i, tk.offset));
@@ -36,14 +36,14 @@ export function check_whitespace(tokens: readonly Token[]): boolean {
         const tk = tokens[i];
         
         if (expect_whitespace) {
-            if (is_token_whitespace(tk) || is_token_eof(tk)) {
+            if (is_token(tk, 'WHITESPACE') || is_token(tk, 'EOF')) {
                 expect_whitespace = false; // we got what we were looking for -> all good
             }
             else {
                 throw Error(`Expected whitespace between tokens '${tokens[i-1].value}' and '${tokens[i].value}'.`);
             }
         }
-        else if (!is_token_whitespace(tk)) {
+        else if (!is_token(tk, 'WHITESPACE')) {
             expect_whitespace = true;
         }
     }
@@ -56,7 +56,7 @@ export function remove_whitespace(tokens: readonly Token[]): Token[] {
     let new_i: number = 0;
     for (let i = 0; i < tokens.length; i++) {
         const tk = tokens[i];
-        if (!is_token_whitespace(tk)) {
+        if (!is_token(tk, 'WHITESPACE')) {
             let temp = tk;
             temp.id = new_i;
             output.push(temp);

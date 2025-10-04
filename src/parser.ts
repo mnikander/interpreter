@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token_boolean, is_token_number, is_token_string, is_token_identifier, is_token_open, is_token_close, is_token_whitespace, is_token_keyword, is_token_lambda, is_token_let, is_token_if, is_token_eof } from "./lexer";
-import { remove_whitespace } from "./whitespace";
+import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token } from './lexer';
+import { remove_whitespace } from './whitespace';
 
 export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
 export type Nested_Atom       = Nested_Identifier | Nested_Binding | Nested_Boolean | Nested_Number | Nested_String;
@@ -80,7 +80,7 @@ class Parser {
     }
 
     is_at_end(): boolean {
-        return is_token_eof(this.peek());
+        return is_token(this.peek(), 'EOF');
     }
 
     expr(): Nested_Expression {
@@ -89,44 +89,44 @@ class Parser {
             throw Error(`Parser::expr() is out-of-bounds`);
         }
 
-        if (is_token_boolean(this.peek())) {
+        if (is_token(this.peek(), 'BOOLEAN')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: "Nested_Boolean", value: (this.previous() as TokenBoolean).value };
+            return { id: id, token: this.index-1, tag: 'Nested_Boolean', value: (this.previous() as TokenBoolean).value };
         }
-        else if (is_token_number(this.peek())) {
+        else if (is_token(this.peek(), 'NUMBER')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: "Nested_Number", value: (this.previous() as TokenNumber).value };
+            return { id: id, token: this.index-1, tag: 'Nested_Number', value: (this.previous() as TokenNumber).value };
         }
-        else if (is_token_string(this.peek())) {
+        else if (is_token(this.peek(), 'STRING')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: "Nested_String", value: (this.previous() as TokenString).value };
+            return { id: id, token: this.index-1, tag: 'Nested_String', value: (this.previous() as TokenString).value };
         }
-        else if (is_token_identifier(this.peek())) {
+        else if (is_token(this.peek(), 'IDENTIFIER')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: "Nested_Identifier", name: (this.previous() as TokenIdentifier).value };
+            return { id: id, token: this.index-1, tag: 'Nested_Identifier', name: (this.previous() as TokenIdentifier).value };
         }
-        else if (is_token_open(this.peek())) {
+        else if (is_token(this.peek(), 'OPEN')) {
             this.consume();
             
             const potential_keyword: Token = this.peek();
-            if (is_token_lambda(potential_keyword)) {
+            if (is_token(potential_keyword, 'LAMBDA')) {
                 return this.lambda();
             }
-            else if (is_token_let(potential_keyword)) {
+            else if (is_token(potential_keyword, 'LET')) {
                 return this.letbind();
             }
-            else if (is_token_if(potential_keyword)) {
+            else if (is_token(potential_keyword, 'IF')) {
                 return this.iff();
             }
             else {
                 return this.call();
             }
         }
-        else if (is_token_close(this.peek())) {
+        else if (is_token(this.peek(), 'CLOSE')) {
             throw Error(`Expected an expression but got ')' instead`);
         }
         else {
@@ -141,14 +141,14 @@ class Parser {
         const potential_keyword: Token = this.peek();
         this.consume();
 
-        if (!is_token_identifier(this.peek())) {
+        if (!is_token(this.peek(), 'IDENTIFIER')) {
             throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().lexeme} instead`);
         }
         else {
             const variable: Nested_Binding = this.binding();
             const body: Nested_Expression = this.expr();
             this.expect_closing();
-            return { id: id, token: potential_keyword.id-1, tag: "Nested_Lambda", binding: variable, body: body };
+            return { id: id, token: potential_keyword.id-1, tag: 'Nested_Lambda', binding: variable, body: body };
         }
     }
 
@@ -159,7 +159,7 @@ class Parser {
         const potential_keyword: Token = this.peek();
         this.consume();
 
-        if (!is_token_identifier(this.peek())) {
+        if (!is_token(this.peek(), 'IDENTIFIER')) {
             throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().lexeme} instead`);
         }
         else {
@@ -208,7 +208,7 @@ class Parser {
             throw Error(`Expected ')' but went out-of-bounds`);
         }
         else {
-            if (is_token_close(this.peek())) {
+            if (is_token(this.peek(), 'CLOSE')) {
                 this.consume();
             }
             else {
