@@ -82,4 +82,14 @@ describe('expressions', () => {
         expect(ast.let_bindings[0].value.tag).toBe("_Number");
         expect(ast.tail.tag).toBe("_Reference");
     });
+
+    it('must produce a valid AST for a lambda expression', () => {
+        const tokens = lex("(lambda x (x))");
+        const ast    = parse(tokens);
+        expect(ast.tag).toBe("_Block");
+        expect(ast.tail.tag).toBe("_Lambda");
+        expect(ast.tail.binding.tag).toBe("_Binding");
+        expect(ast.tail.body.tag).toBe("_Block");
+        expect(ast.tail.body.tail.tag).toBe("_Reference");
+    });
 });

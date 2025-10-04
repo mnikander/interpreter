@@ -254,16 +254,24 @@ function letbind(tokens: readonly Token[]): [(undefined | ParseError), (undefine
 }
 
 function lambda(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _Lambda), Token[]] {
-    const [first, ...rest] = tokens;
+    let error: undefined | ParseError               = undefined;
+    let ast: undefined | _Binding | _Atomic | _Call = undefined;
+    const first = tokens[0];
+    let [...rest] = tokens;
+    let variable: undefined | _Binding;
+    let body: undefined | _Block;
     
-    // TODO
-    // _Lambda = {token: number, tag: '_Lambda', binding: _Binding, body: _Block};
+    [error, ast, rest] = consume(rest, 'LAMBDA');
+    if (error) return [error, ast, rest];
 
-    return [{
-        tag: 'ParseError',
-        token: first.id,
-        message: `Expected ?????. Got '${first.value}' of type '${first.lexeme}' instead.`,
-    }, undefined, [...tokens]];
+    [error, variable, rest] = binding(rest);
+    if (error) return [error, ast, rest];
+
+    [error, body, rest] = block(rest);
+    if (error) return [error, ast, rest];
+
+    const result: _Lambda = { token: first.id, tag: '_Lambda', binding: (variable as _Binding), body: (body as _Block) };
+    return [undefined, result, rest];
 }
 
 function call(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _Call), Token[]] {
