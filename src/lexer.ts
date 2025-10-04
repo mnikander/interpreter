@@ -27,7 +27,7 @@ export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | '
 const lexemes: Record<Lexeme, RegExp> = {
     'BOOLEAN':    /^(true|false)/,
     'NUMBER':     /^[-+]?(?:\d*\.\d+|\d+\.\d*|\d+)/,
-    'STRING':     /^"(\\.|[^"\\])*"|'(\\.|[^'\\])*'/,
+    'STRING':     /^"(\\.|[^"\\])*"|^'(\\.|[^'\\])*'/,
     'IDENTIFIER': /^(?:([_a-zA-Z][_a-zA-Z0-9]*)|([.,:;!?<>\=\@\#\$\+\-\*\/\%\&\|\^\~]+))/,
     'LAMBDA':     /^lambda/,
     'LET':        /^let/,
