@@ -42,6 +42,16 @@ const lexemes: Record<Lexeme, RegExp> = {
     'EOF':        /^/,
 };
 
+
+interface State extends Item {
+    tag: 'State',
+    offset: number,
+    line: string,
+    tokens: Token[]
+};
+
+type Match = { lexeme: Lexeme, word: string };
+
 export function lex(line: string): Token[] {
     let state: State = { tag: 'State', offset: 0, line: line, tokens: []};
     
@@ -115,14 +125,13 @@ export function lex(line: string): Token[] {
     return state.tokens;
 }
 
-interface State extends Item {
-    tag: 'State',
-    offset: number,
-    line: string,
-    tokens: Token[]
-};
+export function is_token(item: Item, lexeme: Lexeme) {
+    return is_token_type(item) && item.lexeme === lexeme;
+}
 
-type Match = { lexeme: Lexeme, word: string };
+function is_token_type(item: Item): item is Token {
+    return item.tag === 'Token';
+}
 
 function check(state: State, expected: Lexeme): undefined | Match {
     const remaining: string = state.line.slice(state.offset);
@@ -221,13 +230,4 @@ function make_whitespace(state: State, match: Match): TokenWhitespace {
 function make_eof(state: State): TokenEOF {
     // note that 'offset' is out-of-bounds, since, EOF is after the end of the input string
     return { tag: 'Token', lexeme: 'EOF', id: state.tokens.length, offset: state.offset, value: 'EOF' }; 
-}
-
-// type predicates
-export function is_token(item: Item, lexeme: Lexeme) {
-    return is_token_type(item) && item.lexeme === lexeme;
-}
-
-function is_token_type(item: Item): item is Token {
-    return item.tag === 'Token';
 }
