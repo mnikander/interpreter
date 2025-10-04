@@ -92,4 +92,19 @@ describe('expressions', () => {
         expect(ast.tail.body.tag).toBe("_Block");
         expect(ast.tail.body.tail.tag).toBe("_Reference");
     });
+
+    it('must produce a valid AST for an arithmetic expression', () => {
+        const tokens = lex("((+ 1) 2)");
+        const ast    = parse(tokens);
+        expect(ast.tag).toBe("_Block");
+        expect(ast.tail.tag).toBe("_Call");
+        expect(ast.tail.fn.tag).toBe("_Block");
+        expect(ast.tail.fn.tail.tag).toBe("_Call");
+        expect(ast.tail.fn.tail.fn.tag).toBe("_Reference");
+        expect(ast.tail.fn.tail.fn.target).toBe("+");
+        expect(ast.tail.fn.tail.arg.tag).toBe("_Number");
+        expect(ast.tail.fn.tail.arg.value).toBe(1);
+        expect(ast.tail.arg.tag).toBe("_Number");
+        expect(ast.tail.arg.value).toBe(2);
+    });
 });

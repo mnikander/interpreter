@@ -189,7 +189,7 @@ function block(tokens: readonly Token[]): [(undefined | ParseError), (undefined 
     let let_bindings: _LetBind[] = [];
 
     [error, ast, rest] = consume(tokens, 'OPEN');
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     while (is_token(rest[0], 'LET')) { // Kleene star on let bindings
         [error, ast, rest] = letbind(rest);
@@ -205,7 +205,7 @@ function block(tokens: readonly Token[]): [(undefined | ParseError), (undefined 
     if (!error && ast) {
         const b: _Block = { token: first.id, tag: "_Block", let_bindings: let_bindings, tail: ast};
         [error, ast, rest] = consume(rest, 'CLOSE');
-        if (error) return [error, ast, rest];
+        if (error) return [error, ast, [...tokens]];
         else return [undefined, b, rest];
     }
     else {
@@ -226,13 +226,13 @@ function letbind(tokens: readonly Token[]): [(undefined | ParseError), (undefine
     let value: undefined | _Atomic | _Call;
     
     [error, ast, rest] = consume(rest, 'LET');
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     [error, variable, rest] = binding(rest);
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     [error, ast, rest] = consume(rest, 'ASSIGN');
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     [error, value, rest] = call(rest);
     if (error) {
@@ -247,7 +247,7 @@ function letbind(tokens: readonly Token[]): [(undefined | ParseError), (undefine
     }
     
     [error, ast, rest] = consume(rest, 'IN');
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     const result: _LetBind = { token: first.id, tag: '_LetBind', binding: (variable as _Binding), value: (value as _Atomic | _Call) };
     return [undefined, result, rest];
@@ -262,29 +262,34 @@ function lambda(tokens: readonly Token[]): [(undefined | ParseError), (undefined
     let body: undefined | _Block;
     
     [error, ast, rest] = consume(rest, 'LAMBDA');
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     [error, variable, rest] = binding(rest);
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     [error, body, rest] = block(rest);
-    if (error) return [error, ast, rest];
+    if (error) return [error, ast, [...tokens]];
 
     const result: _Lambda = { token: first.id, tag: '_Lambda', binding: (variable as _Binding), body: (body as _Block) };
     return [undefined, result, rest];
 }
 
 function call(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _Call), Token[]] {
-    const [first, ...rest] = tokens;
+    let error: undefined | ParseError = undefined;
+    let ast: undefined | _Atomic      = undefined;
+    const first = tokens[0];
+    let [...rest] = tokens;
+    let fn: undefined | _Atomic;
+    let arg: undefined | _Atomic;
     
-    // TODO
-    // _Call = {token: number, tag: '_Call', fn: _Atomic, arg: _Atomic};
+    [error, fn, rest] = atomic(rest);
+    if (error) return [error, ast, [...tokens]];
 
-    return [{
-        tag: 'ParseError',
-        token: first.id,
-        message: `Expected ?????. Got '${first.value}' of type '${first.lexeme}' instead.`,
-    }, undefined, [...tokens]];
+    [error, arg, rest] = atomic(rest);
+    if (error) return [error, ast, [...tokens]];
+
+    const result: _Call = { token: first.id, tag: '_Call', fn: (fn as _Atomic), arg: (arg as _Atomic) };
+    return [undefined, result, rest];
 }
 
 function if_then_else(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _IfThenElse), Token[]] {
