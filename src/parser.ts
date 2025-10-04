@@ -28,15 +28,27 @@ export function is_let(expr: Nested_Expression): expr is Nested_Let { return exp
 export function is_if(expr: Nested_Expression): expr is Nested_If { return expr.tag === 'Nested_If'; }
 export function is_call(expr: Nested_Expression): expr is Nested_Call { return expr.tag === 'Nested_Call'; }
 
+export function parse(tokens: readonly Token[]) : { ast: Nested_Expression, node_count: number } {
+    let parser = new Parser(remove_whitespace(tokens));
+    const expression: Nested_Expression = parser.expr();
+
+    if (parser.is_at_end()) {
+        return { ast: expression, node_count: parser.node_count };
+    }
+    else {
+        throw Error(`Expected a single expression, failed to fully parse input`);
+    }
+}
+
 class Parser {
     index: number;
     node_count: number;
     readonly tokens: readonly Token[];
 
     constructor(tokens: readonly Token[]) {
-        this.index = 0;
+        this.index      = 0;
         this.node_count = 0;
-        this.tokens = remove_whitespace(tokens);
+        this.tokens     = tokens;
     }
 
     peek(): Token {
@@ -203,17 +215,5 @@ class Parser {
                 throw new Error(`Expected ')' but got '${this.peek().value}' of type '${this.peek().lexeme}' instead`);
             }
         }
-    }
-}
-
-export function parse(tokens: readonly Token[]) : { ast: Nested_Expression, node_count: number } {
-    let parser = new Parser(tokens);
-    const expression: Nested_Expression = parser.expr();
-
-    if (parser.is_at_end()) {
-        return { ast: expression, node_count: parser.node_count };
-    }
-    else {
-        throw Error(`Expected a single expression, failed to fully parse input`);
     }
 }
