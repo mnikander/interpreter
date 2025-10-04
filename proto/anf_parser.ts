@@ -293,16 +293,34 @@ function call(tokens: readonly Token[]): [(undefined | ParseError), (undefined |
 }
 
 function if_then_else(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _IfThenElse), Token[]] {
-    const [first, ...rest] = tokens;
+    let error: undefined | ParseError               = undefined;
+    let ast: undefined | _Binding | _Atomic | _Call = undefined;
+    const first = tokens[0];
+    let [...rest] = tokens;
+    let condition: undefined | _Atomic;
+    let then_branch: undefined | _Block;
+    let else_branch: undefined | _Block;
     
-    // TODO
-    // _IfThenElse = {token: number, tag: '_IfThenElse', condition: _Atomic, then_branch: _Block, else_branch: _Block};
+    [error, ast, rest] = consume(rest, 'IF');
+    if (error) return [error, ast, [...tokens]];
 
-    return [{
-        tag: 'ParseError',
-        token: first.id,
-        message: `Expected ?????. Got '${first.value}' of type '${first.lexeme}' instead.`,
-    }, undefined, [...tokens]];
+    [error, condition, rest] = atomic(rest);
+    if (error) return [error, ast, [...tokens]];
+
+    [error, ast, rest] = consume(rest, 'THEN');
+    if (error) return [error, ast, [...tokens]];
+
+    [error, then_branch, rest] = block(rest);
+    if (error) return [error, ast, [...tokens]];
+
+    [error, ast, rest] = consume(rest, 'ELSE');
+    if (error) return [error, ast, [...tokens]];
+
+    [error, else_branch, rest] = block(rest);
+    if (error) return [error, ast, [...tokens]];
+
+    const result: _IfThenElse = { token: first.id, tag: '_IfThenElse', condition: (condition as _Atomic), then_branch: (then_branch as _Block), else_branch: (else_branch as _Block) };
+    return [undefined, result, rest];
 }
 
 function binding(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _Binding), Token[]] {

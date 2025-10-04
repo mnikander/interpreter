@@ -131,4 +131,18 @@ describe('expressions', () => {
         expect(ast.tail.arg.tag).toBe("_Number");
         expect(ast.tail.arg.value).toBe(2);
     });
+
+    it('must produce a valid AST for a simple if expression', () => {
+        const tokens = lex("(if true then (42) else (0))");
+        const ast    = parse(tokens);
+        expect(ast.tag).toBe("_Block");
+        expect(ast.tail.tag).toBe("_IfThenElse");
+        expect(ast.tail.condition.tag).toBe("_Boolean");
+        expect(ast.tail.then_branch.tag).toBe("_Block");
+        expect(ast.tail.then_branch.tail.tag).toBe("_Number");
+        expect(ast.tail.then_branch.tail.value).toBe(42);
+        expect(ast.tail.else_branch.tag).toBe("_Block");
+        expect(ast.tail.else_branch.tail.tag).toBe("_Number");
+        expect(ast.tail.else_branch.tail.value).toBe(0);
+    });
 });
