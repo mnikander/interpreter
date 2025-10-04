@@ -191,7 +191,7 @@ function block(tokens: readonly Token[]): [(undefined | ParseError), (undefined 
     [error, ast, rest] = consume(tokens, 'OPEN');
     if (error) return [error, ast, rest];
 
-    while (is_token(rest[0], 'LET')) {
+    while (is_token(rest[0], 'LET')) { // Kleene star on let bindings
         [error, ast, rest] = letbind(rest);
         if (!error && ast) {
             let_bindings.push(ast);
@@ -218,16 +218,39 @@ function block(tokens: readonly Token[]): [(undefined | ParseError), (undefined 
 }
 
 function letbind(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _LetBind), Token[]] {
-    const [first, ...rest] = tokens;
+    let error: undefined | ParseError               = undefined;
+    let ast: undefined | _Binding | _Atomic | _Call = undefined;
+    const first = tokens[0];
+    let [...rest] = tokens;
+    let variable: undefined | _Binding;
+    let value: undefined | _Atomic | _Call;
     
-    // TODO
-    // _LetBind = {token: number, tag: '_LetBind', binding: _Binding, value: (_Atomic | _Call)};
+    [error, ast, rest] = consume(rest, 'LET');
+    if (error) return [error, ast, rest];
 
-    return [{
-        tag: 'ParseError',
-        token: first.id,
-        message: `Expected ?????. Got '${first.value}' of type '${first.lexeme}' instead.`,
-    }, undefined, [...tokens]];
+    [error, variable, rest] = binding(rest);
+    if (error) return [error, ast, rest];
+
+    [error, ast, rest] = consume(rest, 'ASSIGN');
+    if (error) return [error, ast, rest];
+
+    [error, value, rest] = atomic(rest);
+    if (error) {
+        [error, value, rest] = call(rest);
+    }
+    if (error) {
+        [{
+            tag: 'ParseError',
+            token: first.id,
+            message: `Expected atom or call. Got '${rest[0].value}' of type '${rest[0].lexeme}' instead.`,
+        }, undefined, [...tokens]];
+    }
+    
+    [error, ast, rest] = consume(rest, 'IN');
+    if (error) return [error, ast, rest];
+
+    const result: _LetBind = { token: first.id, tag: '_LetBind', binding: (variable as _Binding), value: (value as _Atomic | _Call) };
+    return [undefined, result, rest];
 }
 
 function lambda(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _Lambda), Token[]] {

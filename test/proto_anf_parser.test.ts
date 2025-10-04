@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lex, Token } from '../src/lexer'
-import { _Call, _Binding, _Reference, _Lambda, _Boolean, _Number, _String, parse, _Block } from '../proto/anf_parser';
+import { _Call, _Binding, _Reference, _Lambda, _Boolean, _Number, _String, _Block, parse } from '../proto/anf_parser';
 
 describe('parse blocks containing literals', () => {
 
@@ -71,5 +71,15 @@ describe('expressions', () => {
         expect(() => parse((lex('1a')))).toThrow();
         expect(() => parse((lex('1_')))).toThrow();
         expect(() => parse((lex('_+')))).toThrow();
+    });
+
+    it('must produce a valid AST for a let-binding', () => {
+        const tokens = lex("(let x = 5 in x)");
+        const ast    = parse(tokens);
+        expect(ast.tag).toBe("_Block");
+        expect(ast.let_bindings[0].tag).toBe("_LetBind");
+        expect(ast.let_bindings[0].binding.tag).toBe("_Binding");
+        expect(ast.let_bindings[0].value.tag).toBe("_Number");
+        expect(ast.tail.tag).toBe("_Reference");
     });
 });
