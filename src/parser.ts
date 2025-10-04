@@ -167,7 +167,7 @@ class Parser {
             const value: Nested_Expression = this.expr();
             const body: Nested_Expression = this.expr();
             this.expect_closing();
-            return { id: id, token: potential_keyword.id-1, tag: "Nested_Let", binding: variable, value: value, body: body };
+            return { id: id, token: potential_keyword.id-1, tag: 'Nested_Let', binding: variable, value: value, body: body };
         }
     }
 
@@ -182,7 +182,7 @@ class Parser {
         const then_branch: Nested_Expression = this.expr();
         const else_branch: Nested_Expression = this.expr();
         this.expect_closing();
-        return { id: id, token: potential_keyword.id-1, tag: "Nested_If", condition: condition, then_branch: then_branch, else_branch: else_branch };
+        return { id: id, token: potential_keyword.id-1, tag: 'Nested_If', condition: condition, then_branch: then_branch, else_branch: else_branch };
     }
 
     // (expr expr)
@@ -193,14 +193,14 @@ class Parser {
         const fn: Nested_Expression = this.expr();
         const arg: Nested_Expression = this.expr();
         this.expect_closing();
-        return { id: id, token: fn.token-1, tag: "Nested_Call", fn: fn, arg: arg };
+        return { id: id, token: fn.token-1, tag: 'Nested_Call', fn: fn, arg: arg };
     }
 
     binding(): Nested_Binding {
         const id = this.emit();
         const token = (this.peek() as TokenIdentifier);
         this.consume();
-        return { id: id, token: token.id, tag: "Nested_Binding", name: token.value };
+        return { id: id, token: token.id, tag: 'Nested_Binding', name: token.value };
     }
 
     expect_closing() {
