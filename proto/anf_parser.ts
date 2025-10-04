@@ -108,12 +108,12 @@ function tail(tokens: readonly Token[]): [(undefined | ParseError), (undefined |
     let ast: undefined   | _Tail      = undefined;
     let rest: Token[]                 = [...tokens];
 
-    [error, ast, rest] = atomic(tokens);
+    [error, ast, rest] = call(tokens);
     if (!error) {
         return [error, ast, rest];
     }
-    
-    [error, ast, rest] = call(tokens);
+
+    [error, ast, rest] = atomic(tokens);
     if (!error) {
         return [error, ast, rest];
     }
@@ -234,9 +234,9 @@ function letbind(tokens: readonly Token[]): [(undefined | ParseError), (undefine
     [error, ast, rest] = consume(rest, 'ASSIGN');
     if (error) return [error, ast, rest];
 
-    [error, value, rest] = atomic(rest);
+    [error, value, rest] = call(rest);
     if (error) {
-        [error, value, rest] = call(rest);
+        [error, value, rest] = atomic(rest);
     }
     if (error) {
         [{
