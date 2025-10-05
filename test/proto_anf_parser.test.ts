@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { lex, Token } from '../src/lexer'
-import { _Call, _Binding, _Reference, _Lambda, _Boolean, _Number, _String, _Block, parse } from '../proto/anf_parser';
+import { _Call, _Binding, _Identifier, _Lambda, _Boolean, _Number, _String, _Block, parse } from '../proto/anf_parser';
 
 describe('parse blocks containing literals', () => {
 
@@ -35,8 +35,8 @@ describe('parse blocks containing literals', () => {
     it('must parse "+" to an identifier', () => {
         const text: string = "(+)";
         const parsed = parse(lex(text));
-        expect(parsed.tail.tag).toBe("_Reference");
-        expect((parsed.tail as _Reference).target).toEqual("+");
+        expect(parsed.tail.tag).toBe("_Identifier");
+        expect((parsed.tail as _Identifier).name).toEqual("+");
     });
 });
 
@@ -80,7 +80,7 @@ describe('expressions', () => {
         expect(ast.let_bindings[0].tag).toBe("_LetBind");
         expect(ast.let_bindings[0].binding.tag).toBe("_Binding");
         expect(ast.let_bindings[0].value.tag).toBe("_Number");
-        expect(ast.tail.tag).toBe("_Reference");
+        expect(ast.tail.tag).toBe("_Identifier");
     });
 
     it('must produce a valid AST for an arithmetic expression', () => {
@@ -90,8 +90,8 @@ describe('expressions', () => {
         expect(ast.tail.tag).toBe("_Call");
         expect(ast.tail.fn.tag).toBe("_Block");
         expect(ast.tail.fn.tail.tag).toBe("_Call");
-        expect(ast.tail.fn.tail.fn.tag).toBe("_Reference");
-        expect(ast.tail.fn.tail.fn.target).toBe("+");
+        expect(ast.tail.fn.tail.fn.tag).toBe("_Identifier");
+        expect(ast.tail.fn.tail.fn.name).toBe("+");
         expect(ast.tail.fn.tail.arg.tag).toBe("_Number");
         expect(ast.tail.fn.tail.arg.value).toBe(1);
         expect(ast.tail.arg.tag).toBe("_Number");
@@ -105,7 +105,7 @@ describe('expressions', () => {
         expect(ast.tail.tag).toBe("_Lambda");
         expect(ast.tail.binding.tag).toBe("_Binding");
         expect(ast.tail.body.tag).toBe("_Block");
-        expect(ast.tail.body.tail.tag).toBe("_Reference");
+        expect(ast.tail.body.tail.tag).toBe("_Identifier");
     });
 
     it('must produce a valid AST for a nested lambda expression', () => {
@@ -124,8 +124,8 @@ describe('expressions', () => {
         expect(ast.tail.fn.tail.fn.tail.body.tail.binding.tag).toBe("_Binding");
         expect(ast.tail.fn.tail.fn.tail.body.tail.binding.name).toBe("b");
         expect(ast.tail.fn.tail.fn.tail.body.tail.body.tag).toBe("_Block");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.body.tail.tag).toBe("_Reference");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.body.tail.target).toBe("a");
+        expect(ast.tail.fn.tail.fn.tail.body.tail.body.tail.tag).toBe("_Identifier");
+        expect(ast.tail.fn.tail.fn.tail.body.tail.body.tail.name).toBe("a");
         expect(ast.tail.fn.tail.arg.tag).toBe("_Number");
         expect(ast.tail.fn.tail.arg.value).toBe(1);
         expect(ast.tail.arg.tag).toBe("_Number");
