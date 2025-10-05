@@ -2,7 +2,8 @@
 
 export type Id              = {id: number};
 export type Flat_AST        = Flat_Expression[];
-export type Flat_Expression = Flat_Literal | Flat_Identifier | Flat_Binding | Flat_Reference | Flat_Builtin | Flat_Lambda | Flat_Let | Flat_If | Flat_Call;
+export type Flat_Expression = Flat_Block | Flat_Literal | Flat_Identifier | Flat_Binding | Flat_Reference | Flat_Builtin | Flat_Lambda | Flat_Let | Flat_If | Flat_Call;
+export type Flat_Block      = {id: number, token?: number, tag: 'Flat_Block', let_bindings: Id[], tail: Id};
 export type Flat_Let        = {id: number, token?: number, tag: 'Flat_Let', binding: Id, value: Id, body: Id};
 export type Flat_Lambda     = {id: number, token?: number, tag: 'Flat_Lambda', binding: Id, body: Id};
 export type Flat_Builtin    = {id: number, token?: number, tag: 'Flat_Builtin', name: "==" | "!=" | "<" | ">" | "<=" | ">=" | "+" | "-" | "*" | "/" | "%" | "~" | "&&" | "||" | "!"};
