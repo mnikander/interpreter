@@ -36,6 +36,19 @@ export function is_string(expr: Item): expr is _String { return expr.tag === '_S
 
 export type ParseError = { tag: 'ParseError', token: number, message: string };
 
+// This parser is the stuff of nightmares because it:
+// - works via attempting a rule and then rolling back if the rule fails, which makes for _really_ deep stack traces
+// - it's slow because it doesn't use the single token look-ahead to decide what to do, it tries the rule and rolls back
+// - state and error messages are threaded explicitly via a tuple (optional, optional, tokens) which is a really complicated design
+//
+// It's OK to want to thread the state explicitly, but the 'attempt a rule and rollback if needed' approach is complicated
+// I could also just modify my OO-based parser for ANF.
+// With look-ahead I can decide on the correct rule to apply, that means if an error still occurs there is no coming back -> throw an exception
+// That will simplify the code drastically.
+// I need to make sure to remove the ambiguity from my grammar, by introducing a Call_or_Atomic rule,
+// which handles the ambiguity between ATOMIC and ATOMIC ATOMIC i.e. a function call
+
+
 export function parse(tokens: readonly Token[]): _Block {
     const [error, ast, leftovers] = block(remove_whitespace(tokens));
 
@@ -54,10 +67,6 @@ export function parse(tokens: readonly Token[]): _Block {
     }
 }
 
-function split(tokens: readonly Token[]): [Token, Token[]] {
-    return [tokens[0], tokens.slice(1)];
-}
-
 function consume(tokens: readonly Token[], lexeme: Lexeme): [(undefined | ParseError), undefined, Token[]] {
     const [first, ...rest] = tokens;
     if (is_token(first, lexeme)) {
@@ -70,16 +79,6 @@ function consume(tokens: readonly Token[], lexeme: Lexeme): [(undefined | ParseE
             message: `Expected a ${lexeme}. Got '${first.value}' of type '${first.lexeme}' instead.`,
         }, undefined, [...tokens]];
     }
-}
-
-function is(tokens: readonly Token[], lexeme: Lexeme): boolean {
-    const token: Token = peek(tokens);
-    return token.lexeme === lexeme;
-}
-
-function peek(tokens: readonly Token[]): Token {
-    if (tokens.length < 1) throw Error(`Out-of-bounds. Cannot peek at another token.`);
-    return tokens[0];
 }
 
 function literal(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _Literal), Token[]] {
