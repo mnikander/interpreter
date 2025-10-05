@@ -8,16 +8,16 @@ export type _Literal    = _Boolean | _Number | _String;
 export type _Tail       = _Atomic  | _Call   | _Complex;
 export type _Atomic     = _Literal | _Binding | _Reference | _Lambda | _Block; 
 export type _Complex    = _IfThenElse;
-export type _Block      = {id?: number, tk: number, tag: '_Block', let_bindings: _LetBind[], tail: _Tail};
-export type _LetBind    = {id?: number, tk: number, tag: '_LetBind', binding: _Binding, value: (_Atomic | _Call)};
-export type _Lambda     = {id?: number, tk: number, tag: '_Lambda', binding: _Binding, body: _Block};
-export type _Call       = {id?: number, tk: number, tag: '_Call', fn: _Atomic, arg: _Atomic};
-export type _IfThenElse = {id?: number, tk: number, tag: '_IfThenElse', condition: _Atomic | _Call, then_branch: _Block, else_branch: _Block};
-export type _Binding    = {id?: number, tk: number, tag: '_Binding', name: string};
-export type _Reference  = {id?: number, tk: number, tag: '_Reference', target: string};
-export type _Boolean    = {id?: number, tk: number, tag: '_Boolean', value: boolean};
-export type _Number     = {id?: number, tk: number, tag: '_Number', value: number};
-export type _String     = {id?: number, tk: number, tag: '_String', value: string};
+export type _Block      = {id: number, tk: number, tag: '_Block', let_bindings: _LetBind[], tail: _Tail};
+export type _LetBind    = {id: number, tk: number, tag: '_LetBind', binding: _Binding, value: (_Atomic | _Call)};
+export type _Lambda     = {id: number, tk: number, tag: '_Lambda', binding: _Binding, body: _Block};
+export type _Call       = {id: number, tk: number, tag: '_Call', fn: _Atomic, arg: _Atomic};
+export type _IfThenElse = {id: number, tk: number, tag: '_IfThenElse', condition: _Atomic | _Call, then_branch: _Block, else_branch: _Block};
+export type _Binding    = {id: number, tk: number, tag: '_Binding', name: string};
+export type _Reference  = {id: number, tk: number, tag: '_Reference', target: string};
+export type _Boolean    = {id: number, tk: number, tag: '_Boolean', value: boolean};
+export type _Number     = {id: number, tk: number, tag: '_Number', value: number};
+export type _String     = {id: number, tk: number, tag: '_String', value: string};
 
 export function is_literal(expr: Item): expr is _Literal { return is_boolean(expr) || is_number(expr) || is_string(expr); }
 export function is_tail(expr: Item): expr is _Tail { return is_atomic(expr) || is_call(expr) || is_complex(expr); }
