@@ -5,21 +5,21 @@ import { Item } from './item'
 export type Token           = TokenBoolean | TokenNumber | TokenString | TokenIdentifier | TokenLambda
                             | TokenLet | TokenAssign | TokenIn | TokenIf | TokenElse | TokenThen
                             | TokenOpen | TokenClose | TokenWhitespace | TokenEOF;
-export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', id: number, offset: number, value: boolean };
-export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', id: number, offset: number, value: number };
-export type TokenString     = { tag: 'Token', lexeme: 'STRING', id: number, offset: number, value: string };
-export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', id: number, offset: number, value: string };
-export type TokenLambda     = { tag: 'Token', lexeme: 'LAMBDA', id: number, offset: number, value: 'lambda' };
-export type TokenLet        = { tag: 'Token', lexeme: 'LET', id: number, offset: number, value: 'let' };
-export type TokenAssign     = { tag: 'Token', lexeme: 'ASSIGN', id: number, offset: number, value: '=' };
-export type TokenIn         = { tag: 'Token', lexeme: 'IN', id: number, offset: number, value: 'in' };
-export type TokenIf         = { tag: 'Token', lexeme: 'IF', id: number, offset: number, value: 'if' };
-export type TokenThen       = { tag: 'Token', lexeme: 'THEN', id: number, offset: number, value: 'then' };
-export type TokenElse       = { tag: 'Token', lexeme: 'ELSE', id: number, offset: number, value: 'else' };
-export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', id: number, offset: number, value: '(' };
-export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', id: number, offset: number, value: ')' };
-export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', id: number, offset: number, value: string };
-export type TokenEOF        = { tag: 'Token', lexeme: 'EOF', id: number, offset: number, value: 'EOF' };
+export type TokenBoolean    = { tag: 'Token', lexeme: 'BOOLEAN', at: number, offset: number, value: boolean };
+export type TokenNumber     = { tag: 'Token', lexeme: 'NUMBER', at: number, offset: number, value: number };
+export type TokenString     = { tag: 'Token', lexeme: 'STRING', at: number, offset: number, value: string };
+export type TokenIdentifier = { tag: 'Token', lexeme: 'IDENTIFIER', at: number, offset: number, value: string };
+export type TokenLambda     = { tag: 'Token', lexeme: 'LAMBDA', at: number, offset: number, value: 'lambda' };
+export type TokenLet        = { tag: 'Token', lexeme: 'LET', at: number, offset: number, value: 'let' };
+export type TokenAssign     = { tag: 'Token', lexeme: 'ASSIGN', at: number, offset: number, value: '=' };
+export type TokenIn         = { tag: 'Token', lexeme: 'IN', at: number, offset: number, value: 'in' };
+export type TokenIf         = { tag: 'Token', lexeme: 'IF', at: number, offset: number, value: 'if' };
+export type TokenThen       = { tag: 'Token', lexeme: 'THEN', at: number, offset: number, value: 'then' };
+export type TokenElse       = { tag: 'Token', lexeme: 'ELSE', at: number, offset: number, value: 'else' };
+export type TokenOpen       = { tag: 'Token', lexeme: 'OPEN', at: number, offset: number, value: '(' };
+export type TokenClose      = { tag: 'Token', lexeme: 'CLOSE', at: number, offset: number, value: ')' };
+export type TokenWhitespace = { tag: 'Token', lexeme: 'WHITESPACE', at: number, offset: number, value: string };
+export type TokenEOF        = { tag: 'Token', lexeme: 'EOF', at: number, offset: number, value: 'EOF' };
 export type Lexeme          = 'BOOLEAN' | 'NUMBER' | 'STRING' | 'IDENTIFIER' | 'LAMBDA' 
                             | 'LET' | 'ASSIGN'  | 'IN' | 'IF' | 'THEN' | 'ELSE' 
                             | 'WHITESPACE' | 'OPEN' | 'CLOSE' | 'EOF';
@@ -172,62 +172,62 @@ function push(state: State, token: Token): State {
 // constructors
 function make_boolean (state: State, match: Match): TokenBoolean {
     const value = match.word !== 'false';
-    return { tag: 'Token', lexeme: 'BOOLEAN', id: state.tokens.length, offset: state.offset, value: value };
+    return { tag: 'Token', lexeme: 'BOOLEAN', at: state.tokens.length, offset: state.offset, value: value };
 }
 
 function make_number(state: State, match: Match): TokenNumber {
-    return { tag: 'Token', lexeme: 'NUMBER', id: state.tokens.length, offset: state.offset, value: Number(match.word) };
+    return { tag: 'Token', lexeme: 'NUMBER', at: state.tokens.length, offset: state.offset, value: Number(match.word) };
 }
 
 function make_string(state: State, match: Match): TokenString {
-    return { tag: 'Token', lexeme: 'STRING', id: state.tokens.length, offset: state.offset, value: match.word };
+    return { tag: 'Token', lexeme: 'STRING', at: state.tokens.length, offset: state.offset, value: match.word };
 }
 
 function make_identifier (state: State, match: Match): TokenIdentifier {
-    return { tag: 'Token', lexeme: 'IDENTIFIER', id: state.tokens.length, offset: state.offset, value: match.word };
+    return { tag: 'Token', lexeme: 'IDENTIFIER', at: state.tokens.length, offset: state.offset, value: match.word };
 }
 
 function make_lambda (state: State, match: Match): TokenLambda {
-    return { tag: 'Token', lexeme: 'LAMBDA', id: state.tokens.length, offset: state.offset, value: 'lambda' };
+    return { tag: 'Token', lexeme: 'LAMBDA', at: state.tokens.length, offset: state.offset, value: 'lambda' };
 }
 
 function make_let (state: State, match: Match): TokenLet {
-    return { tag: 'Token', lexeme: 'LET', id: state.tokens.length, offset: state.offset, value: 'let' };
+    return { tag: 'Token', lexeme: 'LET', at: state.tokens.length, offset: state.offset, value: 'let' };
 }
 
 function make_assign (state: State, match: Match): TokenAssign {
-    return { tag: 'Token', lexeme: 'ASSIGN', id: state.tokens.length, offset: state.offset, value: '=' };
+    return { tag: 'Token', lexeme: 'ASSIGN', at: state.tokens.length, offset: state.offset, value: '=' };
 }
 
 function make_in (state: State, match: Match): TokenIn {
-    return { tag: 'Token', lexeme: 'IN', id: state.tokens.length, offset: state.offset, value: 'in' };
+    return { tag: 'Token', lexeme: 'IN', at: state.tokens.length, offset: state.offset, value: 'in' };
 }
 
 function make_if (state: State, match: Match): TokenIf {
-    return { tag: 'Token', lexeme: 'IF', id: state.tokens.length, offset: state.offset, value: 'if' };
+    return { tag: 'Token', lexeme: 'IF', at: state.tokens.length, offset: state.offset, value: 'if' };
 }
 
 function make_then (state: State, match: Match): TokenThen {
-    return { tag: 'Token', lexeme: 'THEN', id: state.tokens.length, offset: state.offset, value: 'then' };
+    return { tag: 'Token', lexeme: 'THEN', at: state.tokens.length, offset: state.offset, value: 'then' };
 }
 
 function make_else (state: State, match: Match): TokenElse {
-    return { tag: 'Token', lexeme: 'ELSE', id: state.tokens.length, offset: state.offset, value: 'else' };
+    return { tag: 'Token', lexeme: 'ELSE', at: state.tokens.length, offset: state.offset, value: 'else' };
 }
 
 function make_open(state: State, match: Match): TokenOpen {
-    return { tag: 'Token', lexeme: 'OPEN', id: state.tokens.length, offset: state.offset, value: '(' };
+    return { tag: 'Token', lexeme: 'OPEN', at: state.tokens.length, offset: state.offset, value: '(' };
 }
 
 function make_close(state: State, match: Match): TokenClose {
-    return { tag: 'Token', lexeme: 'CLOSE', id: state.tokens.length, offset: state.offset, value: ')' };
+    return { tag: 'Token', lexeme: 'CLOSE', at: state.tokens.length, offset: state.offset, value: ')' };
 }
 
 function make_whitespace(state: State, match: Match): TokenWhitespace {
-    return { tag: 'Token', lexeme: 'WHITESPACE', id: state.tokens.length, offset: state.offset, value: match.word };
+    return { tag: 'Token', lexeme: 'WHITESPACE', at: state.tokens.length, offset: state.offset, value: match.word };
 }
 
 function make_eof(state: State): TokenEOF {
     // note that 'offset' is out-of-bounds, since, EOF is after the end of the input string
-    return { tag: 'Token', lexeme: 'EOF', id: state.tokens.length, offset: state.offset, value: 'EOF' }; 
+    return { tag: 'Token', lexeme: 'EOF', at: state.tokens.length, offset: state.offset, value: 'EOF' }; 
 }

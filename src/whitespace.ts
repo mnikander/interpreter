@@ -21,7 +21,7 @@ export function add_whitespace_to_parentheses(tokens: readonly Token[]): Token[]
         }
         else {
             let temp = tk;
-            temp.id = new_i;
+            temp.at = new_i;
             new_i++;
             output.push(temp);
         }
@@ -58,7 +58,7 @@ export function remove_whitespace(tokens: readonly Token[]): Token[] {
         const tk = tokens[i];
         if (!is_token(tk, 'WHITESPACE')) {
             let temp = tk;
-            temp.id = new_i;
+            temp.at = new_i;
             output.push(temp);
             new_i++;
         }
@@ -68,13 +68,13 @@ export function remove_whitespace(tokens: readonly Token[]): Token[] {
 }
 
 function make_whitespace(token_number: number, character_offset: number): TokenWhitespace {
-    return { tag: 'Token', lexeme: 'WHITESPACE', id: token_number, offset: character_offset, value: ' ' };
+    return { tag: 'Token', lexeme: 'WHITESPACE', at: token_number, offset: character_offset, value: ' ' };
 }
 
 function make_open(token_number: number, character_offset: number): TokenOpen {
-    return { tag: 'Token', lexeme: 'OPEN', id: token_number, offset: character_offset, value: '(' };
+    return { tag: 'Token', lexeme: 'OPEN', at: token_number, offset: character_offset, value: '(' };
 }
 
 function make_close(token_number: number, character_offset: number): TokenClose {
-    return { tag: 'Token', lexeme: 'CLOSE', id: token_number, offset: character_offset, value: ')' };
+    return { tag: 'Token', lexeme: 'CLOSE', at: token_number, offset: character_offset, value: ')' };
 }

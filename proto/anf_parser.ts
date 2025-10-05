@@ -75,7 +75,7 @@ function consume(tokens: readonly Token[], lexeme: Lexeme): [(undefined | ParseE
     else {
         return [{
             tag: 'ParseError',
-            token: first.id,
+            token: first.at,
             message: `Expected a ${lexeme}. Got '${first.value}' of type '${first.lexeme}' instead.`,
         }, undefined, [...tokens]];
     }
@@ -84,18 +84,18 @@ function consume(tokens: readonly Token[], lexeme: Lexeme): [(undefined | ParseE
 function literal(tokens: readonly Token[]): [(undefined | ParseError), (undefined | _Literal), Token[]] {
     const [first, ...rest] = tokens;
     if (is_token(first, 'BOOLEAN')) {
-        return [undefined, {token: first.id, tag: "_Boolean", value: (first as TokenBoolean).value}, rest];
+        return [undefined, {token: first.at, tag: "_Boolean", value: (first as TokenBoolean).value}, rest];
     }
     else if (is_token(first, 'NUMBER')) {
-        return [undefined, {token: first.id, tag: "_Number", value: (first as TokenNumber).value}, rest];
+        return [undefined, {token: first.at, tag: "_Number", value: (first as TokenNumber).value}, rest];
     }
     else if (is_token(first, 'STRING')) {
-        return [undefined, {token: first.id, tag: "_String", value: (first as TokenString).value}, rest];
+        return [undefined, {token: first.at, tag: "_String", value: (first as TokenString).value}, rest];
     }
     else {
         return [{
             tag: 'ParseError',
-            token: first.id,
+            token: first.at,
             message: `Expected boolean, number, or string literal. Got '${first.value}' of type '${first.lexeme}' instead.`,
         }, undefined, [...tokens]];
     }
@@ -124,7 +124,7 @@ function tail(tokens: readonly Token[]): [(undefined | ParseError), (undefined |
 
     return [{
         tag: 'ParseError',
-        token: first.id,
+        token: first.at,
         message: `Expected literal, identifier, lambda, block, call, or complex control-flow. Got '${first.value}' of type '${first.lexeme}' instead.`,
     }, undefined, [...tokens]];
 }
@@ -157,7 +157,7 @@ function atomic(tokens: readonly Token[]): [(undefined | ParseError), (undefined
 
     return [{
         tag: 'ParseError',
-        token: first.id,
+        token: first.at,
         message: `Expected literal, identifier, lambda, or block. Got '${first.value}' of type '${first.lexeme}' instead.`,
     }, undefined, [...tokens]];
 }
@@ -175,7 +175,7 @@ function complex(tokens: readonly Token[]): [(undefined | ParseError), (undefine
 
     return [{
         tag: 'ParseError',
-        token: first.id,
+        token: first.at,
         message: `Expected if-then-else. Got '${first.value}' of type '${first.lexeme}' instead.`,
     }, undefined, [...tokens]];
 }
@@ -202,7 +202,7 @@ function block(tokens: readonly Token[]): [(undefined | ParseError), (undefined 
 
     [error, ast, rest] = tail(rest);
     if (!error && ast) {
-        const b: _Block = { token: first.id, tag: "_Block", let_bindings: let_bindings, tail: ast};
+        const b: _Block = { token: first.at, tag: "_Block", let_bindings: let_bindings, tail: ast};
         [error, ast, rest] = consume(rest, 'CLOSE');
         if (error) return [error, ast, [...tokens]];
         else return [undefined, b, rest];
@@ -210,7 +210,7 @@ function block(tokens: readonly Token[]): [(undefined | ParseError), (undefined 
     else {
         return [{
             tag: 'ParseError',
-            token: first.id,
+            token: first.at,
             message: `Expected zero or more let-bindings followed by a tail-expression. Got '${first.value}' of type '${first.lexeme}' instead.`,
         }, undefined, [...tokens]];
     }
@@ -240,7 +240,7 @@ function letbind(tokens: readonly Token[]): [(undefined | ParseError), (undefine
     if (error) {
         [{
             tag: 'ParseError',
-            token: first.id,
+            token: first.at,
             message: `Expected atom or call. Got '${rest[0].value}' of type '${rest[0].lexeme}' instead.`,
         }, undefined, [...tokens]];
     }
@@ -248,7 +248,7 @@ function letbind(tokens: readonly Token[]): [(undefined | ParseError), (undefine
     [error, ast, rest] = consume(rest, 'IN');
     if (error) return [error, ast, [...tokens]];
 
-    const result: _LetBind = { token: first.id, tag: '_LetBind', binding: (variable as _Binding), value: (value as _Atomic | _Call) };
+    const result: _LetBind = { token: first.at, tag: '_LetBind', binding: (variable as _Binding), value: (value as _Atomic | _Call) };
     return [undefined, result, rest];
 }
 
@@ -269,7 +269,7 @@ function lambda(tokens: readonly Token[]): [(undefined | ParseError), (undefined
     [error, body, rest] = block(rest);
     if (error) return [error, ast, [...tokens]];
 
-    const result: _Lambda = { token: first.id, tag: '_Lambda', binding: (variable as _Binding), body: (body as _Block) };
+    const result: _Lambda = { token: first.at, tag: '_Lambda', binding: (variable as _Binding), body: (body as _Block) };
     return [undefined, result, rest];
 }
 
@@ -287,7 +287,7 @@ function call(tokens: readonly Token[]): [(undefined | ParseError), (undefined |
     [error, arg, rest] = atomic(rest);
     if (error) return [error, ast, [...tokens]];
 
-    const result: _Call = { token: first.id, tag: '_Call', fn: (fn as _Atomic), arg: (arg as _Atomic) };
+    const result: _Call = { token: first.at, tag: '_Call', fn: (fn as _Atomic), arg: (arg as _Atomic) };
     return [undefined, result, rest];
 }
 
@@ -318,7 +318,7 @@ function if_then_else(tokens: readonly Token[]): [(undefined | ParseError), (und
     [error, else_branch, rest] = block(rest);
     if (error) return [error, ast, [...tokens]];
 
-    const result: _IfThenElse = { token: first.id, tag: '_IfThenElse', condition: (condition as _Atomic), then_branch: (then_branch as _Block), else_branch: (else_branch as _Block) };
+    const result: _IfThenElse = { token: first.at, tag: '_IfThenElse', condition: (condition as _Atomic), then_branch: (then_branch as _Block), else_branch: (else_branch as _Block) };
     return [undefined, result, rest];
 }
 
@@ -326,12 +326,12 @@ function binding(tokens: readonly Token[]): [(undefined | ParseError), (undefine
     const [first, ...rest] = tokens;
 
     if (is_token(first, 'IDENTIFIER')) {
-        return [undefined, {token: first.id, tag: "_Binding", name: (first as TokenIdentifier).value}, rest];
+        return [undefined, {token: first.at, tag: "_Binding", name: (first as TokenIdentifier).value}, rest];
     }
     else {
         return [{
             tag: 'ParseError',
-            token: first.id,
+            token: first.at,
             message: `Expected an identifier. Got '${first.value}' of type '${first.lexeme}' instead.`,
         }, undefined, [...tokens]];
     }
@@ -341,12 +341,12 @@ function reference(tokens: readonly Token[]): [(undefined | ParseError), (undefi
     const [first, ...rest] = tokens;
 
     if (is_token(first, 'IDENTIFIER')) {
-        return [undefined, {token: first.id, tag: "_Reference", target: (first as TokenIdentifier).value}, rest];
+        return [undefined, {token: first.at, tag: "_Reference", target: (first as TokenIdentifier).value}, rest];
     }
     else {
         return [{
             tag: 'ParseError',
-            token: first.id,
+            token: first.at,
             message: `Expected an identifier. Got '${first.value}' of type '${first.lexeme}' instead.`,
         }, undefined, [...tokens]];
     }
