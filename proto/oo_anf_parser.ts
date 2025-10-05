@@ -34,14 +34,6 @@ export function is_boolean(expr: Item): expr is _Boolean { return expr.tag === '
 export function is_number(expr: Item): expr is _Number { return expr.tag === '_Number'; }
 export function is_string(expr: Item): expr is _String { return expr.tag === '_String'; }
 
-export type ParseError = { tag: 'ParseError', tk: number, message: string };
-
-
-//
-// With look-ahead I can decide on the correct rule to apply, that means if an error still occurs there is no coming back -> throw an exception
-// That will simplify the code drastically.
-// I need to make sure to remove the ambiguity from my grammar, by introducing a Call_or_Atomic rule,
-// which handles the ambiguity between ATOMIC and ATOMIC ATOMIC i.e. a function call
 
 export function parse(tokens: readonly Token[]): _Block {
     const filtered_tokens: Token[] = remove_whitespace(tokens);
@@ -65,13 +57,6 @@ export class ANF_Parser {
         this.node_count = 0;
         this.tokens     = tokens;
     }
-
-    // Helper functions
-
-    // check:         check type of current token against an expectation
-    // expect:        verify that the current token is what is expected, else error (not implemented)
-    // consume:       can be implemented as advance or expect-advance
-    // match:         expect-advance
     
     // check if we have reached the end of the input
     at_end(): boolean {
@@ -313,6 +298,8 @@ export class ANF_Parser {
             throw this.report_expected(['BOOLEAN', 'NUMBER', 'STRING', 'IDENTIFIER', 'LAMBDA', 'OPEN']);
         }
     }
+    
+    // provide a predicate, since this is a union type, which just forwards to other functions
     is_token_atomic(): undefined | Lexeme {
         return this.check_any(['BOOLEAN', 'NUMBER', 'STRING', 'IDENTIFIER', 'LAMBDA', 'OPEN']);
     }
@@ -327,6 +314,8 @@ export class ANF_Parser {
             throw this.report_expected(['IF']);
         }
     }
+
+    // provide a predicate, since this is a union type, which just forwards to other functions
     is_token_complex(): undefined | Lexeme {
         return this.check_any(['IF']);
     }
@@ -391,6 +380,8 @@ export class ANF_Parser {
             throw this.report_expected(['BOOLEAN', 'NUMBER', 'STRING']);
         }
     }
+
+    // provide a predicate, since this is a union type which just forwards to other functions
     is_token_literal(): undefined | Lexeme {
         return this.check_any(['BOOLEAN', 'NUMBER', 'STRING']);
     }
