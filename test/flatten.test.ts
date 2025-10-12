@@ -22,7 +22,7 @@ describe('convert atoms', () => {
         expect(flat_ast).toStrictEqual(expected);
     });
 
-    it('must parse "-0.1" to a number'), () => {
+    it('must parse "-0.1" to a number', () => {
         const text: string       = '-0.1';
         const lexed: Token[]     = lex(text);
         const parsed             = parse(lexed);
@@ -35,7 +35,7 @@ describe('convert atoms', () => {
         expect(node_count).toBe(1);
         expect(flat_ast.length).toBe(1);
         expect(flat_ast).toStrictEqual(expected);
-    }
+    });
 });
 
 describe('expressions', () => {
