@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Id, Flat_Expression, Flat_AST, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if, Flat_Builtin } from "./flat_ast";
+import { Id, Flat_Expression, Flat_AST, Flat_Builtin, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_builtin, is_if, is_block } from "../src/flat_ast";
 import { Item } from "./item";
 
 export type Value          = PrimitiveValue | ClosureValue | BuiltinValue;
@@ -33,7 +33,10 @@ export function lookup(id: number, env: Environment): Value {
 }
 
 export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment): Value {
-    if (is_literal(expr, ast)) {
+    if (is_block(expr, ast)) {
+            return evaluate(ast[expr.body.id], ast, env);
+        }
+    else if (is_literal(expr, ast)) {
         return { tag: 'Primitive', value: expr.value };
     }
     else if (is_identifier(expr, ast)) {

@@ -16,6 +16,7 @@ export type Flat_Literal    = {id: number, token?: number, tag: 'Flat_Literal', 
 
 export const builtins: readonly string[] = ["==" , "!=" , "<" , ">" , "<=" , ">=" , "+" , "-" , "*" , "/" , "%" , "~" , "&&" , "||" , "!"];
 
+export function is_block(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Block { return expr.tag === 'Flat_Block'; }
 export function is_let(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Let { return expr.tag === 'Flat_Let'; }
 export function is_lambda(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Lambda { return expr.tag === 'Flat_Lambda'; }
 export function is_call(expr: Flat_Expression, ast: Flat_AST): expr is Flat_Call { return expr.tag === 'Flat_Call'; }
