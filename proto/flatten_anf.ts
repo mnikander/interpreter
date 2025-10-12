@@ -17,7 +17,7 @@ function flatten_nodes(nested_ast: _Expr, flat_ast: Flat_AST): Flat_AST {
         flat_ast[index]           = node;
         flat_ast                  = flatten_nodes(nested_ast.body, flat_ast);
     }
-    if (is_lambda(nested_ast)) {
+    else if (is_lambda(nested_ast)) {
         const index               = nested_ast.id;
         const binding_id          = { id: nested_ast.binding.id };
         const body_id             = { id: nested_ast.body.id };
