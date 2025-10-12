@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Lexeme, Token, TokenBoolean, TokenIdentifier, TokenNumber, TokenString, is_token } from "../src/lexer";
-import { remove_whitespace } from "../src/whitespace";
+import { Lexeme, Token, TokenBoolean, TokenIdentifier, TokenNumber, TokenString, is_token } from "./lexer";
+import { remove_whitespace } from "./whitespace";
 import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String, walk } from "./anf_ast"
 
 const id_placeholder: number = -1;

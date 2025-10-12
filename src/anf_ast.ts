@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Marco Nikander
 
-import { Item } from "../src/item";
+import { Item } from "./item";
 
 export type _Expression = _LetBind | _Tail;
 export type _Literal    = _Boolean | _Number | _String;

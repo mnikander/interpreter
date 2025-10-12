@@ -1,10 +1,10 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { lex, Token } from "./lexer";
-import { parse } from "../proto/anf_parser";
+import { parse } from "./anf_parser";
 import { Environment, Value, evaluate, is_primitive_value, make_env } from "./evaluator";
 import { Flat_AST } from "./flat_ast";
-import { flatten } from "../proto/anf_flatten";
+import { flatten } from "./anf_flatten";
 import { resolve_names } from "./resolver";
 import { check_parentheses } from "./parentheses";
 import { add_whitespace_to_parentheses, check_whitespace } from "./whitespace";
