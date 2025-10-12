@@ -3,7 +3,7 @@ import { lex, Token } from '../src/lexer'
 import { parse } from '../proto/anf_parser';
 import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String } from "../proto/anf_ast"
 import { Flat_Expression, Flat_AST } from "../src/flat_ast";
-import { flatten } from '../proto/flatten_anf';
+import { flatten } from '../proto/anf_flatten';
 
 describe('convert atoms', () => {
     it('must flatten "true" to a boolean', () => {
