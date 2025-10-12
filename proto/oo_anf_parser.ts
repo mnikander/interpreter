@@ -36,7 +36,7 @@ export function is_number(expr: Item): expr is _Number { return expr.tag === '_N
 export function is_string(expr: Item): expr is _String { return expr.tag === '_String'; }
 
 
-export function parse(tokens: readonly Token[]): _Block {
+export function parse(tokens: readonly Token[]): { ast: _Block, node_count: number } {
     const filtered_tokens: Token[] = remove_whitespace(tokens);
     let parser: ANF_Parser         = new ANF_Parser(filtered_tokens);
     const ast: _Block              = parser.block();
@@ -45,7 +45,7 @@ export function parse(tokens: readonly Token[]): _Block {
         throw Error(`Expected input to be one program. A second program begins at token '${parser.peek().value}' of type '${parser.peek().lexeme}'.`);
     }
 
-    return ast;
+    return { ast: ast, node_count: parser.node_count };
 }
 
 export class ANF_Parser {
