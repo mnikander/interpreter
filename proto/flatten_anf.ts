@@ -12,14 +12,10 @@ export function flatten(ast: _Block, node_count: number): Flat_AST {
 function flatten_nodes(nested_ast: _Expr, flat_ast: Flat_AST): Flat_AST {
     if (is_block(nested_ast)) {
         const index               = nested_ast.id;
-        const binding_ids: Id[]   = (nested_ast.let_bindings).map((b: _LetBind) => { return {id: b.id};});
-        const tail_id             = { id: nested_ast.tail.id };
-        let node: Flat_Block      = { id: index, token: nested_ast.tk, tag: 'Flat_Block', let_bindings: binding_ids, tail: tail_id };
+        const body: Id            = { id: nested_ast.body.id };
+        let node: Flat_Block      = { id: index, token: nested_ast.tk, tag: 'Flat_Block', body: body };
         flat_ast[index]           = node;
-        for (let i: number = 0; i < nested_ast.let_bindings.length; i++) {
-            flat_ast              = flatten_nodes(nested_ast.let_bindings[i], flat_ast);
-        }
-        flat_ast                  = flatten_nodes(nested_ast.tail, flat_ast);
+        flat_ast                  = flatten_nodes(nested_ast.body, flat_ast);
     }
     if (is_lambda(nested_ast)) {
         const index               = nested_ast.id;
@@ -34,10 +30,12 @@ function flatten_nodes(nested_ast: _Expr, flat_ast: Flat_AST): Flat_AST {
         const index               = nested_ast.id;
         const binding_id          = { id: nested_ast.binding.id };
         const value_id            = { id: nested_ast.value.id };
+        const body_id             = { id: nested_ast.body.id };
         let node: Flat_Let        = { id: index, token: nested_ast.tk, tag: 'Flat_Let', binding: binding_id, value: value_id, body: body_id };
         flat_ast[index]           = node;
         flat_ast                  = flatten_nodes(nested_ast.binding, flat_ast);
         flat_ast                  = flatten_nodes(nested_ast.value, flat_ast);
+        flat_ast                  = flatten_nodes(nested_ast.body, flat_ast);
     }
     else if (is_if(nested_ast)) {
         const index               = nested_ast.id;

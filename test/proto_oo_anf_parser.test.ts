@@ -7,36 +7,36 @@ describe('parse blocks containing literals', () => {
     it('must parse "true" to a boolean', () => {
         const text: string = '(true)';
         const parsed = parse(lex(text));
-        expect(parsed.tail.tag).toBe("_Boolean");
-        expect((parsed.tail as _Boolean).value).toBe(true);
+        expect(parsed.body.tag).toBe("_Boolean");
+        expect((parsed.body as _Boolean).value).toBe(true);
     });
 
     it('must parse "-0.1" to a number', () => {
         const text: string = '(-0.1)';
         const parsed = parse(lex(text));
-        expect(parsed.tail.tag).toBe("_Number");
-        expect((parsed.tail as _Number).value).toEqual(-0.1);
+        expect(parsed.body.tag).toBe("_Number");
+        expect((parsed.body as _Number).value).toEqual(-0.1);
     });
 
     it('must parse "hello world" to a string', () => {
         const text: string = '("hello world")';
         const parsed = parse(lex(text));
-        expect(parsed.tail.tag).toBe("_String");
-        expect((parsed.tail as _String).value).toEqual('\"hello world\"');
+        expect(parsed.body.tag).toBe("_String");
+        expect((parsed.body as _String).value).toEqual('\"hello world\"');
     });
 
     it("must parse 'hello world' to a string", () => {
         const text: string = "('hello world')";
         const parsed = parse(lex(text));
-        expect(parsed.tail.tag).toBe("_String");
-        expect((parsed.tail as _String).value).toEqual('\'hello world\'');
+        expect(parsed.body.tag).toBe("_String");
+        expect((parsed.body as _String).value).toEqual('\'hello world\'');
     });
 
     it('must parse "+" to an identifier', () => {
         const text: string = "(+)";
         const parsed = parse(lex(text));
-        expect(parsed.tail.tag).toBe("_Identifier");
-        expect((parsed.tail as _Identifier).name).toEqual("+");
+        expect(parsed.body.tag).toBe("_Identifier");
+        expect((parsed.body as _Identifier).name).toEqual("+");
     });
 });
 
@@ -77,72 +77,72 @@ describe('expressions', () => {
         const tokens = lex("(let x = 5 in x)");
         const ast    = parse(tokens);
         expect(ast.tag).toBe("_Block");
-        expect(ast.let_bindings[0].tag).toBe("_LetBind");
-        expect(ast.let_bindings[0].binding.tag).toBe("_Binding");
-        expect(ast.let_bindings[0].value.tag).toBe("_Number");
-        expect(ast.tail.tag).toBe("_Identifier");
+        expect(ast.body.tag).toBe("_LetBind");
+        expect(ast.body.binding.tag).toBe("_Binding");
+        expect(ast.body.value.tag).toBe("_Number");
+        expect(ast.body.body.tag).toBe("_Identifier");
     });
 
     it('must produce a valid AST for an arithmetic expression', () => {
         const tokens = lex("((+ 1) 2)");
         const ast    = parse(tokens);
         expect(ast.tag).toBe("_Block");
-        expect(ast.tail.tag).toBe("_Call");
-        expect(ast.tail.fn.tag).toBe("_Block");
-        expect(ast.tail.fn.tail.tag).toBe("_Call");
-        expect(ast.tail.fn.tail.fn.tag).toBe("_Identifier");
-        expect(ast.tail.fn.tail.fn.name).toBe("+");
-        expect(ast.tail.fn.tail.arg.tag).toBe("_Number");
-        expect(ast.tail.fn.tail.arg.value).toBe(1);
-        expect(ast.tail.arg.tag).toBe("_Number");
-        expect(ast.tail.arg.value).toBe(2);
+        expect(ast.body.tag).toBe("_Call");
+        expect(ast.body.fn.tag).toBe("_Block");
+        expect(ast.body.fn.body.tag).toBe("_Call");
+        expect(ast.body.fn.body.fn.tag).toBe("_Identifier");
+        expect(ast.body.fn.body.fn.name).toBe("+");
+        expect(ast.body.fn.body.arg.tag).toBe("_Number");
+        expect(ast.body.fn.body.arg.value).toBe(1);
+        expect(ast.body.arg.tag).toBe("_Number");
+        expect(ast.body.arg.value).toBe(2);
     });
 
     it('must produce a valid AST for a simple lambda expression', () => {
         const tokens = lex("(lambda x (x))");
         const ast    = parse(tokens);
         expect(ast.tag).toBe("_Block");
-        expect(ast.tail.tag).toBe("_Lambda");
-        expect(ast.tail.binding.tag).toBe("_Binding");
-        expect(ast.tail.body.tag).toBe("_Block");
-        expect(ast.tail.body.tail.tag).toBe("_Identifier");
+        expect(ast.body.tag).toBe("_Lambda");
+        expect(ast.body.binding.tag).toBe("_Binding");
+        expect(ast.body.body.tag).toBe("_Block");
+        expect(ast.body.body.body.tag).toBe("_Identifier");
     });
 
     it('must produce a valid AST for a nested lambda expression', () => {
         const tokens = lex("(((lambda a (lambda b (a))) 1) 2)");
         const ast    = parse(tokens);
         expect(ast.tag).toBe("_Block");
-        expect(ast.tail.tag).toBe("_Call");
-        expect(ast.tail.fn.tag).toBe("_Block");
-        expect(ast.tail.fn.tail.tag).toBe("_Call");
-        expect(ast.tail.fn.tail.fn.tag).toBe("_Block");
-        expect(ast.tail.fn.tail.fn.tail.tag).toBe("_Lambda");
-        expect(ast.tail.fn.tail.fn.tail.binding.tag).toBe("_Binding");
-        expect(ast.tail.fn.tail.fn.tail.binding.name).toBe("a");
-        expect(ast.tail.fn.tail.fn.tail.body.tag).toBe("_Block");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.tag).toBe("_Lambda");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.binding.tag).toBe("_Binding");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.binding.name).toBe("b");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.body.tag).toBe("_Block");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.body.tail.tag).toBe("_Identifier");
-        expect(ast.tail.fn.tail.fn.tail.body.tail.body.tail.name).toBe("a");
-        expect(ast.tail.fn.tail.arg.tag).toBe("_Number");
-        expect(ast.tail.fn.tail.arg.value).toBe(1);
-        expect(ast.tail.arg.tag).toBe("_Number");
-        expect(ast.tail.arg.value).toBe(2);
+        expect(ast.body.tag).toBe("_Call");
+        expect(ast.body.fn.tag).toBe("_Block");
+        expect(ast.body.fn.body.tag).toBe("_Call");
+        expect(ast.body.fn.body.fn.tag).toBe("_Block");
+        expect(ast.body.fn.body.fn.body.tag).toBe("_Lambda");
+        expect(ast.body.fn.body.fn.body.binding.tag).toBe("_Binding");
+        expect(ast.body.fn.body.fn.body.binding.name).toBe("a");
+        expect(ast.body.fn.body.fn.body.body.tag).toBe("_Block");
+        expect(ast.body.fn.body.fn.body.body.body.tag).toBe("_Lambda");
+        expect(ast.body.fn.body.fn.body.body.body.binding.tag).toBe("_Binding");
+        expect(ast.body.fn.body.fn.body.body.body.binding.name).toBe("b");
+        expect(ast.body.fn.body.fn.body.body.body.body.tag).toBe("_Block");
+        expect(ast.body.fn.body.fn.body.body.body.body.body.tag).toBe("_Identifier");
+        expect(ast.body.fn.body.fn.body.body.body.body.body.name).toBe("a");
+        expect(ast.body.fn.body.arg.tag).toBe("_Number");
+        expect(ast.body.fn.body.arg.value).toBe(1);
+        expect(ast.body.arg.tag).toBe("_Number");
+        expect(ast.body.arg.value).toBe(2);
     });
 
     it('must produce a valid AST for a simple if expression', () => {
         const tokens = lex("(if true then (42) else (0))");
         const ast    = parse(tokens);
         expect(ast.tag).toBe("_Block");
-        expect(ast.tail.tag).toBe("_IfThenElse");
-        expect(ast.tail.condition.tag).toBe("_Boolean");
-        expect(ast.tail.then_branch.tag).toBe("_Block");
-        expect(ast.tail.then_branch.tail.tag).toBe("_Number");
-        expect(ast.tail.then_branch.tail.value).toBe(42);
-        expect(ast.tail.else_branch.tag).toBe("_Block");
-        expect(ast.tail.else_branch.tail.tag).toBe("_Number");
-        expect(ast.tail.else_branch.tail.value).toBe(0);
+        expect(ast.body.tag).toBe("_IfThenElse");
+        expect(ast.body.condition.tag).toBe("_Boolean");
+        expect(ast.body.then_branch.tag).toBe("_Block");
+        expect(ast.body.then_branch.body.tag).toBe("_Number");
+        expect(ast.body.then_branch.body.value).toBe(42);
+        expect(ast.body.else_branch.tag).toBe("_Block");
+        expect(ast.body.else_branch.body.tag).toBe("_Number");
+        expect(ast.body.else_branch.body.value).toBe(0);
     });
 });

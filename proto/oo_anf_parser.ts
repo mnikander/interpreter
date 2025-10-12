@@ -9,8 +9,8 @@ export type _Literal    = _Boolean | _Number | _String;
 export type _Tail       = _Atomic  | _Call   | _Complex;
 export type _Atomic     = _Literal | _Binding | _Identifier | _Lambda | _Block; 
 export type _Complex    = _IfThenElse;
-export type _Block      = {id: number, tk: number, tag: '_Block', let_bindings: _LetBind[], tail: _Tail};
-export type _LetBind    = {id: number, tk: number, tag: '_LetBind', binding: _Binding, value: (_Atomic | _Call)};
+export type _Block      = {id: number, tk: number, tag: '_Block', body: (_LetBind | _Tail)};
+export type _LetBind    = {id: number, tk: number, tag: '_LetBind', binding: _Binding, value: (_Atomic | _Call), body: (_LetBind | _Tail)};
 export type _Lambda     = {id: number, tk: number, tag: '_Lambda', binding: _Binding, body: _Block};
 export type _Call       = {id: number, tk: number, tag: '_Call', fn: _Atomic, arg: _Atomic};
 export type _IfThenElse = {id: number, tk: number, tag: '_IfThenElse', condition: _Atomic | _Call, then_branch: _Block, else_branch: _Block};
@@ -125,7 +125,7 @@ export class ANF_Parser {
         return Error(`Expected '${expected}' got '${this.peek().value}' of type '${this.peek().lexeme}'.`);
     }
 
-    // BLOCK          = open LET_STAR TAIL close
+    // BLOCK          = open LETBIND / TAIL close
     block(): _Block {
         const id = this.node_count++;
         const tk = this.index;
@@ -134,8 +134,7 @@ export class ANF_Parser {
             throw this.report_expected(['OPEN']);
         }
 
-        const lets: _LetBind[] = this.let_star();
-        const tail: _Tail      = this.tail();
+        let body: (_LetBind | _Tail) = this.content();
 
         if (!this.match('CLOSE')) {
             throw this.report_expected(['CLOSE']);
@@ -145,46 +144,54 @@ export class ANF_Parser {
             id: id,
             tk: tk,
             tag: '_Block',
-            let_bindings: lets,
-            tail: tail
+            body: body,
         };
         return node;
     }
 
-    // LET_STAR       = *('let' BINDING '=' ATOMIC_OR_CALL 'in')
-    let_star(): _LetBind[] {
-        let bindings: _LetBind[] = [];
+    // LETBIND        = *('let' BINDING '=' ATOMIC_OR_CALL 'in')
+    letbind(): _LetBind {
+        const id = this.node_count++;
+        const tk = this.index;
 
-        while (is_token(this.peek(), 'LET')) {
-            const id = this.node_count++;
-            const tk = this.index;
-
-            if (!this.match('LET')) {
-                throw this.report_expected(['LET']);
-            }
-
-            const left = this.binding();
-
-            if (!this.match('ASSIGN')) {
-                throw this.report_expected(['ASSIGN']);
-            }
-
-            const right: _Atomic | _Call = this.atomic_or_call();
-
-            if (!this.match('IN')) {
-                throw this.report_expected(['IN']);
-            }
-
-            const node: _LetBind = {
-                id: id,
-                tk: tk,
-                tag: '_LetBind',
-                binding: left,
-                value: right
-            };
-            bindings.push(node);
+        if (!this.match('LET')) {
+            throw this.report_expected(['LET']);
         }
-        return bindings;
+
+        const left = this.binding();
+
+        if (!this.match('ASSIGN')) {
+            throw this.report_expected(['ASSIGN']);
+        }
+
+        const right: _Atomic | _Call = this.atomic_or_call();
+
+        if (!this.match('IN')) {
+            throw this.report_expected(['IN']);
+        }
+
+        const body: (_LetBind | _Tail) = this.content();
+
+        const binding: _LetBind = {
+            id: id,
+            tk: tk,
+            tag: '_LetBind',
+            binding: left,
+            value: right,
+            body: body,
+        };
+        return binding;
+    }
+
+    content(): _LetBind | _Tail {
+        let body: _LetBind | _Tail;
+        if (is_token(this.peek(), 'LET')) {
+            body = this.letbind();
+        }
+        else {
+            body = this.tail();
+        }
+        return body;
     }
 
     // LAMBDA         = 'lambda' BINDING BLOCK
