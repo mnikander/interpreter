@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "../src/item";
-import { _Expr, _Block, _LetBind, is_block, is_boolean, is_call, is_binding, is_identifier, is_lambda, is_let, is_if, is_number, is_string } from "./oo_anf_parser";
+import { _Expression, _Block, _LetBind, is_block, is_boolean, is_call, is_binding, is_identifier, is_lambda, is_let, is_if, is_number, is_string } from "./oo_anf_parser";
 import { Id, Flat_Block, Flat_Literal, Flat_Identifier, Flat_Lambda, Flat_Let, Flat_Call, Flat_Expression, Flat_AST, Flat_Binding, Flat_If } from "../src/flat_ast";
 
 export function flatten(ast: _Block, node_count: number): Flat_AST {
@@ -9,7 +9,7 @@ export function flatten(ast: _Block, node_count: number): Flat_AST {
     return flatten_nodes(ast, flat);
 }
 
-function flatten_nodes(nested_ast: _Expr, flat_ast: Flat_AST): Flat_AST {
+function flatten_nodes(nested_ast: _Expression, flat_ast: Flat_AST): Flat_AST {
     if (is_block(nested_ast)) {
         const index               = nested_ast.id;
         const body: Id            = { id: nested_ast.body.id };

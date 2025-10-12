@@ -4,7 +4,7 @@ import { Item } from "../src/item";
 import { Lexeme, Token, TokenBoolean, TokenIdentifier, TokenNumber, TokenString, is_token } from "../src/lexer";
 import { remove_whitespace } from "../src/whitespace";
 
-export type _Expr       = _LetBind | _Tail;
+export type _Expression = _LetBind | _Tail;
 export type _Literal    = _Boolean | _Number | _String;
 export type _Tail       = _Atomic  | _Call   | _Complex;
 export type _Atomic     = _Literal | _Binding | _Identifier | _Lambda | _Block; 
