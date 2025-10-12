@@ -3,34 +3,34 @@
 import { Token, TokenBoolean, TokenNumber, TokenString, TokenIdentifier, is_token } from './lexer';
 import { remove_whitespace } from './whitespace';
 
-export type Nested_Expression = Nested_Atom | Nested_Call | Nested_Lambda | Nested_Let | Nested_If;
-export type Nested_Atom       = Nested_Identifier | Nested_Binding | Nested_Boolean | Nested_Number | Nested_String;
-export type Nested_Boolean    = {id: number, token: number, tag: 'Nested_Boolean', value: boolean};
-export type Nested_Number     = {id: number, token: number, tag: 'Nested_Number', value: number};
-export type Nested_String     = {id: number, token: number, tag: 'Nested_String', value: string};
-export type Nested_Identifier = {id: number, token: number, tag: 'Nested_Identifier', name: string};
-export type Nested_Binding    = {id: number, token: number, tag: 'Nested_Binding', name: string};
-export type Nested_Reference  = {id: number, token: number, tag: 'Nested_Reference', target: string};
-export type Nested_Lambda     = {id: number, token: number, tag: 'Nested_Lambda', binding: Nested_Binding, body: Nested_Expression};
-export type Nested_Let        = {id: number, token: number, tag: 'Nested_Let', binding: Nested_Binding, value: Nested_Expression, body: Nested_Expression};
-export type Nested_If         = {id: number, token: number, tag: 'Nested_If', condition: Nested_Expression, then_branch: Nested_Expression, else_branch: Nested_Expression};
-export type Nested_Call       = {id: number, token: number, tag: 'Nested_Call', fn: Nested_Expression, arg: Nested_Expression};
+export type _Expression = _Atom | _Call | _Lambda | _Let | _If;
+export type _Atom       = _Identifier | _Binding | _Boolean | _Number | _String;
+export type _Boolean    = {id: number, token: number, tag: '_Boolean', value: boolean};
+export type _Number     = {id: number, token: number, tag: '_Number', value: number};
+export type _String     = {id: number, token: number, tag: '_String', value: string};
+export type _Identifier = {id: number, token: number, tag: '_Identifier', name: string};
+export type _Binding    = {id: number, token: number, tag: '_Binding', name: string};
+export type _Reference  = {id: number, token: number, tag: '_Reference', target: string};
+export type _Lambda     = {id: number, token: number, tag: '_Lambda', binding: _Binding, body: _Expression};
+export type _Let        = {id: number, token: number, tag: '_Let', binding: _Binding, value: _Expression, body: _Expression};
+export type _If         = {id: number, token: number, tag: '_If', condition: _Expression, then_branch: _Expression, else_branch: _Expression};
+export type _Call       = {id: number, token: number, tag: '_Call', fn: _Expression, arg: _Expression};
 
-export function is_expression(expr: Nested_Expression): expr is Nested_Expression { return is_atom(expr) || is_lambda(expr) || is_let(expr) || is_call(expr); }
-export function is_atom(expr: Nested_Expression): expr is Nested_Atom { return is_identifier(expr) || is_boolean(expr) || is_number(expr) || is_string(expr); }
-export function is_boolean(expr: Nested_Expression): expr is Nested_Boolean { return expr.tag === 'Nested_Boolean'; }
-export function is_number(expr: Nested_Expression): expr is Nested_Number { return expr.tag === 'Nested_Number'; }
-export function is_string(expr: Nested_Expression): expr is Nested_String { return expr.tag === 'Nested_String'; }
-export function is_identifier(expr: Nested_Expression): expr is Nested_Identifier { return expr.tag === 'Nested_Identifier'; }
-export function is_binding(expr: Nested_Expression): expr is Nested_Binding { return expr.tag === 'Nested_Binding'; }
-export function is_lambda(expr: Nested_Expression): expr is Nested_Lambda { return expr.tag === 'Nested_Lambda'; }
-export function is_let(expr: Nested_Expression): expr is Nested_Let { return expr.tag === 'Nested_Let'; }
-export function is_if(expr: Nested_Expression): expr is Nested_If { return expr.tag === 'Nested_If'; }
-export function is_call(expr: Nested_Expression): expr is Nested_Call { return expr.tag === 'Nested_Call'; }
+export function is_expression(expr: _Expression): expr is _Expression { return is_atom(expr) || is_lambda(expr) || is_let(expr) || is_call(expr); }
+export function is_atom(expr: _Expression): expr is _Atom { return is_identifier(expr) || is_boolean(expr) || is_number(expr) || is_string(expr); }
+export function is_boolean(expr: _Expression): expr is _Boolean { return expr.tag === '_Boolean'; }
+export function is_number(expr: _Expression): expr is _Number { return expr.tag === '_Number'; }
+export function is_string(expr: _Expression): expr is _String { return expr.tag === '_String'; }
+export function is_identifier(expr: _Expression): expr is _Identifier { return expr.tag === '_Identifier'; }
+export function is_binding(expr: _Expression): expr is _Binding { return expr.tag === '_Binding'; }
+export function is_lambda(expr: _Expression): expr is _Lambda { return expr.tag === '_Lambda'; }
+export function is_let(expr: _Expression): expr is _Let { return expr.tag === '_Let'; }
+export function is_if(expr: _Expression): expr is _If { return expr.tag === '_If'; }
+export function is_call(expr: _Expression): expr is _Call { return expr.tag === '_Call'; }
 
-export function parse(tokens: readonly Token[]) : { ast: Nested_Expression, node_count: number } {
+export function parse(tokens: readonly Token[]) : { ast: _Expression, node_count: number } {
     let parser = new Parser(remove_whitespace(tokens));
-    const expression: Nested_Expression = parser.expr();
+    const expression: _Expression = parser.expr();
 
     if (parser.is_at_end()) {
         return { ast: expression, node_count: parser.node_count };
@@ -83,7 +83,7 @@ class Parser {
         return is_token(this.peek(), 'EOF');
     }
 
-    expr(): Nested_Expression {
+    expr(): _Expression {
 
         if(this.is_at_end()) {
             throw Error(`Parser::expr() is out-of-bounds`);
@@ -92,22 +92,22 @@ class Parser {
         if (is_token(this.peek(), 'BOOLEAN')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: 'Nested_Boolean', value: (this.previous() as TokenBoolean).value };
+            return { id: id, token: this.index-1, tag: '_Boolean', value: (this.previous() as TokenBoolean).value };
         }
         else if (is_token(this.peek(), 'NUMBER')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: 'Nested_Number', value: (this.previous() as TokenNumber).value };
+            return { id: id, token: this.index-1, tag: '_Number', value: (this.previous() as TokenNumber).value };
         }
         else if (is_token(this.peek(), 'STRING')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: 'Nested_String', value: (this.previous() as TokenString).value };
+            return { id: id, token: this.index-1, tag: '_String', value: (this.previous() as TokenString).value };
         }
         else if (is_token(this.peek(), 'IDENTIFIER')) {
             this.consume();
             const id = this.emit();
-            return { id: id, token: this.index-1, tag: 'Nested_Identifier', name: (this.previous() as TokenIdentifier).value };
+            return { id: id, token: this.index-1, tag: '_Identifier', name: (this.previous() as TokenIdentifier).value };
         }
         else if (is_token(this.peek(), 'OPEN')) {
             this.consume();
@@ -135,7 +135,7 @@ class Parser {
     }
 
     // (lambda identifier expr)
-    lambda(): Nested_Lambda {
+    lambda(): _Lambda {
         // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
         const id = this.emit();
         const potential_keyword: Token = this.peek();
@@ -145,15 +145,15 @@ class Parser {
             throw new Error(`Expected an 'lambda' to be followed by an identifier but got a ${this.peek().lexeme} instead`);
         }
         else {
-            const variable: Nested_Binding = this.binding();
-            const body: Nested_Expression = this.expr();
+            const variable: _Binding = this.binding();
+            const body: _Expression = this.expr();
             this.expect_closing();
-            return { id: id, token: potential_keyword.at-1, tag: 'Nested_Lambda', binding: variable, body: body };
+            return { id: id, token: potential_keyword.at-1, tag: '_Lambda', binding: variable, body: body };
         }
     }
 
     // (let identifier expr expr)
-    letbind(): Nested_Let {
+    letbind(): _Let {
         // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
         const id = this.emit();
         const potential_keyword: Token = this.peek();
@@ -163,44 +163,44 @@ class Parser {
             throw new Error(`Expected an 'let' to be followed by an identifier but got a ${this.peek().lexeme} instead`);
         }
         else {
-            const variable: Nested_Binding = this.binding();
-            const value: Nested_Expression = this.expr();
-            const body: Nested_Expression = this.expr();
+            const variable: _Binding = this.binding();
+            const value: _Expression = this.expr();
+            const body: _Expression = this.expr();
             this.expect_closing();
-            return { id: id, token: potential_keyword.at-1, tag: 'Nested_Let', binding: variable, value: value, body: body };
+            return { id: id, token: potential_keyword.at-1, tag: '_Let', binding: variable, value: value, body: body };
         }
     }
 
     // (if expr expr expr)
-    iff(): Nested_If {
+    iff(): _If {
         // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
         const id = this.emit();
         const potential_keyword: Token = this.peek();
         this.consume();
 
-        const condition: Nested_Expression = this.expr();
-        const then_branch: Nested_Expression = this.expr();
-        const else_branch: Nested_Expression = this.expr();
+        const condition: _Expression = this.expr();
+        const then_branch: _Expression = this.expr();
+        const else_branch: _Expression = this.expr();
         this.expect_closing();
-        return { id: id, token: potential_keyword.at-1, tag: 'Nested_If', condition: condition, then_branch: then_branch, else_branch: else_branch };
+        return { id: id, token: potential_keyword.at-1, tag: '_If', condition: condition, then_branch: then_branch, else_branch: else_branch };
     }
 
     // (expr expr)
-    call(): Nested_Call {
+    call(): _Call {
         // we store the node_id, since we need the ids in pre-order, but construct the AST via post-order recursion
         const id = this.emit();
 
-        const fn: Nested_Expression = this.expr();
-        const arg: Nested_Expression = this.expr();
+        const fn: _Expression = this.expr();
+        const arg: _Expression = this.expr();
         this.expect_closing();
-        return { id: id, token: fn.token-1, tag: 'Nested_Call', fn: fn, arg: arg };
+        return { id: id, token: fn.token-1, tag: '_Call', fn: fn, arg: arg };
     }
 
-    binding(): Nested_Binding {
+    binding(): _Binding {
         const id = this.emit();
         const token = (this.peek() as TokenIdentifier);
         this.consume();
-        return { id: id, token: token.at, tag: 'Nested_Binding', name: token.value };
+        return { id: id, token: token.at, tag: '_Binding', name: token.value };
     }
 
     expect_closing() {

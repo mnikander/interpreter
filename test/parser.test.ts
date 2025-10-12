@@ -1,42 +1,42 @@
 import { describe, it, expect } from 'vitest'
 import { lex } from '../src/lexer'
-import { Nested_Boolean, Nested_Call, Nested_Expression, Nested_Identifier, Nested_Lambda, Nested_Number, Nested_String, parse } from '../src/parser';
+import { _Boolean, _Call, _Expression, _Identifier, _Lambda, _Number, _String, parse } from '../src/parser';
 
 describe('parse atoms', () => {
 
     it('must parse "true" to a boolean', () => {
         const text: string = 'true';
         const parsed = parse(lex(text));
-        expect(parsed.ast.tag).toBe("Nested_Boolean");
-        expect((parsed.ast as Nested_Boolean).value).toBe(true);
+        expect(parsed.ast.tag).toBe("_Boolean");
+        expect((parsed.ast as _Boolean).value).toBe(true);
     });
 
     it('must parse "-0.1" to a number', () => {
         const text: string = '-0.1';
         const parsed = parse(lex(text));
-        expect(parsed.ast.tag).toBe("Nested_Number");
-        expect((parsed.ast as Nested_Number).value).toEqual(-0.1);
+        expect(parsed.ast.tag).toBe("_Number");
+        expect((parsed.ast as _Number).value).toEqual(-0.1);
     });
 
     it('must parse "hello world" to a string', () => {
         const text: string = '"hello world"';
         const parsed = parse(lex(text));
-        expect(parsed.ast.tag).toBe("Nested_String");
-        expect((parsed.ast as Nested_String).value).toEqual('\"hello world\"');
+        expect(parsed.ast.tag).toBe("_String");
+        expect((parsed.ast as _String).value).toEqual('\"hello world\"');
     });
 
     it("must parse 'hello world' to a string", () => {
         const text: string = "'hello world'";
         const parsed = parse(lex(text));
-        expect(parsed.ast.tag).toBe("Nested_String");
-        expect((parsed.ast as Nested_String).value).toEqual('\'hello world\'');
+        expect(parsed.ast.tag).toBe("_String");
+        expect((parsed.ast as _String).value).toEqual('\'hello world\'');
     });
 
     it('must parse "+" to an identifier', () => {
         const text: string = "+";
         const parsed = parse(lex(text));
-        expect(parsed.ast.tag).toBe("Nested_Identifier");
-        expect((parsed.ast as Nested_Identifier).name).toEqual("+");
+        expect(parsed.ast.tag).toBe("_Identifier");
+        expect((parsed.ast as _Identifier).name).toEqual("+");
     });
 });
 
@@ -103,38 +103,38 @@ describe('expressions', () => {
 
     it('must produce a valid AST for an arithmetic expression', () => {
         const parsed = parse(lex("((+ 1) 2)"));
-        const ast: Nested_Expression = parsed.ast;
+        const ast: _Expression = parsed.ast;
         const node_count: number     = parsed.node_count;
         expect(node_count).toBe(5);
-        expect(ast.tag).toBe("Nested_Call");
+        expect(ast.tag).toBe("_Call");
     });
 
     it('must produce a valid AST for a simple lambda expression', () => {
         const parsed = parse(lex("((lambda x x) 42)"));
-        const ast: Nested_Expression = parsed.ast;
+        const ast: _Expression = parsed.ast;
         const node_count: number     = parsed.node_count;
         expect(node_count).toBe(5);
-        expect(ast.tag).toBe("Nested_Call");
-        expect((ast as Nested_Call).id).toBe(0);
-        expect((ast as Nested_Call).fn.id).toBe(1);
-        expect((ast as Nested_Call).arg.id).toBe(4);
-        expect(((ast as Nested_Call).arg as Nested_Number).value).toBe(42);
-        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.id).toBe(2);
-        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.tag).toBe("Nested_Binding");
-        expect((((ast as Nested_Call).fn) as Nested_Lambda).binding.name).toBe("x");
-        expect((((ast as Nested_Call).fn) as Nested_Lambda).body.id).toBe(3);
-        expect((((ast as Nested_Call).fn) as Nested_Lambda).body.tag).toBe("Nested_Identifier");
-        expect(((((ast as Nested_Call).fn) as Nested_Lambda).body as Nested_Identifier).name).toBe("x");
+        expect(ast.tag).toBe("_Call");
+        expect((ast as _Call).id).toBe(0);
+        expect((ast as _Call).fn.id).toBe(1);
+        expect((ast as _Call).arg.id).toBe(4);
+        expect(((ast as _Call).arg as _Number).value).toBe(42);
+        expect((((ast as _Call).fn) as _Lambda).binding.id).toBe(2);
+        expect((((ast as _Call).fn) as _Lambda).binding.tag).toBe("_Binding");
+        expect((((ast as _Call).fn) as _Lambda).binding.name).toBe("x");
+        expect((((ast as _Call).fn) as _Lambda).body.id).toBe(3);
+        expect((((ast as _Call).fn) as _Lambda).body.tag).toBe("_Identifier");
+        expect(((((ast as _Call).fn) as _Lambda).body as _Identifier).name).toBe("x");
     });
 
     it('must produce a valid AST for a nested lambda expression', () => {
         const parsed = parse(lex("(((lambda a (lambda b a)) 1) 2)"));
-        const ast: Nested_Expression = parsed.ast;
+        const ast: _Expression = parsed.ast;
         const node_count: number     = parsed.node_count;
         expect(node_count).toBe(9);
-        expect(ast.tag).toBe("Nested_Call");
-        expect((ast as Nested_Call).id).toBe(0);
-        expect((ast as Nested_Call).fn.id).toBe(1);
-        expect((ast as Nested_Call).arg.id).toBe(8);
+        expect(ast.tag).toBe("_Call");
+        expect((ast as _Call).id).toBe(0);
+        expect((ast as _Call).fn.id).toBe(1);
+        expect((ast as _Call).arg.id).toBe(8);
     });
 });
