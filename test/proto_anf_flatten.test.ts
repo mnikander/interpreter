@@ -56,7 +56,7 @@ describe('convert atoms', () => {
     });
 });
 
-describe.skip('expressions', () => {
+describe('expressions', () => {
     it('must produce a valid AST for arithmetic expressions', () => {
         const text: string       = "((+ 1) 2)";
         const lexed: Token[]     = lex(text);
@@ -114,12 +114,12 @@ describe.skip('expressions', () => {
             {id:  1, token:  1, tag: 'Flat_Call', body: {id: 2}, arg: {id: 12}},
             {id:  2, token:  1, tag: 'Flat_Block', body: {id: 3}},
             {id:  3, token:  2, tag: 'Flat_Call', body: {id: 4}, arg: {id: 11}},
-            {id:  4, token:  2, tag: 'Flat_Lambda', binding: {id: 3}, body: {id: 6}},
+            {id:  4, token:  2, tag: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
             {id:  5, token:  3, tag: 'Flat_Binding', name: 'a'},
             {id:  6, token:  4, tag: 'Flat_Block', body: {id: 7}},
-            {id:  7, token:  5, tag: 'Flat_Lambda', binding: {id: 5}, body: {id: 8}},
+            {id:  7, token:  5, tag: 'Flat_Lambda', binding: {id: 8}, body: {id: 9}},
             {id:  8, token:  6, tag: 'Flat_Binding', name: 'b'},
-            {id:  9, token:  7, tag: 'Flat_Block', body: {id: 3}},
+            {id:  9, token:  7, tag: 'Flat_Block', body: {id: 10}},
             {id: 10, token:  8, tag: 'Flat_Identifier', name: 'a'},
             {id: 11, token: 11, tag: 'Flat_Literal', value: 1},
             {id: 12, token: 13, tag: 'Flat_Literal', value: 2}
@@ -151,47 +151,55 @@ describe.skip('expressions', () => {
     });
 
     it('must produce a valid AST when let-binding to a function', () => {
-        const text: string       = "(let successor (lambda x ((+ 1) x)) (successor 41))";
+        const text: string       = "(let successor = (lambda x ((+ 1) x)) in (successor 41))";
         const lexed: Token[]     = lex(text);
         const parsed             = parse(lexed);
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
         const expected: Flat_Expression[] = [
-            {id:  0, token:  0, tag: 'Flat_Let', binding: {id: 1}, value: {id: 2}, body: {id: 9}},
-            {id:  1, token:  2, tag: 'Flat_Binding', name: 'successor'},
-            {id:  2, token:  3, tag: 'Flat_Lambda', binding: {id: 3}, body: {id: 4}},
-            {id:  3, token:  5, tag: 'Flat_Binding', name: 'x'},
-            {id:  4, token:  6, tag: 'Flat_Call', body: {id: 5}, arg: {id: 8}}, // 8 is large
-            {id:  5, token:  7, tag: 'Flat_Call', body: {id: 6}, arg: {id: 7}},
-            {id:  6, token:  8, tag: 'Flat_Identifier', name: '+'},
-            {id:  7, token:  9, tag: 'Flat_Literal', value: 1},
-            {id:  8, token: 11, tag: 'Flat_Identifier', name: 'x'},
-            {id:  9, token: 14, tag: 'Flat_Call', body: {id: 10}, arg: {id: 11}},
-            {id: 10, token: 15, tag: 'Flat_Identifier', name: 'successor'},
-            {id: 11, token: 16, tag: 'Flat_Literal', value: 41},
+            {id:  0, token:  0, tag: 'Flat_Block', body: {id: 1}},
+            {id:  1, token:  1, tag: 'Flat_Let', binding: {id: 2}, value: {id: 3}, body: {id: 13}},
+            {id:  2, token:  2, tag: 'Flat_Binding', name: 'successor'},
+            {id:  3, token:  4, tag: 'Flat_Block', body: {id: 4}},
+            {id:  4, token:  5, tag: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
+            {id:  5, token:  6, tag: 'Flat_Binding', name: 'x'},
+            {id:  6, token:  7, tag: 'Flat_Block', body: {id: 7}},
+            {id:  7, token:  8, tag: 'Flat_Call', body: {id: 8}, arg: {id: 12}},
+            {id:  8, token:  8, tag: 'Flat_Block', body: {id: 9}},
+            {id:  9, token:  9, tag: 'Flat_Call', body: {id: 10}, arg: {id: 11}},
+            {id: 10, token:  9, tag: 'Flat_Identifier', name: '+'},
+            {id: 11, token: 10, tag: 'Flat_Literal', value: 1},
+            {id: 12, token: 12, tag: 'Flat_Identifier', name: 'x'},
+            {id: 13, token: 16, tag: 'Flat_Block', body: {id: 14}},
+            {id: 14, token: 17, tag: 'Flat_Call', body: {id: 15}, arg: {id: 16}},
+            {id: 15, token: 17, tag: 'Flat_Identifier', name: 'successor'},
+            {id: 16, token: 18, tag: 'Flat_Literal', value: 41},
         ];
 
-        expect(flat_ast.length).toBe(12);
+        expect(flat_ast.length).toBe(17);
         expect(node_count).toBe(flat_ast.length);
         expect(flat_ast).toStrictEqual(expected);
     });
 
     it('must produce a valid AST for if-expressions', () => {
-        const text: string       = "(if true (42) (0))";
+        const text: string       = "(if true then (42) else (0))";
         const lexed: Token[]     = lex(text);
         const parsed             = parse(lexed);
         const node_count: number = parsed.node_count;
         const flat_ast: Flat_AST = flatten(parsed.ast, parsed.node_count);
 
         const expected: Flat_Expression[] = [
-            {id: 0, token: 0, tag: 'Flat_If', condition: {id: 1}, then_branch: {id: 2}, else_branch: {id: 3}},
-            {id: 1, token: 2, tag: 'Flat_Literal', value: true},
-            {id: 2, token: 3, tag: 'Flat_Literal', value: 42},
-            {id: 3, token: 4, tag: 'Flat_Literal', value: 0},
+            {id: 0, token: 0, tag: 'Flat_Block', body: {id: 1}},
+            {id: 1, token: 1, tag: 'Flat_If', condition: {id: 2}, then_branch: {id: 3}, else_branch: {id: 5}},
+            {id: 2, token: 2, tag: 'Flat_Literal', value: true},
+            {id: 3, token: 4, tag: 'Flat_Block', body: {id: 4}},
+            {id: 4, token: 5, tag: 'Flat_Literal', value: 42},
+            {id: 5, token: 8, tag: 'Flat_Block', body: {id: 6}},
+            {id: 6, token: 9, tag: 'Flat_Literal', value: 0},
         ];
 
-        expect(flat_ast.length).toBe(4);
+        expect(flat_ast.length).toBe(7);
         expect(node_count).toBe(flat_ast.length);
         expect(flat_ast).toStrictEqual(expected);
     });
