@@ -151,7 +151,7 @@ describe('expressions', () => {
     });
 
     it('must produce a valid AST when let-binding to a function', () => {
-        const text: string       = "(let successor = (lambda x ((+ 1) x)) in (successor 41))";
+        const text: string       = "(let successor = lambda x ((+ 1) x) in (successor 41))";
         const lexed: Token[]     = lex(text);
         const parsed             = parse(lexed);
         const node_count: number = parsed.node_count;
@@ -159,25 +159,24 @@ describe('expressions', () => {
 
         const expected: Flat_Expression[] = [
             {id:  0, token:  0, tag: 'Flat_Block', body: {id: 1}},
-            {id:  1, token:  1, tag: 'Flat_Let', binding: {id: 2}, value: {id: 3}, body: {id: 13}},
+            {id:  1, token:  1, tag: 'Flat_Let', binding: {id: 2}, value: {id: 3}, body: {id: 12}},
             {id:  2, token:  2, tag: 'Flat_Binding', name: 'successor'},
-            {id:  3, token:  4, tag: 'Flat_Block', body: {id: 4}},
-            {id:  4, token:  5, tag: 'Flat_Lambda', binding: {id: 5}, body: {id: 6}},
-            {id:  5, token:  6, tag: 'Flat_Binding', name: 'x'},
-            {id:  6, token:  7, tag: 'Flat_Block', body: {id: 7}},
-            {id:  7, token:  8, tag: 'Flat_Call', body: {id: 8}, arg: {id: 12}},
-            {id:  8, token:  8, tag: 'Flat_Block', body: {id: 9}},
-            {id:  9, token:  9, tag: 'Flat_Call', body: {id: 10}, arg: {id: 11}},
-            {id: 10, token:  9, tag: 'Flat_Identifier', name: '+'},
-            {id: 11, token: 10, tag: 'Flat_Literal', value: 1},
-            {id: 12, token: 12, tag: 'Flat_Identifier', name: 'x'},
-            {id: 13, token: 16, tag: 'Flat_Block', body: {id: 14}},
-            {id: 14, token: 17, tag: 'Flat_Call', body: {id: 15}, arg: {id: 16}},
-            {id: 15, token: 17, tag: 'Flat_Identifier', name: 'successor'},
-            {id: 16, token: 18, tag: 'Flat_Literal', value: 41},
+            {id:  3, token:  4, tag: 'Flat_Lambda', binding: {id: 4}, body: {id: 5}},
+            {id:  4, token:  5, tag: 'Flat_Binding', name: 'x'},
+            {id:  5, token:  6, tag: 'Flat_Block', body: {id: 6}},
+            {id:  6, token:  7, tag: 'Flat_Call', body: {id: 7}, arg: {id: 11}},
+            {id:  7, token:  7, tag: 'Flat_Block', body: {id: 8}},
+            {id:  8, token:  8, tag: 'Flat_Call', body: {id: 9}, arg: {id: 10}},
+            {id:  9, token:  8, tag: 'Flat_Identifier', name: '+'},
+            {id: 10, token:  9, tag: 'Flat_Literal', value: 1},
+            {id: 11, token: 11, tag: 'Flat_Identifier', name: 'x'},
+            {id: 12, token: 14, tag: 'Flat_Block', body: {id: 13}},
+            {id: 13, token: 15, tag: 'Flat_Call', body: {id: 14}, arg: {id: 15}},
+            {id: 14, token: 15, tag: 'Flat_Identifier', name: 'successor'},
+            {id: 15, token: 16, tag: 'Flat_Literal', value: 41},
         ];
 
-        expect(flat_ast.length).toBe(17);
+        expect(flat_ast.length).toBe(16);
         expect(node_count).toBe(flat_ast.length);
         expect(flat_ast).toStrictEqual(expected);
     });
