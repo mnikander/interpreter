@@ -128,13 +128,13 @@ export class ANF_Parser {
     // BLOCK          = open LETBIND / TAIL close
     block(): _Block {
         const id = this.node_count++;
-        const token = this.index;
+        const offset = this.index;
 
         if (!this.match('OPEN')) {
             throw this.report_expected(['OPEN']);
         }
 
-        let body: (_LetBind | _Tail) = this.content();
+        const body: (_LetBind | _Tail) = this.content();
 
         if (!this.match('CLOSE')) {
             throw this.report_expected(['CLOSE']);
@@ -142,7 +142,7 @@ export class ANF_Parser {
 
         const node: _Block = {
             id: id,
-            token: token,
+            token: offset,
             tag: '_Block',
             body: body,
         };
@@ -152,7 +152,7 @@ export class ANF_Parser {
     // LETBIND        = *('let' BINDING '=' ATOMIC_OR_CALL 'in')
     letbind(): _LetBind {
         const id = this.node_count++;
-        const token = this.index;
+        const offset = this.index;
 
         if (!this.match('LET')) {
             throw this.report_expected(['LET']);
@@ -174,7 +174,7 @@ export class ANF_Parser {
 
         const binding: _LetBind = {
             id: id,
-            token: token,
+            token: offset,
             tag: '_LetBind',
             binding: left,
             value: right,
@@ -197,7 +197,7 @@ export class ANF_Parser {
     // LAMBDA         = 'lambda' BINDING BLOCK
     lambda(): _Lambda {
         const id = this.node_count++;
-        const token = this.index;
+        const offset = this.index;
 
         if (!this.match('LAMBDA')) {
             throw this.report_expected(['LAMBDA']);
@@ -208,7 +208,7 @@ export class ANF_Parser {
 
         const node: _Lambda = {
             id: id,
-            token: token,
+            token: offset,
             tag: '_Lambda',
             binding: binding,
             body: block
@@ -219,7 +219,7 @@ export class ANF_Parser {
     // IF             = 'if' ATOMIC_OR_CALL 'then' BLOCK 'else' BLOCK
     if_then_else(): _IfThenElse {
         const id = this.node_count++;
-        const token = this.index;
+        const offset = this.index;
         
         if (!this.match('IF')) {
             throw this.report_expected(['IF']);
@@ -241,7 +241,7 @@ export class ANF_Parser {
 
         const node: _IfThenElse = {
             id: id,
-            token: token,
+            token: offset,
             tag: '_IfThenElse',
             condition: condition,
             then_branch: then_branch,
@@ -266,15 +266,15 @@ export class ANF_Parser {
 
     // ATOMIC_OR_CALL = ATOMIC [ATOMIC]
     atomic_or_call(): _Atomic | _Call {
-        const token = this.index;
+        const offset = this.index;
 
         const first_atom = this.atomic();
 
         if(this.is_token_atomic()) {
             const second_atom = this.atomic();
             const call: _Call = {
-                id: this.node_count,
-                token: token,
+                id: this.node_count, // TODO / BUG: this Id is incorrect, since all of its children already have Ids
+                token: offset,
                 tag: '_Call',
                 fn: first_atom,
                 arg: second_atom
@@ -330,16 +330,15 @@ export class ANF_Parser {
     // BINDING        = identifier
     binding(): _Binding {
         const id = this.node_count++;
-        const token = this.index;
+        const offset = this.index;
 
-        if (is_token(this.peek(), 'IDENTIFIER')) {
-            const token = this.peek();
-            this.advance();
+
+        if (this.match('IDENTIFIER')) {
             const node: _Binding = {
                 id: id,
-                token: token,
+                token: offset,
                 tag: '_Binding',
-                name: (token as TokenIdentifier).value
+                name: (this.previous() as TokenIdentifier).value
             };
             return node;
         }
@@ -351,16 +350,14 @@ export class ANF_Parser {
     // IDENTIFIER     = identifier
     identifier(): _Identifier {
         const id = this.node_count++;
-        const token = this.index;
+        const offset = this.index;
 
-        if (is_token(this.peek(), 'IDENTIFIER')) {
-            const token = this.peek();
-            this.advance();
+        if (this.match('IDENTIFIER')) {
             const node: _Identifier = {
                 id: id,
-                token: token,
+                token: offset,
                 tag: '_Identifier',
-                name: (token as TokenIdentifier).value
+                name: (this.previous() as TokenIdentifier).value
             };
             return node;
         }
@@ -372,16 +369,16 @@ export class ANF_Parser {
     // LITERAL        = boolean | number | string
     literal(): _Literal {
         const id = this.node_count++;
-        const token = this.index;
+        const offset = this.index;
         
         if (this.match('BOOLEAN')) {
-            return {id: id, token: token, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
+            return {id: id, token: offset, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
         }
         else if (this.match('NUMBER')) {
-            return {id: id, token: token, tag: "_Number", value: (this.previous() as TokenNumber).value};
+            return {id: id, token: offset, tag: "_Number", value: (this.previous() as TokenNumber).value};
         }
         else if (this.match('STRING')) {
-            return {id: id, token: token, tag: "_String", value: (this.previous() as TokenString).value};
+            return {id: id, token: offset, tag: "_String", value: (this.previous() as TokenString).value};
         }
         else {
             throw this.report_expected(['BOOLEAN', 'NUMBER', 'STRING']);
