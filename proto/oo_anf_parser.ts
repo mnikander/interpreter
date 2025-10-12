@@ -9,16 +9,16 @@ export type _Literal    = _Boolean | _Number | _String;
 export type _Tail       = _Atomic  | _Call   | _Complex;
 export type _Atomic     = _Literal | _Binding | _Identifier | _Lambda | _Block; 
 export type _Complex    = _IfThenElse;
-export type _Block      = {id: number, tk: number, tag: '_Block', body: (_LetBind | _Tail)};
-export type _LetBind    = {id: number, tk: number, tag: '_LetBind', binding: _Binding, value: (_Atomic | _Call), body: (_LetBind | _Tail)};
-export type _Lambda     = {id: number, tk: number, tag: '_Lambda', binding: _Binding, body: _Block};
-export type _Call       = {id: number, tk: number, tag: '_Call', fn: _Atomic, arg: _Atomic};
-export type _IfThenElse = {id: number, tk: number, tag: '_IfThenElse', condition: _Atomic | _Call, then_branch: _Block, else_branch: _Block};
-export type _Binding    = {id: number, tk: number, tag: '_Binding', name: string};
-export type _Identifier = {id: number, tk: number, tag: '_Identifier', name: string};
-export type _Boolean    = {id: number, tk: number, tag: '_Boolean', value: boolean};
-export type _Number     = {id: number, tk: number, tag: '_Number', value: number};
-export type _String     = {id: number, tk: number, tag: '_String', value: string};
+export type _Block      = {id: number, token: number, tag: '_Block', body: (_LetBind | _Tail)};
+export type _LetBind    = {id: number, token: number, tag: '_LetBind', binding: _Binding, value: (_Atomic | _Call), body: (_LetBind | _Tail)};
+export type _Lambda     = {id: number, token: number, tag: '_Lambda', binding: _Binding, body: _Block};
+export type _Call       = {id: number, token: number, tag: '_Call', fn: _Atomic, arg: _Atomic};
+export type _IfThenElse = {id: number, token: number, tag: '_IfThenElse', condition: _Atomic | _Call, then_branch: _Block, else_branch: _Block};
+export type _Binding    = {id: number, token: number, tag: '_Binding', name: string};
+export type _Identifier = {id: number, token: number, tag: '_Identifier', name: string};
+export type _Boolean    = {id: number, token: number, tag: '_Boolean', value: boolean};
+export type _Number     = {id: number, token: number, tag: '_Number', value: number};
+export type _String     = {id: number, token: number, tag: '_String', value: string};
 
 export function is_literal(expr: Item): expr is _Literal { return is_boolean(expr) || is_number(expr) || is_string(expr); }
 export function is_tail(expr: Item): expr is _Tail { return is_atomic(expr) || is_call(expr) || is_complex(expr); }
@@ -128,7 +128,7 @@ export class ANF_Parser {
     // BLOCK          = open LETBIND / TAIL close
     block(): _Block {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
 
         if (!this.match('OPEN')) {
             throw this.report_expected(['OPEN']);
@@ -142,7 +142,7 @@ export class ANF_Parser {
 
         const node: _Block = {
             id: id,
-            tk: tk,
+            token: token,
             tag: '_Block',
             body: body,
         };
@@ -152,7 +152,7 @@ export class ANF_Parser {
     // LETBIND        = *('let' BINDING '=' ATOMIC_OR_CALL 'in')
     letbind(): _LetBind {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
 
         if (!this.match('LET')) {
             throw this.report_expected(['LET']);
@@ -174,7 +174,7 @@ export class ANF_Parser {
 
         const binding: _LetBind = {
             id: id,
-            tk: tk,
+            token: token,
             tag: '_LetBind',
             binding: left,
             value: right,
@@ -197,7 +197,7 @@ export class ANF_Parser {
     // LAMBDA         = 'lambda' BINDING BLOCK
     lambda(): _Lambda {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
 
         if (!this.match('LAMBDA')) {
             throw this.report_expected(['LAMBDA']);
@@ -208,7 +208,7 @@ export class ANF_Parser {
 
         const node: _Lambda = {
             id: id,
-            tk: tk,
+            token: token,
             tag: '_Lambda',
             binding: binding,
             body: block
@@ -219,7 +219,7 @@ export class ANF_Parser {
     // IF             = 'if' ATOMIC_OR_CALL 'then' BLOCK 'else' BLOCK
     if_then_else(): _IfThenElse {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
         
         if (!this.match('IF')) {
             throw this.report_expected(['IF']);
@@ -241,7 +241,7 @@ export class ANF_Parser {
 
         const node: _IfThenElse = {
             id: id,
-            tk: tk,
+            token: token,
             tag: '_IfThenElse',
             condition: condition,
             then_branch: then_branch,
@@ -267,7 +267,7 @@ export class ANF_Parser {
     // ATOMIC_OR_CALL = ATOMIC [ATOMIC]
     atomic_or_call(): _Atomic | _Call {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
 
         const first_atom = this.atomic();
 
@@ -275,7 +275,7 @@ export class ANF_Parser {
             const second_atom = this.atomic();
             const call: _Call = {
                 id: id,
-                tk: tk,
+                token: token,
                 tag: '_Call',
                 fn: first_atom,
                 arg: second_atom
@@ -331,14 +331,14 @@ export class ANF_Parser {
     // BINDING        = identifier
     binding(): _Binding {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
 
         if (is_token(this.peek(), 'IDENTIFIER')) {
             const token = this.peek();
             this.advance();
             const node: _Binding = {
                 id: id,
-                tk: tk,
+                token: token,
                 tag: '_Binding',
                 name: (token as TokenIdentifier).value
             };
@@ -352,14 +352,14 @@ export class ANF_Parser {
     // IDENTIFIER     = identifier
     identifier(): _Identifier {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
 
         if (is_token(this.peek(), 'IDENTIFIER')) {
             const token = this.peek();
             this.advance();
             const node: _Identifier = {
                 id: id,
-                tk: tk,
+                token: token,
                 tag: '_Identifier',
                 name: (token as TokenIdentifier).value
             };
@@ -373,16 +373,16 @@ export class ANF_Parser {
     // LITERAL        = boolean | number | string
     literal(): _Literal {
         const id = this.node_count++;
-        const tk = this.index;
+        const token = this.index;
         
         if (this.match('BOOLEAN')) {
-            return {id: id, tk: tk, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
+            return {id: id, token: token, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
         }
         else if (this.match('NUMBER')) {
-            return {id: id, tk: tk, tag: "_Number", value: (this.previous() as TokenNumber).value};
+            return {id: id, token: token, tag: "_Number", value: (this.previous() as TokenNumber).value};
         }
         else if (this.match('STRING')) {
-            return {id: id, tk: tk, tag: "_String", value: (this.previous() as TokenString).value};
+            return {id: id, token: token, tag: "_String", value: (this.previous() as TokenString).value};
         }
         else {
             throw this.report_expected(['BOOLEAN', 'NUMBER', 'STRING']);
