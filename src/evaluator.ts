@@ -34,8 +34,8 @@ export function lookup(id: number, env: Environment): Value {
 
 export function evaluate(expr: Flat_Expression, ast: Flat_AST, env: Environment): Value {
     if (is_block(expr, ast)) {
-            return evaluate(ast[expr.body.id], ast, env);
-        }
+        return evaluate(ast[expr.body.id], ast, env);
+    }
     else if (is_literal(expr, ast)) {
         return { tag: 'Primitive', value: expr.value };
     }
