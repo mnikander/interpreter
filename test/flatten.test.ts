@@ -1,9 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { lex, Token } from '../src/lexer'
-import { parse } from '../src/anf_parser';
-import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String } from "../src/anf_ast"
+import { parse } from '../src/parser';
+import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String } from "../src/ast"
 import { Flat_Expression, Flat_AST } from "../src/flat_ast";
-import { flatten } from '../src/anf_flatten';
+import { flatten } from '../src/flatten';
 
 describe('convert atoms', () => {
     it('must flatten "true" to a boolean', () => {

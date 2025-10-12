@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { lex, Token } from '../src/lexer'
-import { parse } from '../src/anf_parser';
-import { _Expression, _Call, _Binding, _Identifier, _Lambda, _Boolean, _Number, _String, _Block, walk } from '../src/anf_ast';
+import { parse } from '../src/parser';
+import { _Expression, _Call, _Binding, _Identifier, _Lambda, _Boolean, _Number, _String, _Block, walk } from '../src/ast';
 
 describe('parse blocks containing literals', () => {
 
