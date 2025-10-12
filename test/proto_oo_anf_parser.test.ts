@@ -63,6 +63,12 @@ describe('expressions', () => {
         expect(() => parse(lex(text))).toThrow();
     });
 
+    it('must report an error when enclosing parentheses are missing', () => {
+        const text: string = '-0.1';
+        const lexed: Token[] = lex(text);
+        expect(() => parse(lexed)).toThrow();
+    });
+
     it('must report an error for invalid identifiers, either during lexing or parsing', () => {
         expect(() => parse((lex('$a')))).toThrow();
         expect(() => parse((lex('a$')))).toThrow();
