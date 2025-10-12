@@ -266,7 +266,6 @@ export class ANF_Parser {
 
     // ATOMIC_OR_CALL = ATOMIC [ATOMIC]
     atomic_or_call(): _Atomic | _Call {
-        const id = this.node_count++;
         const token = this.index;
 
         const first_atom = this.atomic();
@@ -274,7 +273,7 @@ export class ANF_Parser {
         if(this.is_token_atomic()) {
             const second_atom = this.atomic();
             const call: _Call = {
-                id: id,
+                id: this.node_count,
                 token: token,
                 tag: '_Call',
                 fn: first_atom,
