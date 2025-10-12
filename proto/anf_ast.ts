@@ -32,3 +32,40 @@ export function is_identifier(expr: Item): expr is _Identifier { return expr.tag
 export function is_boolean(expr: Item): expr is _Boolean { return expr.tag === '_Boolean'; }
 export function is_number(expr: Item): expr is _Number { return expr.tag === '_Number'; }
 export function is_string(expr: Item): expr is _String { return expr.tag === '_String'; }
+
+export type Visitor = {
+  pre?:  (node: _Expression, context: any) => void;
+  post?: (node: _Expression, context: any) => void;
+};
+
+export function walk(node: _Expression, visitor: Visitor, context: any): void {
+    if (visitor.pre) {
+        visitor.pre(node, context);
+    }
+
+    if (is_block(node)) {
+        walk(node.body, visitor, context);
+    }
+    else if (is_let(node)) {
+        walk(node.binding, visitor, context);
+        walk(node.value, visitor, context);
+        walk(node.body, visitor, context);
+    }
+    else if (is_lambda(node)) {
+        walk(node.binding, visitor, context);
+        walk(node.body, visitor, context);
+    }
+    else if (is_call(node)) {
+        walk(node.fn, visitor, context);
+        walk(node.arg, visitor, context);
+    }
+    else if (is_if(node)) {
+        walk(node.condition, visitor, context);
+        walk(node.then_branch, visitor, context);
+        walk(node.else_branch, visitor, context);
+    }
+
+    if (visitor.post) {
+        visitor.post(node, context);
+    }
+}
