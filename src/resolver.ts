@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Marco Nikander
 
 import { Item } from "./item";
-import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, builtins, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_if } from "./flat_ast";
+import { Flat_Binding, Flat_Reference, Flat_Expression, Flat_AST, Flat_Builtin, builtins, is_literal, is_identifier, is_reference, is_lambda, is_let, is_call, is_binding, is_if, is_block } from "./flat_ast";
 
 export type GlobalScope = {
     tag: "GlobalScope"
@@ -71,6 +71,12 @@ function resolve(expr: Flat_Expression, ast: Flat_AST, scope: GlobalScope | Scop
 
         ast = resolve(fn_node, ast, scope);
         ast = resolve(arg_node, ast, scope);
+        return ast;
+    }
+    else if (is_block(expr, ast)) {
+        const body_node  = ast[expr.body.id];
+
+        ast = resolve(body_node, ast, scope);
         return ast;
     }
     else if (is_if(expr, ast)) {
