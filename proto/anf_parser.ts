@@ -4,6 +4,8 @@ import { Lexeme, Token, TokenBoolean, TokenIdentifier, TokenNumber, TokenString,
 import { remove_whitespace } from "../src/whitespace";
 import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String, walk } from "./anf_ast"
 
+const id_placeholder: number = -1;
+
 export function parse(tokens: readonly Token[]): { ast: _Block, node_count: number } {
     const filtered_tokens: Token[] = remove_whitespace(tokens);
     let parser: ANF_Parser         = new ANF_Parser(filtered_tokens);
@@ -22,12 +24,10 @@ export function parse(tokens: readonly Token[]): { ast: _Block, node_count: numb
 
 export class ANF_Parser {
     index: number;
-    node_count: number;
     readonly tokens: readonly Token[];
 
     constructor(tokens: readonly Token[]) {
         this.index      = 0;
-        this.node_count = 0;
         this.tokens     = tokens;
     }
     
@@ -99,7 +99,6 @@ export class ANF_Parser {
 
     // BLOCK          = open LETBIND / TAIL close
     block(): _Block {
-        const id = this.node_count++;
         const offset = this.index;
 
         if (!this.match('OPEN')) {
@@ -113,7 +112,7 @@ export class ANF_Parser {
         }
 
         const node: _Block = {
-            id: id,
+            id: id_placeholder,
             token: offset,
             tag: '_Block',
             body: body,
@@ -123,7 +122,6 @@ export class ANF_Parser {
 
     // LETBIND        = *('let' BINDING '=' ATOMIC_OR_CALL 'in')
     letbind(): _LetBind {
-        const id = this.node_count++;
         const offset = this.index;
 
         if (!this.match('LET')) {
@@ -145,7 +143,7 @@ export class ANF_Parser {
         const body: (_LetBind | _Tail) = this.content();
 
         const binding: _LetBind = {
-            id: id,
+            id: id_placeholder,
             token: offset,
             tag: '_LetBind',
             binding: left,
@@ -168,7 +166,6 @@ export class ANF_Parser {
 
     // LAMBDA         = 'lambda' BINDING BLOCK
     lambda(): _Lambda {
-        const id = this.node_count++;
         const offset = this.index;
 
         if (!this.match('LAMBDA')) {
@@ -179,7 +176,7 @@ export class ANF_Parser {
         const block   = this.block();
 
         const node: _Lambda = {
-            id: id,
+            id: id_placeholder,
             token: offset,
             tag: '_Lambda',
             binding: binding,
@@ -190,7 +187,6 @@ export class ANF_Parser {
 
     // IF             = 'if' ATOMIC_OR_CALL 'then' BLOCK 'else' BLOCK
     if_then_else(): _IfThenElse {
-        const id = this.node_count++;
         const offset = this.index;
         
         if (!this.match('IF')) {
@@ -212,7 +208,7 @@ export class ANF_Parser {
         const else_branch: _Block = this.block();
 
         const node: _IfThenElse = {
-            id: id,
+            id: id_placeholder,
             token: offset,
             tag: '_IfThenElse',
             condition: condition,
@@ -245,7 +241,7 @@ export class ANF_Parser {
         if(this.is_token_atomic()) {
             const second_atom = this.atomic();
             const call: _Call = {
-                id: this.node_count, // TODO / BUG: this Id is incorrect, since all of its children already have Ids
+                id: id_placeholder,
                 token: offset,
                 tag: '_Call',
                 fn: first_atom,
@@ -301,13 +297,11 @@ export class ANF_Parser {
     
     // BINDING        = identifier
     binding(): _Binding {
-        const id = this.node_count++;
         const offset = this.index;
-
 
         if (this.match('IDENTIFIER')) {
             const node: _Binding = {
-                id: id,
+                id: id_placeholder,
                 token: offset,
                 tag: '_Binding',
                 name: (this.previous() as TokenIdentifier).value
@@ -321,12 +315,11 @@ export class ANF_Parser {
     
     // IDENTIFIER     = identifier
     identifier(): _Identifier {
-        const id = this.node_count++;
         const offset = this.index;
 
         if (this.match('IDENTIFIER')) {
             const node: _Identifier = {
-                id: id,
+                id: id_placeholder,
                 token: offset,
                 tag: '_Identifier',
                 name: (this.previous() as TokenIdentifier).value
@@ -340,17 +333,16 @@ export class ANF_Parser {
         
     // LITERAL        = boolean | number | string
     literal(): _Literal {
-        const id = this.node_count++;
         const offset = this.index;
         
         if (this.match('BOOLEAN')) {
-            return {id: id, token: offset, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
+            return {id: id_placeholder, token: offset, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
         }
         else if (this.match('NUMBER')) {
-            return {id: id, token: offset, tag: "_Number", value: (this.previous() as TokenNumber).value};
+            return {id: id_placeholder, token: offset, tag: "_Number", value: (this.previous() as TokenNumber).value};
         }
         else if (this.match('STRING')) {
-            return {id: id, token: offset, tag: "_String", value: (this.previous() as TokenString).value};
+            return {id: id_placeholder, token: offset, tag: "_String", value: (this.previous() as TokenString).value};
         }
         else {
             throw this.report_expected(['BOOLEAN', 'NUMBER', 'STRING']);
