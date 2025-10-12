@@ -2,18 +2,22 @@
 
 import { Lexeme, Token, TokenBoolean, TokenIdentifier, TokenNumber, TokenString, is_token } from "../src/lexer";
 import { remove_whitespace } from "../src/whitespace";
-import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String } from "./anf_ast"
+import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String, walk } from "./anf_ast"
 
 export function parse(tokens: readonly Token[]): { ast: _Block, node_count: number } {
     const filtered_tokens: Token[] = remove_whitespace(tokens);
     let parser: ANF_Parser         = new ANF_Parser(filtered_tokens);
-    const ast: _Block              = parser.block();
+    let ast: _Block                = parser.block();
+
+    let counter = {index: 0};
+    const visitor = { pre: (node: _Expression, context: {index: number}) => { node.id = context.index; context.index++;} };
+    walk(ast, visitor, counter);
     
     if (!parser.at_end()) {
         throw Error(`Expected input to be one program. A second program begins at token '${parser.peek().value}' of type '${parser.peek().lexeme}'.`);
     }
 
-    return { ast: ast, node_count: parser.node_count };
+    return { ast: ast, node_count: counter.index };
 }
 
 export class ANF_Parser {
