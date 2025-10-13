@@ -18,10 +18,6 @@ ${o}
 
 
 
-
-
-
-
 Welcome! Try typing:
 
 ((+ 1) 2)
