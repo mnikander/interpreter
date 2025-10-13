@@ -4,13 +4,54 @@
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8"/>
-        <title>Symbolic Interpreter</title>
-      <script type="module" crossorigin src="/interpreter/assets/index-CPWsOJto.js"></script>
+        <title>ANF Interpreter</title>
+      <script type="module" crossorigin src="/interpreter/assets/index-1cUzPdZK.js"></script>
       <link rel="stylesheet" crossorigin href="/interpreter/assets/index-BQYscjPq.css">
     </head>
+    <header>
+        <h1>Programming in A-Normal Form</h1>
+    </header>
     <body>
         <button id="help-btn" style="margin-bottom: 1em;">Help</button>
         <div id="help-box" style="display:none; border:1px solid #ccc; padding:1em; margin-bottom:1em; background:#f9f9f9;">
+            <pre>An example program in A-Normal Form:
+<code>
+(
+    let x = 5 in
+    let y = ((+ 1) 2) in
+    if ((> x) y) then (x) else (y)
+)
+</code></pre>
+<div>
+    A program in A-Normal Form (ANF) is a block enclosed by parentheses.
+    A block begins with zero or more let-bindings and is followed by exactly one 'tail expression'.
+    A let-binding may have only simple expressions on the right-hand side.
+    The tail expression is the last line in a block.
+    The value of a block is equal to its tail expression.
+    Note that control flow, such as an if-expression, is only allowed in the tail position.
+    Basically, there are two ways to program:<br><br>
+    1. Create step-by-step intermediate results and bind them to variables.<br>
+    2. Create nested blocks to chain computations that way.<br><br>
+
+    There are several keywords which have their own syntax:<br><br>
+</div>
+
+<table>
+                <thead>
+                    <tr>
+                        <th>Operation</th>
+                        <th>Example</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr> <td>lambda</td>   <td>lambda x ((+ 1) x)</td>          <td>create a function of one variable, is allowed almost anywhere</td> </tr>
+                    <tr> <td>let</td>      <td>(let x = 5 in ((* 2) x))</td>    <td>define variables in a block</td> </tr>
+                    <tr> <td>if</td>       <td>(if true then (4) else (8))</td> <td>selects between two blocks, only allowed at the end of a block</td> </tr>
+                </tbody>
+            </table>
+
+<br>There are also a number of built-in functions:<br><br>
             <table>
                 <thead>
                     <tr>
@@ -32,21 +73,17 @@
                     <tr> <td>>=</td>       <td>((>= 5) 2)</td>                  <td>greater than or equal to</td> </tr>
                     <tr> <td>==</td>       <td>((== 5) 2)</td>                  <td>equal to</td> </tr>
                     <tr> <td>!=</td>       <td>((!= 5) 2)</td>                  <td>unequal to</td> </tr>
-                    <tr> <td>&amp;</td>    <td>((&amp;&amp; True) False)</td>   <td>logical and</td> </tr>
-                    <tr> <td>|</td>        <td>((|| True) False)</td>           <td>logical or</td> </tr>
-                    <tr> <td>!</td>        <td>(! True)</td>                    <td>logical negation</td> </tr>
-                    <tr> <td>lambda</td>   <td>((lambda x ((+ 1) x)) 41)</td>   <td>create a function of one variable</td> </tr>
-                    <tr> <td>let</td>      <td>(let x 5 ((* 2) x))</td>         <td>variables in expressions</td> </tr>
-                    <tr> <td>if</td>       <td>(if True 4 8)</td>               <td>if-expression</td> </tr>
+                    <tr> <td>&amp;</td>    <td>((&amp;&amp; true) false)</td>   <td>logical and</td> </tr>
+                    <tr> <td>|</td>        <td>((|| true) false)</td>           <td>logical or</td> </tr>
+                    <tr> <td>!</td>        <td>(! true)</td>                    <td>logical not</td> </tr>
                 </tbody>
             </table>
-            
-            <pre>Note: Expressions can be nested, for example: <code>((+ 1) ((* 2) 4))</code></pre>
+            <div><br>A function can be called by writing the name of the function, followed by an argument.
+                Functions always take exactly one argument at a time.
+                If the function needs a second argument, you need to do another function application '<code>fn arg</code>'.
+                This is why it is necessary to write: <code>(+ 1) 2</code>
+                <br><br></div>
 
-            <div>Note: Functions always take exactly one argument at a time.
-                If the function needs a second argument, you need to do another function application '<code>(func arg)</code>'.
-                This is why it is necessary to write <code>((+ 1) 2)</code>.
-                The special forms, 'lambda', 'let', and 'if', are not functions and are free from this restriction.</div>
         </div>
         <pre id="output"></pre>
         <input type="text" id="input" value="((+ 1) 2)" autofocus/>
