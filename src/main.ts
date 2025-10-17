@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const output = document.getElementById("output");
     if (output) {
-        output.textContent = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        output.textContent = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
             + "Welcome! Try typing:\n\n"
             + "((+ 1) 2)\n\n"
             + "and press Enter.\n\n"
