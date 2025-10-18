@@ -51,6 +51,18 @@ describe('valid input and output', () => {
         expect(() => interpret('((+++ 2) 3)')).toThrow();
     });
 
+    it('must report an error when the tail-expression is missing', () => {
+        expect(() => interpret('(let x = 5 in )')).toThrow();
+    });
+
+    it('must report an if control flow is on the right-hand side of a let-binding', () => {
+        expect(() => interpret('(let x = if true then (2) else (4) in x)')).toThrow();
+    });
+
+    it('must report an error when the let-bindings and tail-expression are in the wrong order', () => {
+        expect(() => interpret('((+ 1) 2) let x = 5 in x')).toThrow();
+    });
+
     it('should report an error when returning a function', () => {
         expect(() => interpret("(+)")).toThrow();
     });
