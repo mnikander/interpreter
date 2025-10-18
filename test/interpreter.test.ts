@@ -331,6 +331,33 @@ describe('recursion', () => {
         expect(interpret("(let I = (lambda x (x)) in ((I I) 42))")).toBe(42);
     });
 
+    it('must be able to evaluate a recursive function', () => {
+        const definition: string =
+`let isEven = 
+lambda self ( lambda n (
+    if (== 0) n
+    then (
+        true
+    )
+    else (
+        if (== (~ 1)) n
+        then (
+            false
+        )
+        else (
+            let predecessor = (- n) 2 in
+            (self self) predecessor
+        )
+    )
+)) in 
+`;
+        expect(interpret('(' + definition + ' (isEven isEven) 0' + ')')).toBe(true);
+        expect(interpret('(' + definition + ' (isEven isEven) 1' + ')')).toBe(false);
+        expect(interpret('(' + definition + ' (isEven isEven) 2' + ')')).toBe(true);
+        expect(interpret('(' + definition + ' (isEven isEven) 3' + ')')).toBe(false);
+        expect(interpret('(' + definition + ' (isEven isEven) 4' + ')')).toBe(true);
+    });
+
     it('must allow computing the factorial', () => {
         expect(interpret(
             "(let " 
