@@ -40,8 +40,8 @@ function flatten_nodes(nested_ast: _Expression, flat_ast: Flat_AST): Flat_AST {
     else if (is_if(nested_ast)) {
         const index               = nested_ast.id;
         const condition           = { id: nested_ast.condition.id }; 
-        const then_branch             = { id: nested_ast.then_branch.id };
-        const else_branch            = { id: nested_ast.else_branch.id };
+        const then_branch         = { id: nested_ast.then_branch.id };
+        const else_branch         = { id: nested_ast.else_branch.id };
         let node: Flat_If         = { id: index, token: nested_ast.token, tag: 'Flat_If', condition: condition, then_branch: then_branch, else_branch: else_branch };
         flat_ast[index]           = node;
         flat_ast                  = flatten_nodes(nested_ast.condition, flat_ast);
