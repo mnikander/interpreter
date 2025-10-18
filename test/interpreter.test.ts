@@ -345,8 +345,20 @@ describe('recursion', () => {
 });
 
 describe.skip('arrays', () => {
-    it.skip('should evaluate lambda expressions with array-literals as arguments', () => {
-        expect(interpret("((lambda a a) [1 2])")).toBe(1);
+    it('should evaluate lambda expressions with array-literals as arguments', () => {
+        expect(interpret("((lambda a a) [1 2 3 4])")).toBe([1, 2, 3, 4]);
+    });
+
+    it('should evaluate map over arrays', () => {
+        expect(interpret("(map (+ 10) [1 2 3 4])")).toBe([11, 12, 13, 14]);
+    });
+
+    it('should evaluate filter over arrays', () => {
+        expect(interpret("(let isEven = lambda x ((== ((% x) 2)) 0) in filter isEven [1 2 3 4])")).toBe([2, 4]);
+    });
+
+    it('should evaluate reduce over arrays', () => {
+        expect(interpret("(reduce + 0 [1 2 3 4])")).toBe(10);
     });
 });
 
