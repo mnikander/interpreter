@@ -352,7 +352,7 @@ let oddImpl   = lambda even (lambda odd (lambda n (
                     ! (isEven n)
                 ))) in 
 let evenImpl  = lambda even (lambda odd (lambda n (
-                    let isOdd  = (odd even) odd in
+                    let isOdd  = (odd even) odd in 
                     (
                         if (== 0) n
                         then (true)
@@ -360,9 +360,8 @@ let evenImpl  = lambda even (lambda odd (lambda n (
                             isOdd (decrement n))
                     )
                 ))) in 
-let isOdd     = (oddImpl  evenImpl) oddImpl in
-let isEven    = (evenImpl evenImpl) oddImpl in
-
+let isOdd     = (oddImpl  evenImpl) oddImpl in 
+let isEven    = (evenImpl evenImpl) oddImpl in 
 `;
         expect(interpret('(' + definitions + 'isEven 0' + ')')).toBe(true);
         expect(interpret('(' + definitions + 'isEven 1' + ')')).toBe(false);
