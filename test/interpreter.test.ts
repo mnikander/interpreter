@@ -358,6 +358,34 @@ lambda self ( lambda n (
         expect(interpret('(' + definition + ' (isEven isEven) 4' + ')')).toBe(true);
     });
 
+    it('must be able to implement "fix"', () => {
+        const define_fix: string       = "let fix = lambda f (f f) in ";
+        const define_impl: string =
+`let isEven = 
+lambda self ( lambda n (
+    if (== 0) n
+    then (
+        true
+    )
+    else (
+        if (== (~ 1)) n
+        then (
+            false
+        )
+        else (
+            let predecessor = (- n) 2 in 
+            (self self) predecessor
+        )
+    )
+)) in 
+`;
+        expect(interpret("(" + define_fix + define_impl + "(fix isEven) 0" + ")")).toBe(true);
+        expect(interpret("(" + define_fix + define_impl + "(fix isEven) 1" + ")")).toBe(false);
+        expect(interpret("(" + define_fix + define_impl + "(fix isEven) 2" + ")")).toBe(true);
+        expect(interpret("(" + define_fix + define_impl + "(fix isEven) 3" + ")")).toBe(false);
+        expect(interpret("(" + define_fix + define_impl + "(fix isEven) 4" + ")")).toBe(true);
+    });
+
     it('must allow computing the factorial', () => {
         expect(interpret(
             "(let " 
