@@ -4,21 +4,23 @@ import { Lexeme, Token, TokenBoolean, TokenIdentifier, TokenNumber, TokenString,
 import { remove_whitespace } from "./whitespace";
 import { _Expression, _Literal, _Tail, _Atomic, _Complex, _Block, _LetBind, _Lambda, _Call, _IfThenElse, _Binding, _Identifier, _Boolean, _Number, _String, walk } from "./ast"
 
-const id_placeholder: number = -1;
-
 export function parse(tokens: readonly Token[]): { ast: _Block, node_count: number } {
     const filtered_tokens: Token[] = remove_whitespace(tokens);
     let parser: ANF_Parser         = new ANF_Parser(filtered_tokens);
-    let ast: _Block                = parser.block();
-
-    let counter = {index: 0};
-    const visitor = { pre: (node: _Expression, context: {index: number}) => { node.id = context.index; context.index++;} };
-    walk(ast, visitor, counter);
+    let ast: _Block                = parser.block(); // parse
+    const result                   = assign_node_ids(ast);    
     
     if (!parser.at_end()) {
         throw Error(`Expected input to be one program. A second program begins at token '${parser.peek().value}' of type '${parser.peek().lexeme}'.`);
     }
 
+    return { ast: result.ast, node_count: result.node_count };
+}
+
+function assign_node_ids(ast: _Block): { ast: _Block, node_count: number } {
+    let counter = {index: 0};
+    const visitor = { pre: (node: _Expression, context: {index: number}) => { node.id = context.index; context.index++;} };
+    walk(ast, visitor, counter);
     return { ast: ast, node_count: counter.index };
 }
 
@@ -112,7 +114,6 @@ export class ANF_Parser {
         }
 
         const node: _Block = {
-            id: id_placeholder,
             token: offset,
             tag: '_Block',
             body: body,
@@ -143,7 +144,6 @@ export class ANF_Parser {
         const body: (_LetBind | _Tail) = this.content();
 
         const binding: _LetBind = {
-            id: id_placeholder,
             token: offset,
             tag: '_LetBind',
             binding: left,
@@ -176,7 +176,6 @@ export class ANF_Parser {
         const block   = this.block();
 
         const node: _Lambda = {
-            id: id_placeholder,
             token: offset,
             tag: '_Lambda',
             binding: binding,
@@ -208,7 +207,6 @@ export class ANF_Parser {
         const else_branch: _Block = this.block();
 
         const node: _IfThenElse = {
-            id: id_placeholder,
             token: offset,
             tag: '_IfThenElse',
             condition: condition,
@@ -241,7 +239,6 @@ export class ANF_Parser {
         if(this.is_token_atomic()) {
             const second_atom = this.atomic();
             const call: _Call = {
-                id: id_placeholder,
                 token: offset,
                 tag: '_Call',
                 fn: first_atom,
@@ -301,7 +298,6 @@ export class ANF_Parser {
 
         if (this.match('IDENTIFIER')) {
             const node: _Binding = {
-                id: id_placeholder,
                 token: offset,
                 tag: '_Binding',
                 name: (this.previous() as TokenIdentifier).value
@@ -319,7 +315,6 @@ export class ANF_Parser {
 
         if (this.match('IDENTIFIER')) {
             const node: _Identifier = {
-                id: id_placeholder,
                 token: offset,
                 tag: '_Identifier',
                 name: (this.previous() as TokenIdentifier).value
@@ -336,13 +331,13 @@ export class ANF_Parser {
         const offset = this.index;
         
         if (this.match('BOOLEAN')) {
-            return {id: id_placeholder, token: offset, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
+            return {token: offset, tag: "_Boolean", value: (this.previous() as TokenBoolean).value};
         }
         else if (this.match('NUMBER')) {
-            return {id: id_placeholder, token: offset, tag: "_Number", value: (this.previous() as TokenNumber).value};
+            return {token: offset, tag: "_Number", value: (this.previous() as TokenNumber).value};
         }
         else if (this.match('STRING')) {
-            return {id: id_placeholder, token: offset, tag: "_String", value: (this.previous() as TokenString).value};
+            return {token: offset, tag: "_String", value: (this.previous() as TokenString).value};
         }
         else {
             throw this.report_expected(['BOOLEAN', 'NUMBER', 'STRING']);
