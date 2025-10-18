@@ -342,6 +342,39 @@ describe('recursion', () => {
             + ")")
         ).toBe(120);
     });
+
+    it('must evaluate co-recursive functions', () => {
+        const definitions: string =
+`
+let decrement = lambda x ((- x) 1) in 
+let oddImpl   = lambda even (lambda odd (lambda n (
+                    let isEven = (even even) odd in 
+                    ! (isEven n)
+                ))) in 
+let evenImpl  = lambda even (lambda odd (lambda n (
+                    let isOdd  = (odd even) odd in
+                    (
+                        if (== 0) n
+                        then (true)
+                        else (
+                            isOdd (decrement n))
+                    )
+                ))) in 
+let isOdd     = (oddImpl  evenImpl) oddImpl in
+let isEven    = (evenImpl evenImpl) oddImpl in
+
+`;
+        expect(interpret('(' + definitions + 'isEven 0' + ')')).toBe(true);
+        expect(interpret('(' + definitions + 'isEven 1' + ')')).toBe(false);
+        expect(interpret('(' + definitions + 'isEven 2' + ')')).toBe(true);
+        expect(interpret('(' + definitions + 'isEven 3' + ')')).toBe(false);
+        expect(interpret('(' + definitions + 'isEven 4' + ')')).toBe(true);
+        expect(interpret('(' + definitions + 'isOdd 0' + ')')).toBe(false);
+        expect(interpret('(' + definitions + 'isOdd 1' + ')')).toBe(true);
+        expect(interpret('(' + definitions + 'isOdd 2' + ')')).toBe(false);
+        expect(interpret('(' + definitions + 'isOdd 3' + ')')).toBe(true);
+        expect(interpret('(' + definitions + 'isOdd 4' + ')')).toBe(false);
+    });
 });
 
 describe.skip('arrays', () => {
