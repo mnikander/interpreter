@@ -89,7 +89,7 @@ function apply(fn: Value, arg: Value, ast: Flat_AST): Value {
         }
         else {
             fn.args.push(arg);
-            if (fn.args.length == fn.arity) {
+            if (fn.args.length === fn.arity) {
                 return fn.impl(fn.args);
             }
             else {
@@ -121,9 +121,9 @@ function make_builtin(expr: Flat_Builtin, ast:  Flat_AST): BuiltinValue {
         case '!':
             return { tag: 'Builtin', name: expr.name, arity: 1, impl: args => { return { tag: 'Primitive', value: !args[0].value }}, args: [] }
         case '==':
-            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value == args[1].value }}, args: [] }
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value === args[1].value }}, args: [] }
         case '!=':
-            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value != args[1].value }}, args: [] }
+            return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value !== args[1].value }}, args: [] }
         case '<':
             return { tag: 'Builtin', name: expr.name, arity: 2, impl: args => { return { tag: 'Primitive', value: args[0].value < args[1].value }}, args: [] }
         case '>':
