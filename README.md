@@ -1,4 +1,4 @@
-# Symbolic Interpreter (work in progress)
+# Symbolic Interpreter
 
 A simple interpreter for symbolic expressions which runs in the browser.
 The goal is to implement the core of a [lambda language](https://github.com/mnikander/lambda).
