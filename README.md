@@ -1,7 +1,9 @@
 # Symbolic Interpreter
 
 A simple interpreter for symbolic expressions which runs in the browser.
-The goal is to implement the core of a [lambda language](https://github.com/mnikander/lambda).
+The core of a [lambda language](https://github.com/mnikander/lambda) is partially implemented.
+
+**Status**: Discontinued in October 2025
 
 ## [Try it online](https://mnikander.github.io/interpreter/)
 
